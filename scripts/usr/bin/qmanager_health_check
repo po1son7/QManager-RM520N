@@ -153,7 +153,7 @@ _test_catalog_pending() {
         {id:"bin.sms_tool",       category:"binaries", label:"sms_tool binary present",     status:"pending", duration_ms:0, detail:""},
         {id:"bin.qcmd",           category:"binaries", label:"qcmd wrapper present",        status:"pending", duration_ms:0, detail:""},
         {id:"bin.jq",             category:"binaries", label:"jq present",                  status:"pending", duration_ms:0, detail:""},
-        {id:"bin.curl",           category:"binaries", label:"curl present",                status:"pending", duration_ms:0, detail:""},
+        {id:"bin.http_fetch",     category:"binaries", label:"HTTP client (curl or wget)",    status:"pending", duration_ms:0, detail:""},
         {id:"bin.openssl",        category:"binaries", label:"openssl present",             status:"pending", duration_ms:0, detail:""},
         {id:"bin.speedtest",      category:"binaries", label:"speedtest CLI",               status:"pending", duration_ms:0, detail:""},
         {id:"bin.tailscale",      category:"binaries", label:"tailscale binary",            status:"pending", duration_ms:0, detail:""},
@@ -236,7 +236,22 @@ t_bin_atcli()      { _check_bin atcli_smd11 /usr/bin/atcli_smd11 0 ""; }
 t_bin_sms_tool()   { _check_bin sms_tool    /usr/bin/sms_tool    0 ""; }
 t_bin_qcmd()       { _check_bin qcmd        /usr/bin/qcmd        0 ""; }
 t_bin_jq()         { _check_bin jq          /opt/bin/jq          0; }
-t_bin_curl()       { _check_bin curl        /opt/bin/curl        0; }
+# RG501Q reference fw often has wget only — pass if either tool exists (PATH or Entware wget).
+t_bin_http_fetch() {
+    if command -v curl >/dev/null 2>&1; then
+        echo "curl: $(command -v curl)" >> "$OUTPUT_FILE"
+        echo "pass|curl"
+    elif [ -x /opt/bin/wget ]; then
+        echo "/opt/bin/wget present" >> "$OUTPUT_FILE"
+        echo "pass|wget (Entware)"
+    elif command -v wget >/dev/null 2>&1; then
+        echo "wget: $(command -v wget)" >> "$OUTPUT_FILE"
+        echo "pass|wget"
+    else
+        echo "neither curl nor wget found" >> "$OUTPUT_FILE"
+        echo "fail|missing curl and wget"
+    fi
+}
 t_bin_openssl()    { _check_bin openssl     /opt/bin/openssl     0; }
 t_bin_speedtest()  { _check_bin speedtest   /usrdata/root/bin/speedtest 1; }
 t_bin_tailscale() {
@@ -781,7 +796,7 @@ _run_test bin.atcli           binaries     "atcli_smd11 binary present"         
 _run_test bin.sms_tool        binaries     "sms_tool binary present"               t_bin_sms_tool
 _run_test bin.qcmd            binaries     "qcmd wrapper present"                  t_bin_qcmd
 _run_test bin.jq              binaries     "jq present"                            t_bin_jq
-_run_test bin.curl            binaries     "curl present"                          t_bin_curl
+_run_test bin.http_fetch      binaries     "HTTP client (curl or wget)"           t_bin_http_fetch
 _run_test bin.openssl         binaries     "openssl present"                       t_bin_openssl
 _run_test bin.speedtest       binaries     "speedtest CLI"                         t_bin_speedtest
 _run_test bin.tailscale       binaries     "tailscale binary"                      t_bin_tailscale

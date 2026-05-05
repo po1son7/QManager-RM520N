@@ -1,10 +1,20 @@
-# 🚀 QManager RM520N BETA v0.1.6
+# 🚀 QManager RM520N — Release Notes
+
+## v0.1.7-cn (cn/edition)
+
+- **Tailscale on-demand install** uses **wget** (`/opt/bin/wget` or `wget`) when **curl** is missing — RG501Q-class firmware commonly ships without curl.
+- **Installer speedtest bootstrap** avoids invoking **curl** unless it exists on PATH (wget-first unchanged).
+- **System Health Check** (`bin.http_fetch`) passes when either **curl** or **wget** is available.
+
+---
+
+## v0.1.6 — TTL / Hop Limit (RM520N-GL hotfix)
 
 A focused hotfix for **TTL & Hop Limit Configuration** on RM520N-GL. Saving TTL/HL now reflects correctly in the UI and survives a page refresh — and disabling actually disables.
 
 > One-click OTA from **System Settings → Software Update** if you're on v0.1.5. SSH/ADB is no longer required.
 
-## 🛠️ Fixes
+## 🛠️ Fixes (v0.1.6)
 
 - **TTL/HL save no longer resets to disabled after refresh.** The live-state reader was passing a duplicate flag that legacy iptables on RM520N-GL rejects, so the form mistakenly reported "disabled" right after a successful save. The form now mirrors the actual kernel state.
 - **TTL/HL disable now fully clears the rules.** The apply path used to remove only one rule per save, so duplicate or stale rules from past changes could survive a disable and silently re-appear in the UI. The chain is now drained completely on every apply, with a hard cap to prevent runaway loops.

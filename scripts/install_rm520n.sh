@@ -759,17 +759,21 @@ RCEOF
             command -v wget >/dev/null 2>&1 && wget $ENTWARE_WGET_OPTS -q "$1" -O /tmp/speedtest.tgz 2>/dev/null && return 0
             return 1
         }
+        _curl_try() {
+            command -v curl >/dev/null 2>&1 || return 1
+            curl -fsSL "$1" -o /tmp/speedtest.tgz 2>/dev/null
+        }
         # Prefer gh.llkk-wrapped URL first on mainland (mirror prefix enabled); otherwise try Ookla directly first.
         if [ -z "${QMANAGER_DISABLE_MIRROR:-}" ] && \
            [ -n "$SPEEDTEST_MIRROR_TRY" ] && [ "$SPEEDTEST_MIRROR_TRY" != "$SPEEDTEST_PRIMARY" ] && \
-           { _wget_try "$SPEEDTEST_MIRROR_TRY" || curl -fsSL "$SPEEDTEST_MIRROR_TRY" -o /tmp/speedtest.tgz 2>/dev/null; }; then
+           { _wget_try "$SPEEDTEST_MIRROR_TRY" || _curl_try "$SPEEDTEST_MIRROR_TRY"; }; then
             _st_dl=1
         elif _wget_try "$SPEEDTEST_PRIMARY" || \
-           curl -fsSL "$SPEEDTEST_PRIMARY" -o /tmp/speedtest.tgz 2>/dev/null; then
+           _curl_try "$SPEEDTEST_PRIMARY"; then
             _st_dl=1
         elif [ -n "${QMANAGER_DISABLE_MIRROR:-}" ] && \
            [ "$SPEEDTEST_MIRROR_TRY" != "$SPEEDTEST_PRIMARY" ] && \
-           { _wget_try "$SPEEDTEST_MIRROR_TRY" || curl -fsSL "$SPEEDTEST_MIRROR_TRY" -o /tmp/speedtest.tgz 2>/dev/null; }; then
+           { _wget_try "$SPEEDTEST_MIRROR_TRY" || _curl_try "$SPEEDTEST_MIRROR_TRY"; }; then
             _st_dl=1
         fi
         if [ "$_st_dl" = "1" ] && [ -s /tmp/speedtest.tgz ]; then

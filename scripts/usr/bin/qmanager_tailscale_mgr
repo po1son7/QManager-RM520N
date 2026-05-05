@@ -165,11 +165,27 @@ cd /usrdata || { write_status '{"success":false,"status":"error","message":"Cann
 rm -f "$TAILSCALE_TARBALL"
 rm -rf "$TAILSCALE_EXTRACT_DIR"
 
-# Bare curl -O matches rgmii-toolkit — no timeouts, no flags, no fallback.
-# This is the proven pattern that doesn't hang.
-if ! curl -O "$TAILSCALE_URL"; then
-    write_status '{"success":false,"status":"error","message":"Failed to download Tailscale v'"$TAILSCALE_VERSION"'","detail":"curl failed — check internet connection"}'
-    exit 1
+# Prefer bare curl -O (rgmii-toolkit pattern). RG501Q reference firmware often has no curl —
+# fall back to Entware/Busybox wget (same discovery order as other QManager CGIs).
+if command -v curl >/dev/null 2>&1; then
+    if ! curl -O "$TAILSCALE_URL"; then
+        write_status '{"success":false,"status":"error","message":"Failed to download Tailscale v'"$TAILSCALE_VERSION"'","detail":"curl failed — check internet connection"}'
+        exit 1
+    fi
+else
+    QM_WGET=""
+    if [ -x /opt/bin/wget ]; then QM_WGET=/opt/bin/wget
+    elif command -v wget >/dev/null 2>&1; then QM_WGET=$(command -v wget)
+    fi
+    if [ -z "$QM_WGET" ]; then
+        write_status '{"success":false,"status":"error","message":"Neither curl nor wget found — ensure QManager/Entware bootstrap installed wget"}'
+        exit 1
+    fi
+    echo "Using wget: $QM_WGET"
+    if ! "$QM_WGET" -qO "$TAILSCALE_TARBALL" "$TAILSCALE_URL"; then
+        write_status '{"success":false,"status":"error","message":"Failed to download Tailscale v'"$TAILSCALE_VERSION"'","detail":"wget failed — check internet connection"}'
+        exit 1
+    fi
 fi
 
 if [ ! -f "$TAILSCALE_TARBALL" ]; then
