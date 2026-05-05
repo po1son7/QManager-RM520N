@@ -65,7 +65,7 @@ function formatCarrierAggregation(network: NetworkStatus): string {
   const parts: string[] = [];
 
   if (network.ca_active && network.ca_count > 0) {
-    parts.push(`LTE (${network.ca_count + 1} carriers)`);
+    parts.push(`LTE（${network.ca_count + 1} 载波）`);
   } else if (isNSA) {
     // NSA always has an LTE anchor — show "LTE" even without CA
     parts.push("LTE");
@@ -73,13 +73,13 @@ function formatCarrierAggregation(network: NetworkStatus): string {
 
   if (network.nr_ca_active && network.nr_ca_count > 0) {
     // Genuine NR CA — show carrier count (+1 for primary NR carrier)
-    parts.push(`NR (${network.nr_ca_count + 1} carriers)`);
+    parts.push(`NR（${network.nr_ca_count + 1} 载波）`);
   } else if (isNSA) {
     // NSA dual connectivity: NR leg is active but not doing CA
     parts.push("NR");
   }
 
-  if (parts.length === 0) return "Inactive";
+  if (parts.length === 0) return "未激活";
   return parts.join(" + ");
 }
 
@@ -178,7 +178,7 @@ function CellDataSkeleton() {
       <CardHeader>
         <CardTitle>蜂窝信息</CardTitle>
         <CardDescription>
-          Detailed information about the connected cellular network.
+          当前蜂窝网络的接入信息与标识字段。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -226,7 +226,7 @@ const CellDataComponent = ({
       <CardHeader>
         <CardTitle>蜂窝信息</CardTitle>
         <CardDescription>
-          Detailed information about the connected cellular network.
+          当前蜂窝网络的接入信息与标识字段。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -255,7 +255,7 @@ const CellDataComponent = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold text-muted-foreground">
-              Access Point Name (APN)
+              接入点名称（APN）
             </p>
             <div className="flex items-center gap-1.5">
               <p className="text-sm font-semibold">{network?.apn || "-"}</p>
@@ -265,7 +265,7 @@ const CellDataComponent = ({
                 className="p-0.5 cursor-pointer"
                 asChild
               >
-                <Link href="/cellular/settings/apn-management">Edit</Link>
+                <Link href="/cellular/settings/apn-management">编辑</Link>
               </Button>
             </div>
           </motion.div>
@@ -278,7 +278,7 @@ const CellDataComponent = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold text-muted-foreground">
-              Network Type
+              网络类型
             </p>
             <p className="text-sm font-semibold">
               {network ? formatNetworkType(network.type) : "-"}
@@ -293,7 +293,7 @@ const CellDataComponent = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold text-muted-foreground">
-              Cell ID
+              小区 ID（Cell ID）
             </p>
             <div className="flex items-center gap-1.5">
               {cellId != null && enodebId != null ? (
@@ -306,14 +306,14 @@ const CellDataComponent = ({
                   <TooltipContent>
                     <div className="grid">
                       <p>
-                        {cellIdLabel} ID:{" "}
+                        {cellIdLabel} ID（基站标识）：{" "}
                         <span className="font-semibold">
                           {formatNumericField(enodebId)}
                         </span>
                       </p>
 
                       <p>
-                        Sector:{" "}
+                        扇区（Sector）：{" "}
                         <span className="font-semibold">
                           {formatNumericField(sectorId)}
                         </span>
@@ -336,7 +336,7 @@ const CellDataComponent = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold text-muted-foreground">
-              Tracking Area Code
+              跟踪区码（TAC）
             </p>
             <div className="flex items-center gap-1.5">
               {tac != null ? (
@@ -348,7 +348,7 @@ const CellDataComponent = ({
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>
-                      Hex:{" "}
+                      十六进制（Hex）：{" "}
                       <span className="font-semibold">0x{decToHex(tac)}</span>
                     </p>
                   </TooltipContent>
@@ -366,7 +366,7 @@ const CellDataComponent = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold text-muted-foreground">
-              Total Bandwidth in Use
+              在用总带宽
             </p>
             <div className="flex items-center gap-1.5">
               {network?.bandwidth_details ? (
@@ -397,7 +397,7 @@ const CellDataComponent = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold text-muted-foreground">
-              Carrier Aggregation
+              载波聚合（CA）
             </p>
             <p className="text-sm font-semibold">
               {network ? formatCarrierAggregation(network) : "-"}
@@ -412,7 +412,7 @@ const CellDataComponent = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold text-muted-foreground">
-              Active MIMO
+              激活 MIMO
             </p>
             <div className="flex items-center gap-1.5">
               <p className="text-sm font-semibold">{device?.mimo || "-"}</p>
@@ -422,7 +422,7 @@ const CellDataComponent = ({
                 className="p-0.5 cursor-pointer"
                 asChild
               >
-                <Link href="/cellular/antenna-statistics">Per-Antenna</Link>
+                <Link href="/cellular/antenna-statistics">分天线指标</Link>
               </Button>
             </div>
           </motion.div>
@@ -479,7 +479,7 @@ const CellDataComponent = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold text-muted-foreground">
-              Primary DNS
+              首选 DNS
             </p>
             <div className="flex items-center gap-1.5">
               {network?.primary_dns && compressIPv6(network.primary_dns) !== network.primary_dns ? (
@@ -508,7 +508,7 @@ const CellDataComponent = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold text-muted-foreground">
-              Secondary DNS
+              备用 DNS
             </p>
             <div className="flex items-center gap-1.5">
               {network?.secondary_dns && compressIPv6(network.secondary_dns) !== network.secondary_dns ? (

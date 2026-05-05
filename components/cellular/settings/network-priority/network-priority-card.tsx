@@ -43,9 +43,9 @@ import { SaveButton, useSaveFlash } from "@/components/ui/save-button";
 // RAT name mapping: AT command value → display name
 // =============================================================================
 const RAT_DISPLAY: Record<string, string> = {
-  NR5G: "NR5G",
-  LTE: "LTE",
-  WCDMA: "WCDMA",
+  NR5G: "NR5G（5G）",
+  LTE: "LTE（4G）",
+  WCDMA: "WCDMA（3G）",
 };
 
 const RAT_COLORS: Record<string, { bg: string; fg: string }> = {
@@ -120,7 +120,7 @@ function DraggableNetworkItem({
         <span className="font-medium text-sm">{network.name}</span>
       </div>
       <span className="text-xs text-muted-foreground ml-auto">
-        Priority {index + 1}
+        优先级 {index + 1}
       </span>
     </motion.div>
   );
@@ -148,14 +148,19 @@ const NetworkPriorityCard = () => {
   // ---------------------------------------------------------------------------
   // Parse order string into NetworkItem array
   // ---------------------------------------------------------------------------
-  const orderToNetworks = (order: string): NetworkItem[] =>
-    order
+  const orderToNetworks = (order: string): NetworkItem[] => {
+    const cleaned = order
+      .trim()
+      .replace(/^["']+|["']+$/g, "");
+    return cleaned
       .split(":")
+      .map((r) => r.trim().replace(/^["']+|["']+$/g, ""))
       .filter((r) => r.length > 0)
       .map((rat) => ({
         id: rat,
         name: RAT_DISPLAY[rat] || rat,
       }));
+  };
 
   // ---------------------------------------------------------------------------
   // Fetch current order
@@ -170,10 +175,26 @@ const NetworkPriorityCard = () => {
       const data = await resp.json();
       if (!mountedRef.current) return;
 
-      if (!data.success) return;
+      if (!data.success) {
+        toast.error(
+          typeof data.detail === "string"
+            ? data.detail
+            : "读取网络优先级失败（请确认模组支持 AT+QNWPREFCFG=\"rat_acq_order\"）",
+        );
+        setFetchedOrder("");
+        setNetworks([]);
+        return;
+      }
 
-      setFetchedOrder(data.order);
-      setNetworks(orderToNetworks(data.order));
+      const rawOrder = typeof data.order === "string" ? data.order : "";
+      setFetchedOrder(rawOrder);
+      const list = orderToNetworks(rawOrder);
+      setNetworks(list);
+      if (list.length === 0) {
+        toast.warning(
+          "未解析到 RAT 顺序（列表为空）。请抓包查看 GET 返回或模组手册中的 AT 应答格式。",
+        );
+      }
     } catch {
       // silently fail — keep current state
     } finally {
@@ -302,6 +323,13 @@ const NetworkPriorityCard = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {networks.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">
+            暂无可用条目。若模组不支持{" "}
+            <span className="font-mono text-xs">AT+QNWPREFCFG=&quot;rat_acq_order&quot;</span>
+            ，或应答无法解析，将无法显示拖拽列表。
+          </p>
+        ) : null}
         <DndContext
           collisionDetection={closestCenter}
           modifiers={[restrictToVerticalAxis]}

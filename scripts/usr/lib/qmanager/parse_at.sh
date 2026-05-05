@@ -103,6 +103,7 @@ parse_serving_cell() {
     lte_band="" ; lte_earfcn="" ; lte_bandwidth="" ; lte_pci=""
     lte_rsrp="" ; lte_rsrq="" ; lte_sinr="" ; lte_rssi=""
     lte_cell_id="" ; lte_enodeb_id="" ; lte_sector_id="" ; lte_tac=""
+    sc_mcc="" ; sc_mnc=""
     nr_band="" ; nr_arfcn="" ; nr_pci=""
     nr_rsrp="" ; nr_rsrq="" ; nr_sinr="" ; nr_scs=""
     nr_cell_id="" ; nr_enodeb_id="" ; nr_sector_id="" ; nr_tac=""
@@ -165,6 +166,8 @@ parse_serving_cell() {
             lte_rsrq=$(printf '%s' "$csv" | cut -d',' -f13)
             lte_rssi=$(printf '%s' "$csv" | cut -d',' -f14)
             lte_sinr=$(printf '%s' "$csv" | cut -d',' -f15)
+            sc_mcc=$(printf '%s' "$csv" | cut -d',' -f3 | tr -d '\r')
+            sc_mnc=$(printf '%s' "$csv" | cut -d',' -f4 | tr -d '\r')
         fi
 
         # NR5G-NSA line
@@ -178,6 +181,10 @@ parse_serving_cell() {
 
             # NR5G-NSA,MCC,MNC,PCID,RSRP,SINR,RSRQ,ARFCN,band,NR_DL_bw,scs
             # 1        2   3   4    5    6    7    8     9    10        11
+            if [ -z "$sc_mcc" ] || [ -z "$sc_mnc" ]; then
+                sc_mcc=$(printf '%s' "$csv" | cut -d',' -f2 | tr -d '\r')
+                sc_mnc=$(printf '%s' "$csv" | cut -d',' -f3 | tr -d '\r')
+            fi
             nr_pci=$(printf '%s' "$csv" | cut -d',' -f4)
             nr_rsrp=$(printf '%s' "$csv" | cut -d',' -f5)
             nr_sinr=$(printf '%s' "$csv" | cut -d',' -f6)
@@ -218,6 +225,8 @@ parse_serving_cell() {
         local nr_scs_raw
         nr_scs_raw=$(printf '%s' "$csv" | cut -d',' -f16)
         nr_scs=$(map_scs_to_khz "$nr_scs_raw")
+        sc_mcc=$(printf '%s' "$csv" | cut -d',' -f5 | tr -d '\r')
+        sc_mnc=$(printf '%s' "$csv" | cut -d',' -f6 | tr -d '\r')
 
     # ===== LTE-ONLY MODE =====
     elif [ "$has_lte" -gt 0 ]; then
@@ -258,6 +267,8 @@ parse_serving_cell() {
         lte_rsrq=$(printf '%s' "$csv" | cut -d',' -f15)
         lte_rssi=$(printf '%s' "$csv" | cut -d',' -f16)
         lte_sinr=$(printf '%s' "$csv" | cut -d',' -f17)
+        sc_mcc=$(printf '%s' "$csv" | cut -d',' -f5 | tr -d '\r')
+        sc_mnc=$(printf '%s' "$csv" | cut -d',' -f6 | tr -d '\r')
 
     else
         lte_state="unknown"
@@ -295,31 +306,120 @@ parse_temperature() {
 
 # -----------------------------------------------------------------------------
 # Parse AT+COPS?
-# Populates: t2_carrier
+# Populates: t2_carrier_modem_raw (modem-reported operator; may be numeric PLMN)
 # -----------------------------------------------------------------------------
 parse_carrier() {
     local raw="$1"
-    local cops_line
-    cops_line=$(printf '%s\n' "$raw" | grep '+COPS:' | head -1)
+    local cops_line oper
+
+    cops_line=$(printf '%s\n' "$raw" | grep '+COPS:' | head -1 | tr -d '\r')
 
     if [ -z "$cops_line" ]; then
-        t2_carrier=""
+        t2_carrier_modem_raw=""
         return
     fi
 
-    # Strip prefix and CR: "0,0,"Smart",7" or just "2" when deregistered
-    local fields
-    fields=$(printf '%s' "$cops_line" | sed 's/+COPS: //g' | tr -d '\r')
+    oper=""
+    # Quoted alphanumeric / UCS2-style payload (handles commas inside "...")
+    oper=$(printf '%s' "$cops_line" | sed -n 's/^+COPS:[[:space:]]*[^,]*,[^,]*,"\([^"]*\)".*/\1/p')
 
-    # Need at least 3 comma-separated fields for operator name
-    local comma_count
-    comma_count=$(printf '%s' "$fields" | tr -cd ',' | wc -c)
-    if [ "$comma_count" -lt 2 ]; then
-        t2_carrier=""
+    if [ -z "$oper" ]; then
+        # Unquoted numeric PLMN e.g. +COPS: 0,2,46011,7
+        oper=$(printf '%s' "$cops_line" | sed -n 's/^+COPS:[[:space:]]*[0-9]*,[0-9]*,\([^,]*\),.*/\1/p' | tr -d '"' | tr -d ' ')
+    fi
+
+    oper=$(printf '%s' "$oper" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    # Modem/network placeholder when operator text is unavailable (e.g. IMS-only APN).
+    case "$oper" in
+        *[!?]*) ;;
+        *[?]*) oper="" ;;
+    esac
+    t2_carrier_modem_raw="$oper"
+}
+
+# -----------------------------------------------------------------------------
+# Map PLMN (MCC+MNC digits, e.g. 46011) to a friendly operator label.
+# Returns empty when unknown (caller may show "PLMN …").
+# -----------------------------------------------------------------------------
+plmn_operator_name() {
+    local p="$1"
+    case "$p" in
+        46001|46006|46009|46030) printf '%s' 'China Unicom' ;;
+        46003|46005|46011|46012) printf '%s' 'China Telecom' ;;
+        46015) printf '%s' 'China Broadnet' ;;
+        46000|46002|46004|46007|46008|46013|46024|46043|46053|46054|46056|46057|46060|46061|46062|46063|46064|46065|46066|46067|46068|46069|46070|46071|46072|46073|46074|46081|46082|46083|46084|46085|46086|46087|46088|46089|46090|46091|46092|46093|46094|46095|46096|46097|46098|46099)
+            printf '%s' 'China Mobile' ;;
+        '') return 1 ;;
+        *) return 1 ;;
+    esac
+}
+
+# -----------------------------------------------------------------------------
+# Build PLMN digits (e.g. 46011) from QENG MCC,MNC fields (digits only).
+# -----------------------------------------------------------------------------
+serving_cell_plmn_digits() {
+    local mcc mnc
+    mcc=$(printf '%s' "${sc_mcc:-}" | tr -cd '0-9')
+    mnc=$(printf '%s' "${sc_mnc:-}" | tr -cd '0-9')
+    [ "${#mcc}" -eq 3 ] || return 1
+    case "${#mnc}" in
+        2|3) printf '%s%s' "$mcc" "$mnc" ;;
+        1) printf '%s0%s' "$mcc" "$mnc" ;;
+        *) return 1 ;;
+    esac
+}
+
+# -----------------------------------------------------------------------------
+# Set t2_carrier for API/UI from modem raw string + serving-cell PLMN (QENG).
+# Call after each poll cycle (sc_mcc/sc_mnc refresh every Tier 1).
+# -----------------------------------------------------------------------------
+carrier_finalize_operator_display() {
+    local raw plmn name
+
+    raw=$(printf '%s' "${t2_carrier_modem_raw:-}" | tr -d '\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    plmn=""
+    plmn=$(serving_cell_plmn_digits) || plmn=""
+
+    # UTF-8 replacement char / modem "unknown operator" placeholders (e.g. ???? from +COPS?)
+    if [ -n "$raw" ]; then
+        if printf '%s' "$raw" | grep -Fq "$(printf '\357\277\275')"; then
+            raw=""
+        fi
+    fi
+    if [ -n "$raw" ]; then
+        case "$raw" in
+            *[!?]*) ;;
+            *[?]*) raw="" ;;
+        esac
+    fi
+
+    # COPS numeric form
+    if printf '%s' "$raw" | grep -qx '[0-9]\{5,6\}'; then
+        name=$(plmn_operator_name "$raw") || name=""
+        if [ -n "$name" ]; then
+            t2_carrier="$name"
+        else
+            t2_carrier="PLMN ${raw}"
+        fi
         return
     fi
 
-    t2_carrier=$(printf '%s' "$fields" | cut -d',' -f3 | tr -d '"')
+    if [ -n "$raw" ]; then
+        t2_carrier="$raw"
+        return
+    fi
+
+    if [ -n "$plmn" ]; then
+        name=$(plmn_operator_name "$plmn") || name=""
+        if [ -n "$name" ]; then
+            t2_carrier="$name"
+        else
+            t2_carrier="PLMN ${plmn}"
+        fi
+        return
+    fi
+
+    t2_carrier=""
 }
 
 # -----------------------------------------------------------------------------
@@ -472,6 +572,22 @@ _nr_bw_to_mhz() {
     esac
 }
 
+# QCAINFO NR SNR field: typically centi-dB (raw/100); some firmware reports integer dB.
+_nr_qcainfo_snr_db() {
+    local raw="$1"
+    case "$raw" in -32768|''|-) printf 'null'; return ;; esac
+    printf '%s' "$raw" | awk '
+        $1 !~ /^-?[0-9]+$/ { print "null"; next }
+        {
+            v = $1 + 0
+            av = v < 0 ? -v : v
+            if (av < 500)
+                printf "%.1f", v
+            else
+                printf "%.1f", v / 100
+        }'
+}
+
 # -----------------------------------------------------------------------------
 # Parse AT+QCAINFO (Tier 2) — Carrier Aggregation status + bandwidth +
 #   per-carrier component details
@@ -604,35 +720,54 @@ parse_ca_info() {
                 band_num=$(printf '%s' "$band_str" | sed 's/NR5GBAND//;s/NRDCBAND//')
                 band_short="N${band_num}"
 
-                if [ "$nfields" -ge 9 ]; then
-                    # Long form (SCC with UL info):
-                    # type(1),freq(2),bw(3),band(4),state(5),PCI(6),UL_cfg(7),UL_bw(8),UL_ARFCN(9)[,RSRP(10),RSRQ(11)[,SNR(12)]]
-                    cc_pci=$(printf '%s' "$csv" | cut -d',' -f6)
-                    [ "$nfields" -ge 10 ] && cc_rsrp=$(printf '%s' "$csv" | cut -d',' -f10)
-                    [ "$nfields" -ge 11 ] && cc_rsrq=$(printf '%s' "$csv" | cut -d',' -f11)
-                    if [ "$nfields" -ge 12 ]; then
-                        local raw_snr
-                        raw_snr=$(printf '%s' "$csv" | cut -d',' -f12)
-                        case "$raw_snr" in
-                            -32768) cc_sinr="null" ;;
-                            *) cc_sinr=$(printf '%s' "$raw_snr" | awk '{if($1+0==$1) printf "%.1f", $1/100; else print "null"}') ;;
+                local f5 f7
+                f5=$(printf '%s' "$csv" | cut -d',' -f5)
+                f7=$(printf '%s' "$csv" | cut -d',' -f7)
+
+                # Quectel often inserts a state token (CONNECT, SEARCH, …) between band and PCI.
+                # That yields 9 fields with RSRP at column 7 — NOT the long SCC layout with UL triple.
+                case "$f5" in
+                    ''|'-'|*[!0-9\-]*)
+                        case "$f7" in
+                            -*)
+                                cc_pci=$(printf '%s' "$csv" | cut -d',' -f6)
+                                [ "$nfields" -ge 7 ] && cc_rsrp=$(printf '%s' "$csv" | cut -d',' -f7)
+                                [ "$nfields" -ge 8 ] && cc_rsrq=$(printf '%s' "$csv" | cut -d',' -f8)
+                                if [ "$nfields" -ge 9 ]; then
+                                    local raw_snr
+                                    raw_snr=$(printf '%s' "$csv" | cut -d',' -f9)
+                                    cc_sinr=$(_nr_qcainfo_snr_db "$raw_snr")
+                                fi
+                                ;;
+                            *)
+                                if [ "$nfields" -ge 9 ]; then
+                                    # Long form (SCC with UL info):
+                                    # type,freq,bw,band,state,PCI,UL_cfg,UL_bw,UL_ARFCN[,RSRP,RSRQ[,SNR]]
+                                    cc_pci=$(printf '%s' "$csv" | cut -d',' -f6)
+                                    [ "$nfields" -ge 10 ] && cc_rsrp=$(printf '%s' "$csv" | cut -d',' -f10)
+                                    [ "$nfields" -ge 11 ] && cc_rsrq=$(printf '%s' "$csv" | cut -d',' -f11)
+                                    if [ "$nfields" -ge 12 ]; then
+                                        local raw_snr
+                                        raw_snr=$(printf '%s' "$csv" | cut -d',' -f12)
+                                        cc_sinr=$(_nr_qcainfo_snr_db "$raw_snr")
+                                    fi
+                                fi
+                                ;;
                         esac
-                    fi
-                else
-                    # Short form (PCC or old SCC):
-                    # type(1),freq(2),bw(3),band(4),PCI(5)[,RSRP(6),RSRQ(7)[,SNR(8)]]
-                    cc_pci=$(printf '%s' "$csv" | cut -d',' -f5)
-                    [ "$nfields" -ge 6 ] && cc_rsrp=$(printf '%s' "$csv" | cut -d',' -f6)
-                    [ "$nfields" -ge 7 ] && cc_rsrq=$(printf '%s' "$csv" | cut -d',' -f7)
-                    if [ "$nfields" -ge 8 ]; then
-                        local raw_snr
-                        raw_snr=$(printf '%s' "$csv" | cut -d',' -f8)
-                        case "$raw_snr" in
-                            -32768) cc_sinr="null" ;;
-                            *) cc_sinr=$(printf '%s' "$raw_snr" | awk '{if($1+0==$1) printf "%.1f", $1/100; else print "null"}') ;;
-                        esac
-                    fi
-                fi
+                        ;;
+                    *)
+                        # Classic short line (PCI immediately after band):
+                        # type,freq,bw,band,PCI[,RSRP,RSRQ[,SNR]]
+                        cc_pci="$f5"
+                        [ "$nfields" -ge 6 ] && cc_rsrp=$(printf '%s' "$csv" | cut -d',' -f6)
+                        [ "$nfields" -ge 7 ] && cc_rsrq=$(printf '%s' "$csv" | cut -d',' -f7)
+                        if [ "$nfields" -ge 8 ]; then
+                            local raw_snr
+                            raw_snr=$(printf '%s' "$csv" | cut -d',' -f8)
+                            cc_sinr=$(_nr_qcainfo_snr_db "$raw_snr")
+                        fi
+                        ;;
+                esac
                 ;;
             *)
                 # Unrecognized band string — skip

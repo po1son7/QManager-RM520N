@@ -33,15 +33,22 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
         exit 0
     fi
 
-    # +QNWPREFCFG: "rat_acq_order",NR5G:LTE:WCDMA
-    order=$(printf '%s' "$resp" | awk -F',' '
-        /\+QNWPREFCFG:.*"rat_acq_order"/ {
-            val = $2; gsub(/^[[:space:]]+|[[:space:]]+$/, "", val)
-            if (val != "") print val
-        }
-    ')
+    # Typical: +QNWPREFCFG: "rat_acq_order",NR5G:LTE:WCDMA
+    # Alt:    +QNWPREFCFG: "rat_acq_order","NR5G:LTE:WCDMA"
+    # awk -F',' breaks when RAT names contain commas — strip prefix then trim quotes.
+    line=$(printf '%s\n' "$resp" | grep '+QNWPREFCFG:' | head -1 | tr -d '\r')
+    order=""
+    if [ -n "$line" ]; then
+        order=$(printf '%s' "$line" | sed '
+            s/.*[Rr][Aa][Tt]_[Aa][Cc][Qq]_[Oo][Rr][Dd][Ee][Rr]"*[,:[:space:]]*//
+            s/^"//
+            s/"[[:space:]]*$//
+            s/[[:space:]]*$//
+        ')
+    fi
 
     if [ -z "$order" ]; then
+        qlog_warn "rat_acq_order parse failed; raw line=$(printf '%s' "$line" | head -c 200)"
         cgi_error "parse_failed" "Could not parse rat_acq_order response"
         exit 0
     fi

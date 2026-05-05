@@ -104,6 +104,7 @@ boot_ippt_dhcpv4dns="disabled"
 # Tier 2 data (updated periodically)
 t2_temperature=""
 t2_carrier=""
+t2_carrier_modem_raw=""
 t2_sim_status=""
 t2_sim_slot="1"
 t2_ca_active=false
@@ -157,6 +158,8 @@ network_type=""
 service_status="unknown"
 system_state="normal"
 modem_reachable=true
+sc_mcc=""
+sc_mnc=""
 
 # Error tracking
 errors=""
@@ -614,6 +617,8 @@ poll_serving_cell() {
         lte_state="unknown"
         nr_state="unknown"
         errors="modem_timeout"
+        sc_mcc=""
+        sc_mnc=""
         log_warn "Modem unreachable during serving cell poll"
     fi
 }
@@ -1360,6 +1365,7 @@ poll_cycle() {
     fi
     update_conn_uptime
     determine_service_status
+    carrier_finalize_operator_display
     detect_events
     write_cache
 
