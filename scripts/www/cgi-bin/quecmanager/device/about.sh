@@ -11,8 +11,8 @@
 #   /tmp/qmanager_status.json       -> Poller cache (firmware, IMEI, WAN IPs)
 #   AT+QNWCFG="3gpp_rel"           -> 3GPP release versions (LTE, NR5G)
 #   AT+QMAP="LANIP"                -> Device LAN IP and gateway
-#   https://api.ipify.org           -> Public IPv4 (3s timeout, non-blocking)
-#   https://api6.ipify.org          -> Public IPv6 (3s timeout, non-blocking)
+#   https://api-ipv4.ip.sb/ip / api.ipify.org / ident.me -> Public IPv4 (fallback chain)
+#   https://api-ipv6.ip.sb/ip / api6.ipify.org / ipv6.icanhazip.com -> Public IPv6
 #   /etc/openwrt_release            -> OpenWRT version
 #   uname -r                       -> Linux kernel version
 #
@@ -47,15 +47,55 @@ fi
 #    These run in parallel while we do everything else.
 # =============================================================================
 if command -v curl >/dev/null 2>&1; then
-    # -L: follow redirects; -k: tolerate missing CA certs (common on OpenWRT)
-    ( curl -sLk --max-time "$PUB_IP_TIMEOUT" https://api.ipify.org > "$pub4_file" 2>/dev/null ) &
+    # Prefer endpoints reachable from mainland CN; fall back to ipify / ident.me.
+    (
+        _ok=0
+        for url in "https://api-ipv4.ip.sb/ip" "https://api.ipify.org" "https://ident.me"; do
+            if curl -sLk --max-time "$PUB_IP_TIMEOUT" "$url" > "$pub4_file" 2>/dev/null \
+                && grep -qE '^([0-9]{1,3}\.){3}[0-9]{1,3}([[:space:]]|$)' "$pub4_file"; then
+                _ok=1
+                break
+            fi
+        done
+        [ "$_ok" != 1 ] && rm -f "$pub4_file"
+    ) &
     pid4=$!
-    ( curl -sLk --max-time "$PUB_IP_TIMEOUT" https://api6.ipify.org > "$pub6_file" 2>/dev/null ) &
+    (
+        _ok=0
+        for url in "https://api-ipv6.ip.sb/ip" "https://api6.ipify.org" "https://ipv6.icanhazip.com"; do
+            if curl -sLk --max-time "$PUB_IP_TIMEOUT" "$url" > "$pub6_file" 2>/dev/null \
+                && grep -q ':' "$pub6_file"; then
+                _ok=1
+                break
+            fi
+        done
+        [ "$_ok" != 1 ] && rm -f "$pub6_file"
+    ) &
     pid6=$!
 elif command -v wget >/dev/null 2>&1; then
-    ( wget -qO- -T "$PUB_IP_TIMEOUT" https://api.ipify.org > "$pub4_file" 2>/dev/null ) &
+    (
+        _ok=0
+        for url in "https://api-ipv4.ip.sb/ip" "https://api.ipify.org" "https://ident.me"; do
+            if wget -qO- -T "$PUB_IP_TIMEOUT" "$url" > "$pub4_file" 2>/dev/null \
+                && grep -qE '^([0-9]{1,3}\.){3}[0-9]{1,3}([[:space:]]|$)' "$pub4_file"; then
+                _ok=1
+                break
+            fi
+        done
+        [ "$_ok" != 1 ] && rm -f "$pub4_file"
+    ) &
     pid4=$!
-    ( wget -qO- -T "$PUB_IP_TIMEOUT" https://api6.ipify.org > "$pub6_file" 2>/dev/null ) &
+    (
+        _ok=0
+        for url in "https://api-ipv6.ip.sb/ip" "https://api6.ipify.org" "https://ipv6.icanhazip.com"; do
+            if wget -qO- -T "$PUB_IP_TIMEOUT" "$url" > "$pub6_file" 2>/dev/null \
+                && grep -q ':' "$pub6_file"; then
+                _ok=1
+                break
+            fi
+        done
+        [ "$_ok" != 1 ] && rm -f "$pub6_file"
+    ) &
     pid6=$!
 else
     pid4=""

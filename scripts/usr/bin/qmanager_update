@@ -68,18 +68,19 @@ http_download() {
 # default allows both releases and raw/qmanager-build paths (install mode).
 validate_url() {
     local url="$1" strict="${2:-}"
-    case "$url" in
-        https://github.com/dr-dolomite/QManager-RM520N/releases/download/*/qmanager.tar.gz)
-            return 0
-            ;;
-        https://github.com/dr-dolomite/QManager-RM520N/raw/*/qmanager-build/qmanager.tar.gz)
-            # raw/qmanager-build path is only permitted for the one-step install mode
-            if [ "$strict" = "strict" ]; then
-                return 1
-            fi
-            return 0
-            ;;
+    local canon="$url"
+    case "$url" in *https://github.com/*)
+        canon=$(printf '%s\n' "$url" | sed -n 's/.*\(https:\/\/github\.com\/[^ ]*\).*/\1/p')
+        ;;
     esac
+    if echo "$canon" | grep -qE '^https://github\.com/[^/]+/[^/]+/releases/download/[^/]+/qmanager\.tar\.gz$'; then
+        return 0
+    fi
+    if [ "$strict" != "strict" ]; then
+        if echo "$canon" | grep -qE '^https://github\.com/[^/]+/[^/]+/raw/[^/]+/qmanager-build/qmanager\.tar\.gz$'; then
+            return 0
+        fi
+    fi
     return 1
 }
 

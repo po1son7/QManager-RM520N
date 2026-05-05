@@ -8,10 +8,33 @@
 
 set -e
 
+[ -f /usr/lib/qmanager/config.sh ] && . /usr/lib/qmanager/config.sh
+
+if [ -f /usr/lib/qmanager/mirror.sh ]; then
+    . /usr/lib/qmanager/mirror.sh
+else
+    qm_mirror_wrap() {
+        url="$1"
+        prefix="$2"
+        if [ -n "$prefix" ]; then
+            printf '%s%s' "$prefix" "$url"
+        else
+            printf '%s' "$url"
+        fi
+    }
+fi
+
 TTYD_VERSION="1.7.7"
 CONSOLE_DIR="/usrdata/qmanager/console"
 TTYD_BIN="$CONSOLE_DIR/ttyd"
-DOWNLOAD_URL="https://github.com/tsl0922/ttyd/releases/download/${TTYD_VERSION}/ttyd.armhf"
+DOWNLOAD_URL_RAW="https://github.com/tsl0922/ttyd/releases/download/${TTYD_VERSION}/ttyd.armhf"
+MIR=""
+if [ -f /usr/lib/qmanager/config.sh ]; then
+    qm_config_init 2>/dev/null || true
+    MIR=$(qm_config_get update mirror_prefix "https://gh.llkk.cc/" 2>/dev/null) || MIR=""
+    [ -n "${QMANAGER_DISABLE_MIRROR:-}" ] && MIR=""
+fi
+DOWNLOAD_URL=$(qm_mirror_wrap "$DOWNLOAD_URL_RAW" "$MIR")
 SYSTEMD_DIR="/lib/systemd/system"
 WANTS_DIR="/lib/systemd/system/multi-user.target.wants"
 

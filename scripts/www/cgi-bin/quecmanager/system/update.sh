@@ -1,6 +1,19 @@
 #!/bin/sh
 . /usr/lib/qmanager/cgi_base.sh
 . /usr/lib/qmanager/config.sh
+if [ -f /usr/lib/qmanager/mirror.sh ]; then
+    . /usr/lib/qmanager/mirror.sh
+else
+    qm_mirror_wrap() {
+        url="$1"
+        prefix="$2"
+        if [ -n "$prefix" ]; then
+            printf '%s%s' "$prefix" "$url"
+        else
+            printf '%s' "$url"
+        fi
+    }
+fi
 . /usr/lib/qmanager/semver.sh
 # =============================================================================
 # update.sh — CGI Endpoint: Software Update (GET + POST)
@@ -26,7 +39,6 @@ cgi_handle_options
 
 # --- Configuration -----------------------------------------------------------
 
-GITHUB_REPO="dr-dolomite/QManager-RM520N"
 VERSION_FILE="/etc/qmanager/VERSION"
 VERSION_PENDING="/etc/qmanager/VERSION.pending"
 UPDATES_DIR="/etc/qmanager/updates"
@@ -50,6 +62,17 @@ uci_update_get() {
 
 ensure_update_config() {
     qm_config_init
+}
+
+load_update_remote_config() {
+    ensure_update_config
+    GITHUB_REPO=$(qm_config_get update github_repo "dr-dolomite/QManager-RM520N")
+    UPDATE_MIRROR_PREFIX=$(qm_config_get update mirror_prefix "https://gh.llkk.cc/")
+    [ -n "${QMANAGER_DISABLE_MIRROR:-}" ] && UPDATE_MIRROR_PREFIX=""
+}
+
+qm_update_mirror_url() {
+    qm_mirror_wrap "$1" "$UPDATE_MIRROR_PREFIX"
 }
 
 strip_leading_zero() {
@@ -113,7 +136,7 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
 
     # --- Update check ---
     qlog_info "Checking for updates"
-    ensure_update_config
+    load_update_remote_config
 
     current_version=$(get_current_version)
     include_prerelease=$(uci_update_get include_prerelease "1")
@@ -121,7 +144,7 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
     auto_time=$(uci_update_get auto_update_time "03:00")
 
     # Query GitHub Releases API with header capture for rate-limit detection
-    api_url="https://api.github.com/repos/$GITHUB_REPO/releases"
+    api_url=$(qm_update_mirror_url "https://api.github.com/repos/$GITHUB_REPO/releases")
     tmp_body="/tmp/qm_update_api_body.json"
     tmp_headers="/tmp/qm_update_api_headers.txt"
     rm -f "$tmp_body" "$tmp_headers"
@@ -252,7 +275,7 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
     # Download URL from GitHub Releases (stable, redirect handled by uclient-fetch/curl)
     download_url=""
     if [ -n "$latest_tag" ]; then
-        download_url="https://github.com/${GITHUB_REPO}/releases/download/${latest_tag}/qmanager.tar.gz"
+        download_url=$(qm_update_mirror_url "https://github.com/${GITHUB_REPO}/releases/download/${latest_tag}/qmanager.tar.gz")
     fi
     download_size=""
 
@@ -305,6 +328,7 @@ fi
 # =============================================================================
 if [ "$REQUEST_METHOD" = "POST" ]; then
     cgi_read_post
+    load_update_remote_config
 
     ACTION=$(printf '%s' "$POST_DATA" | jq -r '.action // empty')
     if [ -z "$ACTION" ]; then
@@ -382,8 +406,8 @@ if [ "$REQUEST_METHOD" = "POST" ]; then
             cgi_error "missing_version" "version is required"; exit 0
         fi
 
-        download_url="https://github.com/${GITHUB_REPO}/releases/download/${version}/qmanager.tar.gz"
-        checksum_url="https://github.com/${GITHUB_REPO}/releases/download/${version}/sha256sum.txt"
+        download_url=$(qm_update_mirror_url "https://github.com/${GITHUB_REPO}/releases/download/${version}/qmanager.tar.gz")
+        checksum_url=$(qm_update_mirror_url "https://github.com/${GITHUB_REPO}/releases/download/${version}/sha256sum.txt")
 
         jq -n '{"success":true,"status":"starting"}'
         ( sudo -n "$UPDATER" download "$download_url" "$checksum_url" "$version" </dev/null >/dev/null 2>&1 & )
@@ -432,7 +456,7 @@ if [ "$REQUEST_METHOD" = "POST" ]; then
         fi
 
         rollback_version=$(cat "$UPDATES_DIR/previous_version" 2>/dev/null)
-        rollback_url="https://github.com/${GITHUB_REPO}/releases/download/${rollback_version}/qmanager.tar.gz"
+        rollback_url=$(qm_update_mirror_url "https://github.com/${GITHUB_REPO}/releases/download/${rollback_version}/qmanager.tar.gz")
         jq -n --arg v "$rollback_version" '{"success":true,"status":"starting","version":$v}'
         ( sudo -n "$UPDATER" rollback "$rollback_url" "$rollback_version" </dev/null >/dev/null 2>&1 & )
         exit 0

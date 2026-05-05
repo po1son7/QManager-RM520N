@@ -2,22 +2,55 @@
 # ==============================================================================
 # QManager — Installer Bootstrap for RM520N-GL
 # Quectel Modem Manager
-# https://github.com/dr-dolomite/QManager-RM520N
 #
-# Usage:
+# 下载本脚本（推荐：不经 github.com / raw.githubusercontent.com）
 #   curl -fsSL -o /tmp/qmanager-installer.sh \
-#     https://github.com/dr-dolomite/QManager-RM520N/raw/refs/heads/main/qmanager-installer.sh && \
+#     "https://cdn.jsdelivr.net/gh/dr-dolomite/QManager-RM520N@main/qmanager-installer.sh" && \
 #     bash /tmp/qmanager-installer.sh
 #
+# 备选（镜像封装 GitHub Raw）
+#   curl -fsSL -o /tmp/qmanager-installer.sh \
+#     "https://gh.llkk.cc/https://github.com/dr-dolomite/QManager-RM520N/raw/refs/heads/main/qmanager-installer.sh" && \
+#     bash /tmp/qmanager-installer.sh
+#
+# 版本解析默认顺序：① jsDelivr 上的 main/package.json（不经 GitHub API）
+#                   ② 失败时再请求 GitHub Releases API（默认仍走镜像前缀，非直连 github）
+#
 # Environment variables:
-#   QMANAGER_VERSION  Pin a specific release version (default: latest including pre-releases)
+#   QMANAGER_VERSION               Pin release tag (skip automatic resolution)
+#   QMANAGER_GITHUB_REPO           owner/repo for Releases URLs + API fallback (default: dr-dolomite/QManager-RM520N)
+#   QMANAGER_MIRROR_PREFIX         Prepended to GitHub API/asset HTTPS URLs when unset defaults (see resolve fn)
+#   QMANAGER_DISABLE_MIRROR=1      Use direct api.github.com / github.com URLs (no prefix)
+#   QMANAGER_PREFER_GITHUB_RELEASES_API=1   Resolve latest tag via Releases API before jsDelivr package.json
 #
 # ==============================================================================
 
 # --- Configuration -----------------------------------------------------------
 
-GITHUB_REPO="dr-dolomite/QManager-RM520N"
-GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}/releases"
+GITHUB_REPO="${QMANAGER_GITHUB_REPO:-dr-dolomite/QManager-RM520N}"
+GITHUB_API_BASE="https://api.github.com/repos/${GITHUB_REPO}/releases"
+
+qm_install_mirror_prefix_resolve() {
+    if [ -n "${QMANAGER_DISABLE_MIRROR:-}" ]; then
+        printf ''
+        return 0
+    fi
+    if [ -n "${QMANAGER_MIRROR_PREFIX+x}" ]; then
+        printf '%s' "${QMANAGER_MIRROR_PREFIX}"
+        return 0
+    fi
+    printf '%s' 'https://gh.llkk.cc/'
+}
+
+qm_install_mirror_url() {
+    local prefix url="$1"
+    prefix=$(qm_install_mirror_prefix_resolve)
+    if [ -n "$prefix" ]; then
+        printf '%s%s' "$prefix" "$url"
+    else
+        printf '%s' "$url"
+    fi
+}
 ARCHIVE_PATH="/tmp/qmanager.tar.gz"
 CHECKSUM_PATH="/tmp/qmanager_sha256sum.txt"
 EXTRACT_DIR="/tmp/qmanager_install"
@@ -99,12 +132,15 @@ download_file() {
 # --- GitHub API Helper -------------------------------------------------------
 
 fetch_release_info() {
-    local api_url="$1" tmp_file="/tmp/qm_installer_api.json"
+    local api_url_raw="$1"
+    local api_url
+    api_url="$(qm_install_mirror_url "$api_url_raw")"
+    local tmp_file="/tmp/qm_installer_api.json"
     local is_list=false
     rm -f "$tmp_file"
 
     # Detect if we're querying the list endpoint (array) vs a single release (object)
-    case "$api_url" in */releases|*/releases\?*) is_list=true ;; esac
+    case "$api_url_raw" in */releases|*/releases\?*) is_list=true ;; esac
 
     if ! download_file "$api_url" "$tmp_file"; then
         return 1
@@ -126,6 +162,64 @@ fetch_release_info() {
     [ -n "$RELEASE_TAG" ]
 }
 
+# Resolve release tag from jsDelivr — reads main/package.json ".version" (no github.com / GitHub API).
+fetch_release_tag_pkg_json() {
+    RELEASE_TAG=""
+    local owner="${GITHUB_REPO%%/*}"
+    local repo="${GITHUB_REPO#*/}"
+    local url="https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/package.json"
+    local tmp_file="/tmp/qm_installer_pkg.json"
+    rm -f "$tmp_file"
+
+    if ! download_file "$url" "$tmp_file"; then
+        return 1
+    fi
+
+    if command -v jq >/dev/null 2>&1; then
+        RELEASE_TAG=$(jq -r '.version // empty' "$tmp_file" 2>/dev/null)
+    else
+        RELEASE_TAG=$(grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$tmp_file" | head -1 | cut -d'"' -f4)
+    fi
+
+    rm -f "$tmp_file"
+    [ -n "$RELEASE_TAG" ]
+}
+
+# Prefer jsDelivr tag unless QMANAGER_PREFER_GITHUB_RELEASES_API is set.
+resolve_release_tag() {
+    RELEASE_TAG=""
+    if [ -n "${QMANAGER_VERSION:-}" ]; then
+        RELEASE_TAG="$QMANAGER_VERSION"
+        info "Pinned version: $RELEASE_TAG"
+        return 0
+    fi
+
+    if [ -n "${QMANAGER_PREFER_GITHUB_RELEASES_API:-}" ]; then
+        if fetch_release_info "${GITHUB_API_BASE}?per_page=1"; then
+            info "Resolved version from Releases API: $RELEASE_TAG"
+            return 0
+        fi
+        warn "Releases API unavailable, trying jsDelivr package.json..."
+        if fetch_release_tag_pkg_json; then
+            info "Resolved version from jsDelivr (main/package.json): $RELEASE_TAG"
+            return 0
+        fi
+        return 1
+    fi
+
+    if fetch_release_tag_pkg_json; then
+        info "Resolved version from jsDelivr (main/package.json): $RELEASE_TAG"
+        return 0
+    fi
+
+    warn "jsDelivr package.json unreadable, falling back to GitHub Releases API..."
+    if fetch_release_info "${GITHUB_API_BASE}?per_page=1"; then
+        info "Resolved version from Releases API: $RELEASE_TAG"
+        return 0
+    fi
+    return 1
+}
+
 # ==============================================================================
 # Option 1 — Install
 # ==============================================================================
@@ -142,28 +236,26 @@ do_install() {
         case "$ans" in y|Y|yes|YES) ;; *) printf "\n  Aborted.\n\n"; return ;; esac
     fi
 
-    # Resolve release version
+    # Resolve release version (prefer jsDelivr; see resolve_release_tag)
     step "Checking latest release..."
-    RELEASE_TAG=""
+    if ! resolve_release_tag; then
+        die "Could not resolve latest release version (jsDelivr + GitHub API both failed)."
+    fi
 
     if [ -n "${QMANAGER_VERSION:-}" ]; then
-        info "Pinned version: $QMANAGER_VERSION"
-        if ! fetch_release_info "${GITHUB_API}/tags/${QMANAGER_VERSION}"; then
-            die "Release $QMANAGER_VERSION not found on GitHub"
-        fi
-    else
-        # Fetch all releases (includes pre-releases) — latest first
-        if ! fetch_release_info "${GITHUB_API}?per_page=1"; then
-            die "Could not fetch latest release from GitHub. Check your internet connection."
+        if ! fetch_release_info "${GITHUB_API_BASE}/tags/${RELEASE_TAG}"; then
+            warn "Could not verify tag via Releases API — continuing anyway (pinned version)."
         fi
     fi
 
     info "Release: $RELEASE_TAG"
 
-    # Construct download URLs
-    local base_url="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}"
-    local tarball_url="${base_url}/qmanager.tar.gz"
-    local checksum_url="${base_url}/sha256sum.txt"
+    # Construct download URLs (mirror prefix avoids direct github.com where unset defaults apply)
+    local tarball_raw checksum_raw tarball_url checksum_url
+    tarball_raw="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/qmanager.tar.gz"
+    checksum_raw="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/sha256sum.txt"
+    tarball_url="$(qm_install_mirror_url "$tarball_raw")"
+    checksum_url="$(qm_install_mirror_url "$checksum_raw")"
 
     # Download tarball
     step "Downloading QManager ${RELEASE_TAG}..."
@@ -262,20 +354,19 @@ do_download_only() {
 
     # Resolve release version
     step "Checking latest release..."
-    RELEASE_TAG=""
+    if ! resolve_release_tag; then
+        die "Could not resolve release version."
+    fi
 
     if [ -n "${QMANAGER_VERSION:-}" ]; then
-        info "Pinned version: $QMANAGER_VERSION"
-        if ! fetch_release_info "${GITHUB_API}/tags/${QMANAGER_VERSION}"; then
-            die "Release $QMANAGER_VERSION not found on GitHub"
-        fi
-    else
-        if ! fetch_release_info "${GITHUB_API}?per_page=1"; then
-            die "Could not fetch latest release from GitHub. Check your internet connection."
+        if ! fetch_release_info "${GITHUB_API_BASE}/tags/${RELEASE_TAG}"; then
+            warn "Could not verify tag via Releases API — download may still proceed."
         fi
     fi
 
-    local tarball_url="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/qmanager.tar.gz"
+    local tarball_raw tarball_url
+    tarball_raw="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/qmanager.tar.gz"
+    tarball_url="$(qm_install_mirror_url "$tarball_raw")"
 
     step "Downloading QManager ${RELEASE_TAG}..."
     printf "     %s\n" "$tarball_url"

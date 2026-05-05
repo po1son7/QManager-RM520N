@@ -88,6 +88,29 @@ SRC_DEPS="$INSTALL_DIR/dependencies"
 # Entware opkg path
 OPKG="/opt/bin/opkg"
 
+# Optional download mirror (defaults match mainland-China-friendly GitHub acceleration)
+qm_dl_mirror_prefix_resolve() {
+    if [ -n "${QMANAGER_DISABLE_MIRROR:-}" ]; then
+        printf ''
+        return 0
+    fi
+    if [ -n "${QMANAGER_MIRROR_PREFIX+x}" ]; then
+        printf '%s' "${QMANAGER_MIRROR_PREFIX}"
+        return 0
+    fi
+    printf '%s' 'https://gh.llkk.cc/'
+}
+
+qm_dl_mirror_url() {
+    local prefix
+    prefix=$(qm_dl_mirror_prefix_resolve)
+    if [ -n "$prefix" ]; then
+        printf '%s%s' "$prefix" "$1"
+    else
+        printf '%s' "$1"
+    fi
+}
+
 # Optional packages (not bundled — installed from Entware if available)
 OPTIONAL_PACKAGES="msmtp"
 
@@ -403,16 +426,17 @@ install_dependencies() {
     # If opkg is not installed, bootstrap Entware from scratch.
     # This replicates the RGMII toolkit's Entware installation process.
     if [ ! -x "$OPKG" ]; then
-        info "Entware not found — bootstrapping from bin.entware.net"
+        ENTWARE_ARCH="armv7sf-k3.2"
+        # Same layout as bin.entware.net: ${HOST}/${ARCH}/installer (not .../binaries/${ARCH})
+        ENTWARE_BIN_HOST="${ENTWARE_BIN_HOST:-http://mirror.nju.edu.cn/entware}"
+        ENTWARE_URL="${ENTWARE_BIN_HOST}/${ENTWARE_ARCH}/installer"
+
+        info "Entware not found — bootstrapping from ${ENTWARE_BIN_HOST}"
 
         # Prevent library conflicts during bootstrap
         unset LD_LIBRARY_PATH
         unset LD_PRELOAD
 
-        ENTWARE_ARCH="armv7sf-k3.2"
-        ENTWARE_URL="http://bin.entware.net/${ENTWARE_ARCH}/installer"
-
-        # Rename factory opkg if present (conflicts with Entware opkg)
         if command -v opkg >/dev/null 2>&1; then
             _old_opkg=$(command -v opkg)
             mv "$_old_opkg" "${_old_opkg}_old" 2>/dev/null || true
@@ -603,18 +627,28 @@ RCEOF
     if command -v speedtest >/dev/null 2>&1; then
         info "speedtest CLI is already installed"
     else
-        SPEEDTEST_URL="https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-armhf.tgz"
+        SPEEDTEST_PRIMARY="${QMANAGER_SPEEDTEST_URL:-https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-armhf.tgz}"
         SPEEDTEST_DIR="/usrdata/root/bin"
         mkdir -p "$SPEEDTEST_DIR"
-        if wget -q "$SPEEDTEST_URL" -O /tmp/speedtest.tgz 2>/dev/null || \
-           curl -fsSL "$SPEEDTEST_URL" -o /tmp/speedtest.tgz 2>/dev/null; then
+        rm -f /tmp/speedtest.tgz
+        _st_dl=0
+        SPEEDTEST_MIRROR_TRY="$(qm_dl_mirror_url "$SPEEDTEST_PRIMARY")"
+        if wget -q "$SPEEDTEST_PRIMARY" -O /tmp/speedtest.tgz 2>/dev/null || \
+           curl -fsSL "$SPEEDTEST_PRIMARY" -o /tmp/speedtest.tgz 2>/dev/null; then
+            _st_dl=1
+        elif [ "$SPEEDTEST_MIRROR_TRY" != "$SPEEDTEST_PRIMARY" ] && \
+            { wget -q "$SPEEDTEST_MIRROR_TRY" -O /tmp/speedtest.tgz 2>/dev/null || \
+              curl -fsSL "$SPEEDTEST_MIRROR_TRY" -o /tmp/speedtest.tgz 2>/dev/null; }; then
+            _st_dl=1
+        fi
+        if [ "$_st_dl" = "1" ] && [ -s /tmp/speedtest.tgz ]; then
             tar -xzf /tmp/speedtest.tgz -C "$SPEEDTEST_DIR" speedtest 2>/dev/null
             rm -f /tmp/speedtest.tgz "$SPEEDTEST_DIR/speedtest.md"
             chmod +x "$SPEEDTEST_DIR/speedtest"
             ln -sf "$SPEEDTEST_DIR/speedtest" /bin/speedtest
             info "speedtest CLI installed to $SPEEDTEST_DIR/speedtest"
         else
-            warn "speedtest CLI download failed (optional — requires internet)"
+            warn "speedtest CLI download failed (optional — set QMANAGER_SPEEDTEST_URL or QMANAGER_DISABLE_MIRROR)"
         fi
     fi
 
