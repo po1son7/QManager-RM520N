@@ -116,18 +116,16 @@ const FPLMNCard = () => {
     <CardHeader>
       <CardTitle>禁止的网络（FPLMN）</CardTitle>
       <CardDescription>
-        Your SIM stores a list of networks that previously rejected your
-        device. Clearing this list may restore connectivity and improve
-        roaming.
+        SIM 卡会记录曾拒绝本设备的运营商网络列表。清除该列表有助于恢复连接并改善漫游体验。
         <a
           href="https://onomondo.com/blog/how-to-clear-the-fplmn-list-on-a-sim/"
           target="_blank"
           rel="noreferrer"
           className="underline ml-1 text-primary hover:text-primary/80"
         >
-          Learn more
+          了解更多
         </a>
-        .
+        。
       </CardDescription>
     </CardHeader>
   );
@@ -158,7 +156,7 @@ const FPLMNCard = () => {
               <EmptyMedia variant="icon" className="bg-destructive rounded-xl">
                 <AlertTriangleIcon className="text-destructive-foreground size-6" />
               </EmptyMedia>
-              <EmptyTitle>Unable to Check</EmptyTitle>
+              <EmptyTitle>无法查询状态</EmptyTitle>
               <EmptyDescription className="max-w-xs text-pretty">
                 {fetchError}
               </EmptyDescription>
@@ -166,7 +164,7 @@ const FPLMNCard = () => {
             <EmptyContent>
               <Button variant="outline" onClick={() => fetchStatus()}>
                 <RefreshCcwIcon />
-                Retry
+                重试
               </Button>
             </EmptyContent>
           </Empty>
@@ -193,10 +191,9 @@ const FPLMNCard = () => {
                   <EmptyMedia variant="icon" className="bg-destructive rounded-xl">
                     <AlertTriangleIcon className="text-destructive-foreground size-6" />
                   </EmptyMedia>
-                  <EmptyTitle>Blocked Networks Found</EmptyTitle>
+                  <EmptyTitle>发现被禁止的网络</EmptyTitle>
                   <EmptyDescription className="max-w-xs text-pretty">
-                    Your SIM has blocked one or more networks, which may prevent
-                    connection. Clearing the list is recommended.
+                    SIM 卡上存在被禁止的网络，可能导致无法驻网，建议清除列表。
                   </EmptyDescription>
                 </EmptyHeader>
                 <EmptyContent>
@@ -208,10 +205,10 @@ const FPLMNCard = () => {
                     {isClearing ? (
                       <>
                         <Loader2 className="size-4 animate-spin" />
-                        Clearing...
+                        清除中…
                       </>
                     ) : (
-                      "Clear Blocked Networks"
+                      "清除禁止网络"
                     )}
                   </Button>
                 </EmptyContent>
@@ -230,15 +227,15 @@ const FPLMNCard = () => {
                   <EmptyMedia variant="icon" className="bg-primary rounded-xl">
                     <CircleCheckIcon className="text-primary-foreground size-6" />
                   </EmptyMedia>
-                  <EmptyTitle>No Blocked Networks</EmptyTitle>
+                  <EmptyTitle>没有被禁止的网络</EmptyTitle>
                   <EmptyDescription className="max-w-xs text-pretty">
-                    Your SIM has no blocked networks. No action needed.
+                    SIM 卡上无禁止网络记录，无需操作。
                   </EmptyDescription>
                 </EmptyHeader>
                 <EmptyContent>
                   <Button variant="outline" onClick={() => fetchStatus()}>
                     <RefreshCcwIcon />
-                    Refresh Status
+                    刷新状态
                   </Button>
                 </EmptyContent>
               </Empty>

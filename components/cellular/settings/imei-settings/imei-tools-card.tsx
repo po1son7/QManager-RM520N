@@ -114,8 +114,7 @@ const IMEIToolsCard = () => {
       <CardHeader>
         <CardTitle>IMEI 工具</CardTitle>
         <CardDescription>
-          Generate and validate IMEI numbers using the Luhn algorithm. For
-          educational purposes only.
+          使用 Luhn 算法生成并校验 IMEI 号码，仅供学习用途。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -130,7 +129,7 @@ const IMEIToolsCard = () => {
             <FieldSet>
               <FieldGroup>
                 <Field>
-                  <FieldLabel>Device Preset</FieldLabel>
+                  <FieldLabel>设备预设</FieldLabel>
                   <Select
                     value={selectedPresetId}
                     onValueChange={handlePresetChange}
@@ -151,7 +150,7 @@ const IMEIToolsCard = () => {
                     </SelectContent>
                   </Select>
                   <FieldDescription>
-                    Select a device TAC or enter a custom 8–12 digit prefix.
+                    选择设备对应的 TAC，或输入自定义的 8–12 位数字前缀。
                   </FieldDescription>
                 </Field>
 
@@ -170,13 +169,12 @@ const IMEIToolsCard = () => {
                     </InputGroup>
                     {showPrefixError ? (
                       <FieldError>
-                        Prefix must be 8–12 digits ({customPrefix.length}{" "}
-                        entered)
+                        前缀须为 8–12 位数字（当前已输入 {customPrefix.length}{" "}
+                        位）
                       </FieldError>
                     ) : (
                       <FieldDescription>
-                        The remaining digits and check digit are generated
-                        automatically.
+                        其余数位与校验位将自动生成。
                       </FieldDescription>
                     )}
                   </Field>
@@ -212,15 +210,15 @@ const IMEIToolsCard = () => {
                                 <CopyIcon />
                               </InputGroupButton>
                             </TooltipTrigger>
-                            <TooltipContent>Copy to clipboard</TooltipContent>
+                            <TooltipContent>复制到剪贴板</TooltipContent>
                           </Tooltip>
                         </InputGroupAddon>
                       )}
                     </InputGroup>
                   </div>
                   <FieldDescription>
-                    Luhn validation runs automatically at 15 digits. You can
-                    also type or paste any IMEI to validate it.
+                    输入满 15 位后将自动进行 Luhn 校验。您也可输入或粘贴任意
+                    IMEI 进行校验。
                   </FieldDescription>
                 </Field>
               </FieldGroup>
@@ -229,20 +227,20 @@ const IMEIToolsCard = () => {
 
           {breakdown && (
             <Field>
-              <FieldLabel>Breakdown</FieldLabel>
+              <FieldLabel>IMEI 结构</FieldLabel>
               <div className="grid grid-cols-4 gap-2 rounded-md border bg-muted/30 px-3 py-2 font-mono text-sm">
                 <div>
-                  <p className="text-xs text-muted-foreground">Validity</p>
+                  <p className="text-xs text-muted-foreground">有效性</p>
                   <p className="font-medium flex items-center gap-1">
                     {isValid ? (
                       <>
                         <CheckCircle2Icon className="size-4 text-green-500" />
-                        Valid IMEI
+                        IMEI 有效
                       </>
                     ) : (
                       <>
                         <XCircleIcon className="size-4 text-red-500" />
-                        Invalid IMEI
+                        IMEI 无效
                       </>
                     )}
                   </p>
@@ -256,7 +254,7 @@ const IMEIToolsCard = () => {
                   <p className="font-medium">{breakdown.snr}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Check (15)</p>
+                  <p className="text-xs text-muted-foreground">校验位（15）</p>
                   <p className="font-medium">{breakdown.checkDigit}</p>
                 </div>
               </div>
@@ -265,7 +263,7 @@ const IMEIToolsCard = () => {
 
           <div className="flex items-center gap-x-4">
             <Button type="submit" disabled={!isValidPrefix}>
-              Generate IMEI
+              生成 IMEI
             </Button>
 
             <Button
@@ -280,7 +278,7 @@ const IMEIToolsCard = () => {
               }
             >
               <ExternalLinkIcon className="size-4" />
-              Check IMEI Info
+              查询 IMEI 信息
             </Button>
           </div>
         </form>

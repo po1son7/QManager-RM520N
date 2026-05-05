@@ -84,7 +84,7 @@ export default function SystemHealthCheck() {
           onDownload={downloadBundle}
         />
         {error && (
-          <div className="text-sm text-destructive">Error: {error}</div>
+          <div className="text-sm text-destructive">错误：{error}</div>
         )}
         {groups.length > 0 && (
           <motion.div
@@ -117,9 +117,9 @@ export default function SystemHealthCheck() {
                 <StethoscopeIcon className="size-6 text-muted-foreground" />
               </div>
               <div className="space-y-1.5">
-                <h2 className="text-base font-semibold">Ready to run diagnostics</h2>
+                <h2 className="text-base font-semibold">准备运行诊断</h2>
                 <p className="text-sm text-muted-foreground max-w-md">
-                  Probes every QManager subsystem and packages the results into a redacted bundle you can share with support.
+                  探测 QManager 各子系统，并将结果打包为脱敏诊断包，便于分享给技术支持。
                 </p>
               </div>
               <div className="flex flex-wrap justify-center gap-1.5 max-w-lg">
@@ -133,12 +133,12 @@ export default function SystemHealthCheck() {
                 {isStarting ? (
                   <>
                     <Loader2Icon className="size-4 animate-spin" />
-                    Starting…
+                    启动中…
                   </>
                 ) : (
                   <>
                     <PlayIcon className="size-4" />
-                    Run Diagnostics
+                    运行诊断
                   </>
                 )}
               </Button>

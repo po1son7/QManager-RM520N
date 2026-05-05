@@ -77,40 +77,40 @@ const PingEntriesCard = ({
               <Button variant="outline" size="sm" className="h-7 gap-1">
                 <ArrowUpDown className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Sort
+                  排序
                 </span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+              <DropdownMenuLabel>排序方式</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuCheckboxItem
                 checked={sortOrder === "newest"}
                 onCheckedChange={() => setSortOrder("newest")}
               >
-                Newest first
+                最新在上
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={sortOrder === "oldest"}
                 onCheckedChange={() => setSortOrder("oldest")}
               >
-                Oldest first
+                最旧在上
               </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
         <CardDescription>
-          Individual ping results for the selected time range.
+          所选时间范围内的单次 Ping 结果明细。
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Latency</TableHead>
-              <TableHead>Packet Loss</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Time</TableHead>
+              <TableHead>延迟</TableHead>
+              <TableHead>丢包率</TableHead>
+              <TableHead>日期</TableHead>
+              <TableHead>时间</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -124,19 +124,19 @@ const PingEntriesCard = ({
                 >
                   <TableCell>
                     {isRealtime && !ping.ok
-                      ? "Timeout"
+                      ? "超时"
                       : `${ping.latency} ms`}
                   </TableCell>
                   <TableCell>{ping.packet_loss}%</TableCell>
                   <TableCell>
-                    {new Date(ping.timestamp).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
+                    {new Date(ping.timestamp).toLocaleDateString("zh-CN", {
                       year: "numeric",
+                      month: "long",
+                      day: "numeric",
                     })}
                   </TableCell>
                   <TableCell>
-                    {new Date(ping.timestamp).toLocaleTimeString(undefined, {
+                    {new Date(ping.timestamp).toLocaleTimeString("zh-CN", {
                       hour: "2-digit",
                       minute: "2-digit",
                       second: "2-digit",

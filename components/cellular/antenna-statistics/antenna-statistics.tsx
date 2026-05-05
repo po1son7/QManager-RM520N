@@ -115,7 +115,7 @@ function MetricRow({
       </span>
       <AnimatedProgress
         value={progress}
-        label={`${label} signal strength`}
+        label={`${label} 信号强度`}
         barColor={QUALITY_BAR_COLORS[quality]}
       />
       <span className="text-sm font-semibold tabular-nums min-w-17 text-right shrink-0">
@@ -183,10 +183,13 @@ function TechCard({
               <EmptyMedia variant="icon">
                 <SignalIcon />
               </EmptyMedia>
-              <EmptyTitle>No {title.split(" ")[0]} Signal</EmptyTitle>
+              <EmptyTitle>
+                无 {prefix === "lte" ? "LTE" : "NR5G"} 信号
+              </EmptyTitle>
               <EmptyDescription className="max-w-xs text-pretty">
-                Antenna metrics will appear when{" "}
-                {prefix === "lte" ? "4G LTE" : "5G NR"} is active.
+                {prefix === "lte"
+                  ? "当 4G LTE 激活时将显示各天线指标。"
+                  : "当 5G NR 激活时将显示各天线指标。"}
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
@@ -293,8 +296,8 @@ export default function AntennaStatistics() {
 
   const lteCard = (
     <TechCard
-      title="LTE Signal"
-      description="Per-antenna metrics for 4G LTE"
+      title="LTE 信号"
+      description="4G LTE 各天线链路指标"
       signal={signal}
       prefix="lte"
     />
@@ -302,8 +305,8 @@ export default function AntennaStatistics() {
 
   const nrCard = (
     <TechCard
-      title="NR5G Signal"
-      description="Per-antenna metrics for 5G NR"
+      title="NR5G 信号"
+      description="5G NR 各天线链路指标"
       signal={signal}
       prefix="nr"
     />

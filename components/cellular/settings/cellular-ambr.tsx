@@ -32,8 +32,7 @@ const CellularAMBRCard = ({ ambr, isLoading }: CellularAMBRCardProps) => {
         <CardHeader>
           <CardTitle>数据速率上限（AMBR）</CardTitle>
           <CardDescription>
-            The maximum upload and download speeds your carrier allows for each
-            data connection. These limits are set by your carrier&apos;s network policy.
+            运营商为每条数据连接允许的最大上行与下行速率上限，具体由运营商网络策略决定。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -63,8 +62,7 @@ const CellularAMBRCard = ({ ambr, isLoading }: CellularAMBRCardProps) => {
       <CardHeader>
         <CardTitle>数据速率上限（AMBR）</CardTitle>
         <CardDescription>
-          The maximum upload and download speeds your carrier allows for each
-          data connection. These limits are set by your carrier&apos;s network policy.
+          运营商为每条数据连接允许的最大上行与下行速率上限，具体由运营商网络策略决定。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -80,16 +78,15 @@ const CellularAMBRCard = ({ ambr, isLoading }: CellularAMBRCardProps) => {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>
-                    While devices can request specific AMBR values, operators{" "}
+                    终端虽可请求特定 AMBR 数值，运营商{" "}
                     <br />
-                    may ignore these and enforce their own speed limits based on{" "}
+                    也可能不予采纳，并按套餐、网络策略或{" "}
                     <br />
-                    subscription plans, network policies, or congestion
-                    conditions.
+                    拥塞等情况另行限速。
                   </p>
                 </TooltipContent>
               </Tooltip>
-              <h2 className="font-semibold text-sm">LTE Rates</h2>
+              <h2 className="font-semibold text-sm">LTE 速率</h2>
             </div>
 
             <Separator />
@@ -121,7 +118,7 @@ const CellularAMBRCard = ({ ambr, isLoading }: CellularAMBRCardProps) => {
             ) : (
               <>
                 <p className="text-sm text-muted-foreground">
-                  No LTE rate data — not connected to LTE
+                  无 LTE 速率数据 — 当前未连接到 LTE
                 </p>
                 <Separator />
               </>
@@ -139,16 +136,15 @@ const CellularAMBRCard = ({ ambr, isLoading }: CellularAMBRCardProps) => {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>
-                    While devices can request specific AMBR values, operators{" "}
+                    终端虽可请求特定 AMBR 数值，运营商{" "}
                     <br />
-                    may ignore these and enforce their own speed limits based on{" "}
+                    也可能不予采纳，并按套餐、网络策略或{" "}
                     <br />
-                    subscription plans, network policies, or congestion
-                    conditions.
+                    拥塞等情况另行限速。
                   </p>
                 </TooltipContent>
               </Tooltip>
-              <h2 className="font-semibold text-sm">5G Rates</h2>
+              <h2 className="font-semibold text-sm">5G 速率</h2>
             </div>
             <Separator />
             {ambr && ambr.nr5g.length > 0 ? (
@@ -179,7 +175,7 @@ const CellularAMBRCard = ({ ambr, isLoading }: CellularAMBRCardProps) => {
             ) : (
               <>
                 <p className="text-sm text-muted-foreground">
-                  No 5G rate data — not connected to 5G
+                  无 5G 速率数据 — 当前未连接到 5G
                 </p>
                 <Separator />
               </>

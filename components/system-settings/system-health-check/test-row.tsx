@@ -28,7 +28,7 @@ export default function TestRow({ test, fetchOutput }: TestRowProps) {
       setError(null);
       try {
         const body = await fetchOutput(test.id);
-        setOutput(body || "(no output captured)");
+        setOutput(body || "未捕获输出");
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
       } finally {
