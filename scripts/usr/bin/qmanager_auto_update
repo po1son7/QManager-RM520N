@@ -56,7 +56,7 @@ current_version=$(tr -d '[:space:]' < "$VERSION_FILE" 2>/dev/null)
 [ -z "$current_version" ] && current_version="0.0.0"
 
 qm_config_init
-REPO=$(qm_config_get update github_repo "dr-dolomite/QManager-RM520N")
+REPO=$(qm_config_get update github_repo "po1son7/QManager-RM520N")
 UPDATE_MIRROR_PREFIX=$(qm_config_get update mirror_prefix "https://gh.llkk.cc/")
 [ -n "${QMANAGER_DISABLE_MIRROR:-}" ] && UPDATE_MIRROR_PREFIX=""
 

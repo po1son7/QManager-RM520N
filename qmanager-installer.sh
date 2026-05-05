@@ -5,20 +5,21 @@
 #
 # 下载本脚本（RG501Q 该固件通常无 curl，请用 wget）
 #   wget -q -O /tmp/qmanager-installer.sh \
-#     "https://cdn.jsdelivr.net/gh/dr-dolomite/QManager-RM520N@main/qmanager-installer.sh" && \
+#     "https://cdn.jsdelivr.net/gh/po1son7/QManager-RM520N@cn/edition/qmanager-installer.sh" && \
 #     bash /tmp/qmanager-installer.sh
 #
 # 备选（镜像封装 GitHub Raw）
 #   wget -q -O /tmp/qmanager-installer.sh \
-#     "https://gh.llkk.cc/https://github.com/dr-dolomite/QManager-RM520N/raw/refs/heads/main/qmanager-installer.sh" && \
+#     "https://gh.llkk.cc/https://github.com/po1son7/QManager-RM520N/raw/refs/heads/cn/edition/qmanager-installer.sh" && \
 #     bash /tmp/qmanager-installer.sh
 #
-# 版本解析默认顺序：① jsDelivr 上的 main/package.json（不经 GitHub API）
+# 版本解析默认顺序：① jsDelivr 上的 cn/edition/package.json（不经 GitHub API；可用 QMANAGER_GITHUB_REF 改分支）
 #                   ② 失败时再请求 GitHub Releases API（默认仍走镜像前缀，非直连 github）
 #
 # Environment variables:
 #   QMANAGER_VERSION               Pin release tag (skip automatic resolution)
-#   QMANAGER_GITHUB_REPO           owner/repo for Releases URLs + API fallback (default: dr-dolomite/QManager-RM520N)
+#   QMANAGER_GITHUB_REPO           owner/repo for Releases URLs + API fallback (default: po1son7/QManager-RM520N)
+#   QMANAGER_GITHUB_REF            用于 jsDelivr 上 package.json 的分支/ref（默认: cn/edition）
 #   QMANAGER_MIRROR_PREFIX         Prepended to GitHub API/asset HTTPS URLs when unset defaults (see resolve fn)
 #   QMANAGER_DISABLE_MIRROR=1      Use direct api.github.com / github.com URLs (no prefix)
 #   QMANAGER_PREFER_GITHUB_RELEASES_API=1   Resolve latest tag via Releases API before jsDelivr package.json
@@ -38,7 +39,7 @@
 
 # --- Configuration -----------------------------------------------------------
 
-GITHUB_REPO="${QMANAGER_GITHUB_REPO:-dr-dolomite/QManager-RM520N}"
+GITHUB_REPO="${QMANAGER_GITHUB_REPO:-po1son7/QManager-RM520N}"
 GITHUB_API_BASE="https://api.github.com/repos/${GITHUB_REPO}/releases"
 GITEE_API_BASE="" # set by qm_gitee_resolve_api_base
 
@@ -190,12 +191,13 @@ fetch_release_info() {
     [ -n "$RELEASE_TAG" ]
 }
 
-# Resolve release tag from jsDelivr — reads main/package.json ".version" (no github.com / GitHub API).
+# Resolve release tag from jsDelivr — reads <QMANAGER_GITHUB_REF>/package.json ".version" (no github.com / GitHub API).
 fetch_release_tag_pkg_json() {
     RELEASE_TAG=""
     local owner="${GITHUB_REPO%%/*}"
     local repo="${GITHUB_REPO#*/}"
-    local url="https://cdn.jsdelivr.net/gh/${owner}/${repo}@main/package.json"
+    local ref="${QMANAGER_GITHUB_REF:-cn/edition}"
+    local url="https://cdn.jsdelivr.net/gh/${owner}/${repo}@${ref}/package.json"
     local tmp_file="/tmp/qm_installer_pkg.json"
     rm -f "$tmp_file"
 
@@ -335,14 +337,14 @@ resolve_release_tag() {
         fi
         warn "Releases API unavailable, trying jsDelivr package.json..."
         if fetch_release_tag_pkg_json; then
-            info "Resolved version from jsDelivr (main/package.json): $RELEASE_TAG"
+            info "Resolved version from jsDelivr (${QMANAGER_GITHUB_REF:-cn/edition}/package.json): $RELEASE_TAG"
             return 0
         fi
         return 1
     fi
 
     if fetch_release_tag_pkg_json; then
-        info "Resolved version from jsDelivr (main/package.json): $RELEASE_TAG"
+        info "Resolved version from jsDelivr (${QMANAGER_GITHUB_REF:-cn/edition}/package.json): $RELEASE_TAG"
         return 0
     fi
 

@@ -1168,8 +1168,8 @@ Status written atomically to `/tmp/qmanager_update.json` via `write_status()`:
 #### URL Validation
 
 `validate_url()` enforces a GitHub origin whitelist:
-- `https://github.com/dr-dolomite/QManager-RM520N/releases/download/*/qmanager.tar.gz` -- allowed in all modes
-- `https://github.com/dr-dolomite/QManager-RM520N/raw/*/qmanager-build/qmanager.tar.gz` -- allowed in `install` mode only (not strict mode)
+- `https://github.com/po1son7/QManager-RM520N/releases/download/*/qmanager.tar.gz` -- allowed in all modes
+- `https://github.com/po1son7/QManager-RM520N/raw/*/qmanager-build/qmanager.tar.gz` -- allowed in `install` mode only (not strict mode)
 
 Rollback and download modes use `validate_url "$URL" "strict"` to permit only the releases path.
 

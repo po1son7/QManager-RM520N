@@ -56,7 +56,7 @@ qm_config_init() {
     "include_prerelease": 1,
     "auto_update_enabled": 0,
     "auto_update_time": "03:00",
-    "github_repo": "dr-dolomite/QManager-RM520N",
+    "github_repo": "po1son7/QManager-RM520N",
     "mirror_prefix": "https://gh.llkk.cc/"
   }
 }

@@ -86,7 +86,7 @@
 
 ```sh
 wget -q -O /tmp/qmanager-installer.sh \
-  "https://cdn.jsdelivr.net/gh/dr-dolomite/QManager-RM520N@main/qmanager-installer.sh" && \
+  "https://cdn.jsdelivr.net/gh/po1son7/QManager-RM520N@cn/edition/qmanager-installer.sh" && \
   bash /tmp/qmanager-installer.sh
 ```
 
@@ -96,14 +96,15 @@ wget -q -O /tmp/qmanager-installer.sh \
 
 ```sh
 wget -q -O /tmp/qmanager-installer.sh \
-  "https://gh.llkk.cc/https://github.com/dr-dolomite/QManager-RM520N/raw/refs/heads/main/qmanager-installer.sh" && \
+  "https://gh.llkk.cc/https://github.com/po1son7/QManager-RM520N/raw/refs/heads/cn/edition/qmanager-installer.sh" && \
   bash /tmp/qmanager-installer.sh
 ```
 
 安装脚本默认行为：
 
-1. **解析版本号**：优先从 jsDelivr 拉取 **`main/package.json`** 中的 `"version"`（**不调用 GitHub Releases API**）。仅在失败时再回退到 GitHub Releases API（默认同样经过镜像前缀，避免直连 `api.github.com`）。  
-   - 维护发布时请尽量保证 **`main` 分支的 `package.json` 版本号与 GitHub Release 标签一致**。  
+1. **解析版本号**：优先从 jsDelivr 拉取 **`cn/edition/package.json`** 中的 `"version"`（**不调用 GitHub Releases API**）。仅在失败时再回退到 GitHub Releases API（默认同样经过镜像前缀，避免直连 `api.github.com`）。  
+   - 维护发布时请尽量保证 **`cn/edition` 分支的 `package.json` 版本号与 GitHub Release 标签一致**。  
+   - 若要从其它分支读取版本，可设置：`export QMANAGER_GITHUB_REF=分支名`。  
    - 若希望始终用 Releases API 解析最新标签，可设置：`export QMANAGER_PREFER_GITHUB_RELEASES_API=1`。
 2. **下载安装包**：从 `releases/download/<tag>/qmanager.tar.gz` 获取内容；默认对 `https://github.com/...` 与 `https://api.github.com/...` 使用镜像前缀 **`https://gh.llkk.cc/`**，实际 TLS 连接到加速端，而非直连 GitHub。
 3. **传输工具**：安装脚本及运行时使用 **`wget`** 优先下载资源（参考固件无 `curl`）；安装 Entware 后亦可使用 `/opt/bin/wget`。  
@@ -116,7 +117,7 @@ wget -q -O /tmp/qmanager-installer.sh \
 ```sh
 export QMANAGER_DISABLE_MIRROR=1
 wget -q -O /tmp/qmanager-installer.sh \
-  https://github.com/dr-dolomite/QManager-RM520N/raw/refs/heads/main/qmanager-installer.sh && \
+  https://github.com/po1son7/QManager-RM520N/raw/refs/heads/cn/edition/qmanager-installer.sh && \
   bash /tmp/qmanager-installer.sh
 ```
 
@@ -129,7 +130,7 @@ bash /tmp/qmanager-installer.sh
 
 （仅解压包手动安装时，也可在运行 `install_rm520n.sh` 前导出该变量。）
 
-安装完成后，设备上 **`/etc/qmanager/qmanager.conf`** → `update` 段默认仍带 **`mirror_prefix`**，用于系统内 OTA 与 ttyd 等下载；可自行修改或调整 `github_repo`（例如使用你自己的 Release 仓库）。
+安装完成后，设备上 **`/etc/qmanager/qmanager.conf`** → `update` 段默认 **`github_repo` 为 `po1son7/QManager-RM520N`**，并带 **`mirror_prefix`**，用于系统内 OTA 与 ttyd 等下载；可自行修改。
 
 **Speedtest CLI**：先尝试 `install.speedtest.net`，失败后再使用与 GitHub 相同的镜像前缀；也可用 `QMANAGER_SPEEDTEST_URL` 指向你可访问的完整包地址。
 

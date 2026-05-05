@@ -21,7 +21,7 @@ ADB or SSH into the modem and run:
 
 ```sh
 curl -fsSL -o /tmp/qmanager-installer.sh \
-  https://github.com/dr-dolomite/QManager-RM520N/raw/refs/heads/main/qmanager-installer.sh && \
+  https://github.com/po1son7/QManager-RM520N/raw/refs/heads/cn/edition/qmanager-installer.sh && \
   bash /tmp/qmanager-installer.sh
 ```
 
@@ -31,7 +31,7 @@ curl -fsSL -o /tmp/qmanager-installer.sh \
 
 ## 💙 Thank You
 
-Bug reports and feature requests welcome on [GitHub Issues](https://github.com/dr-dolomite/QManager-RM520N/issues).
+Bug reports and feature requests welcome on [GitHub Issues](https://github.com/po1son7/QManager-RM520N/issues).
 
 If QManager saves you time, consider [sponsoring on GitHub](https://github.com/sponsors/dr-dolomite) or sending GCash via Remitly to **Russel Yasol** (+639544817486).
 

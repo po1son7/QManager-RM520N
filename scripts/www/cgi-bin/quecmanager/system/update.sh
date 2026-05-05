@@ -66,7 +66,7 @@ ensure_update_config() {
 
 load_update_remote_config() {
     ensure_update_config
-    GITHUB_REPO=$(qm_config_get update github_repo "dr-dolomite/QManager-RM520N")
+    GITHUB_REPO=$(qm_config_get update github_repo "po1son7/QManager-RM520N")
     UPDATE_MIRROR_PREFIX=$(qm_config_get update mirror_prefix "https://gh.llkk.cc/")
     [ -n "${QMANAGER_DISABLE_MIRROR:-}" ] && UPDATE_MIRROR_PREFIX=""
 }
