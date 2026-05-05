@@ -14,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, RefreshCcw } from "lucide-react";
 
 import type { AboutDeviceData } from "@/types/about-device";
+import { modemHeroImage } from "@/lib/device-modem-image";
 
 // =============================================================================
 // DeviceInformationCard — Modem image + device identity & network addresses
@@ -150,13 +151,22 @@ const DeviceInformationCard = ({
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
             >
-              <div className="size-44 bg-primary/15 rounded-full p-4 flex items-center justify-center">
-                <img
-                  src="/device-icon.svg"
-                  alt={data.device.model ? `${data.device.model} 模组` : "模组"}
-                  className="size-full drop-shadow-md object-contain"
-                />
-              </div>
+              {(() => {
+                const hero = modemHeroImage(data.device.model);
+                const frame =
+                  hero.variant === "photo"
+                    ? "size-44 bg-primary/15 rounded-2xl p-2 flex items-center justify-center ring-1 ring-border/60"
+                    : "size-44 bg-primary/15 rounded-full p-4 flex items-center justify-center";
+                return (
+                  <div className={frame}>
+                    <img
+                      src={hero.src}
+                      alt={hero.alt}
+                      className="size-full drop-shadow-md object-contain"
+                    />
+                  </div>
+                );
+              })()}
             </motion.div>
 
             {/* Data sections */}

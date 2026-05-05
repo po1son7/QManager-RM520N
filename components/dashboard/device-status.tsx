@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 
 import type { DeviceStatus } from "@/types/modem-status";
+import { modemHeroImage } from "@/lib/device-modem-image";
 
 const containerVariants: Variants = {
   hidden: {},
@@ -101,13 +102,22 @@ const DeviceStatusComponent = ({
       <CardContent>
         <div className="grid gap-4">
           <div className="flex items-center justify-center mb-8">
-            <div className="size-44 bg-primary/15 rounded-full p-4 flex items-center justify-center">
-              <img
-                src="/device-icon.svg"
-                alt="设备图标"
-                className="size-full drop-shadow-md object-contain"
-              />
-            </div>
+            {(() => {
+              const hero = modemHeroImage(data?.model);
+              const frame =
+                hero.variant === "photo"
+                  ? "size-44 bg-primary/15 rounded-2xl p-2 flex items-center justify-center ring-1 ring-border/60"
+                  : "size-44 bg-primary/15 rounded-full p-4 flex items-center justify-center";
+              return (
+                <div className={frame}>
+                  <img
+                    src={hero.src}
+                    alt={hero.alt}
+                    className="size-full drop-shadow-md object-contain"
+                  />
+                </div>
+              );
+            })()}
           </div>
 
           <div className="grid gap-2">
