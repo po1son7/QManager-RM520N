@@ -23,12 +23,42 @@
 #   QMANAGER_DISABLE_MIRROR=1      Use direct api.github.com / github.com URLs (no prefix)
 #   QMANAGER_PREFER_GITHUB_RELEASES_API=1   Resolve latest tag via Releases API before jsDelivr package.json
 #
+# 中国大陆 / Gitee Release（资源在国内，可不走路径 gh.llkk.cc）：
+#   QMANAGER_USE_GITEE=1           从 Gitee Release 下载 qmanager.tar.gz / sha256sum.txt（不走镜像前缀）
+#   QMANAGER_GITEE_REPO=owner/repo  必填，例如 aowu2048/qmanager-rm520n
+#   QMANAGER_GITEE_REF=分支名       可选，用于从 Gitee  raw 读取 package.json 解析版本（默认 main）
+#
+# 模组上一键示例（脚本与安装包均来自 Gitee）：
+#   wget -q -O /tmp/qmanager-installer.sh \
+#     "https://gitee.com/aowu2048/qmanager-rm520n/raw/cn/edition/qmanager-installer.sh" && \
+#   QMANAGER_USE_GITEE=1 QMANAGER_GITEE_REPO=aowu2048/qmanager-rm520n QMANAGER_GITEE_REF=cn/edition \
+#     bash /tmp/qmanager-installer.sh
+#
 # ==============================================================================
 
 # --- Configuration -----------------------------------------------------------
 
 GITHUB_REPO="${QMANAGER_GITHUB_REPO:-dr-dolomite/QManager-RM520N}"
 GITHUB_API_BASE="https://api.github.com/repos/${GITHUB_REPO}/releases"
+GITEE_API_BASE="" # set by qm_gitee_resolve_api_base
+
+qm_use_gitee() {
+    case "${QMANAGER_USE_GITEE:-}" in 1|yes|YES|true|TRUE) return 0 ;; *) return 1 ;; esac
+}
+
+qm_gitee_require_repo() {
+    if [ -z "${QMANAGER_GITEE_REPO:-}" ]; then
+        die "QMANAGER_GITEE_REPO is required when QMANAGER_USE_GITEE=1 (e.g. aowu2048/qmanager-rm520n)"
+    fi
+}
+
+qm_gitee_owner() { printf '%s' "${QMANAGER_GITEE_REPO%%/*}"; }
+qm_gitee_name() { printf '%s' "${QMANAGER_GITEE_REPO#*/}"; }
+
+qm_gitee_resolve_api_base() {
+    qm_gitee_require_repo
+    GITEE_API_BASE="https://gitee.com/api/v5/repos/$(qm_gitee_owner)/$(qm_gitee_name)"
+}
 
 qm_install_mirror_prefix_resolve() {
     if [ -n "${QMANAGER_DISABLE_MIRROR:-}" ]; then
@@ -183,13 +213,119 @@ fetch_release_tag_pkg_json() {
     [ -n "$RELEASE_TAG" ]
 }
 
-# Prefer jsDelivr tag unless QMANAGER_PREFER_GITHUB_RELEASES_API is set.
+# --- Gitee API / raw package.json (中国大陆 Release 直连) ------------------------
+
+fetch_release_info_gitee_latest() {
+    RELEASE_TAG=""
+    qm_gitee_resolve_api_base
+    local tmp_file="/tmp/qm_gitee_release.json"
+    rm -f "$tmp_file"
+    if ! download_file "${GITEE_API_BASE}/releases/latest" "$tmp_file"; then
+        rm -f "$tmp_file"
+        return 1
+    fi
+    if command -v jq >/dev/null 2>&1; then
+        RELEASE_TAG=$(jq -r '.tag_name // empty' "$tmp_file" 2>/dev/null)
+    else
+        RELEASE_TAG=$(grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' "$tmp_file" | head -1 | cut -d'"' -f4)
+    fi
+    rm -f "$tmp_file"
+    [ -n "$RELEASE_TAG" ]
+}
+
+fetch_release_tag_gitee_pkg_json() {
+    RELEASE_TAG=""
+    qm_gitee_require_repo
+    local ref="${QMANAGER_GITEE_REF:-main}"
+    local owner repo url tmp_file
+    owner=$(qm_gitee_owner)
+    repo=$(qm_gitee_name)
+    url="https://gitee.com/${owner}/${repo}/raw/${ref}/package.json"
+    tmp_file="/tmp/qm_gitee_pkg.json"
+    rm -f "$tmp_file"
+    if ! download_file "$url" "$tmp_file"; then
+        return 1
+    fi
+    if command -v jq >/dev/null 2>&1; then
+        RELEASE_TAG=$(jq -r '.version // empty' "$tmp_file" 2>/dev/null)
+    else
+        RELEASE_TAG=$(grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$tmp_file" | head -1 | cut -d'"' -f4)
+    fi
+    rm -f "$tmp_file"
+    [ -n "$RELEASE_TAG" ]
+}
+
+# Sets tarball_url / checksum_url for the active release host (GitHub mirror vs Gitee direct).
+qm_release_tarball_and_checksum_urls() {
+    local tr cr o r
+    if qm_use_gitee; then
+        qm_gitee_require_repo
+        o=$(qm_gitee_owner)
+        r=$(qm_gitee_name)
+        tr="https://gitee.com/${o}/${r}/releases/download/${RELEASE_TAG}/qmanager.tar.gz"
+        cr="https://gitee.com/${o}/${r}/releases/download/${RELEASE_TAG}/sha256sum.txt"
+        tarball_url="$tr"
+        checksum_url="$cr"
+    else
+        tr="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/qmanager.tar.gz"
+        cr="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/sha256sum.txt"
+        tarball_url="$(qm_install_mirror_url "$tr")"
+        checksum_url="$(qm_install_mirror_url "$cr")"
+    fi
+}
+
+verify_pinned_release_tag() {
+    [ -n "${QMANAGER_VERSION:-}" ] || return 0
+    if qm_use_gitee; then
+        qm_gitee_resolve_api_base
+        local tmp="/tmp/qm_gitee_tag_verify.json"
+        rm -f "$tmp"
+        if download_file "${GITEE_API_BASE}/releases/tags/${RELEASE_TAG}" "$tmp" && [ -s "$tmp" ]; then
+            rm -f "$tmp"
+            return 0
+        fi
+        rm -f "$tmp"
+        warn "Could not verify tag via Gitee API — continuing anyway (pinned version)."
+        return 0
+    fi
+    if ! fetch_release_info "${GITHUB_API_BASE}/tags/${RELEASE_TAG}"; then
+        warn "Could not verify tag via Releases API — continuing anyway (pinned version)."
+    fi
+}
+
+# Prefer jsDelivr (GitHub) or Gitee raw/API when QMANAGER_USE_GITEE=1.
 resolve_release_tag() {
     RELEASE_TAG=""
     if [ -n "${QMANAGER_VERSION:-}" ]; then
         RELEASE_TAG="$QMANAGER_VERSION"
         info "Pinned version: $RELEASE_TAG"
         return 0
+    fi
+
+    if qm_use_gitee; then
+        qm_gitee_require_repo
+        if [ -n "${QMANAGER_PREFER_GITHUB_RELEASES_API:-}" ]; then
+            if fetch_release_info_gitee_latest; then
+                info "Resolved version from Gitee Releases API: $RELEASE_TAG"
+                return 0
+            fi
+            warn "Gitee Releases API unavailable, trying Gitee raw package.json..."
+            if fetch_release_tag_gitee_pkg_json; then
+                info "Resolved version from Gitee raw package.json (${QMANAGER_GITEE_REF:-main}): $RELEASE_TAG"
+                return 0
+            fi
+            return 1
+        fi
+        if fetch_release_tag_gitee_pkg_json; then
+            info "Resolved version from Gitee raw package.json (${QMANAGER_GITEE_REF:-main}): $RELEASE_TAG"
+            return 0
+        fi
+        warn "Gitee package.json unreadable, trying Gitee Releases API..."
+        if fetch_release_info_gitee_latest; then
+            info "Resolved version from Gitee Releases API: $RELEASE_TAG"
+            return 0
+        fi
+        return 1
     fi
 
     if [ -n "${QMANAGER_PREFER_GITHUB_RELEASES_API:-}" ]; then
@@ -237,23 +373,18 @@ do_install() {
     # Resolve release version (prefer jsDelivr; see resolve_release_tag)
     step "Checking latest release..."
     if ! resolve_release_tag; then
+        if qm_use_gitee; then
+            die "Could not resolve release version (Gitee raw package.json + Releases API failed)."
+        fi
         die "Could not resolve latest release version (jsDelivr + GitHub API both failed)."
     fi
 
-    if [ -n "${QMANAGER_VERSION:-}" ]; then
-        if ! fetch_release_info "${GITHUB_API_BASE}/tags/${RELEASE_TAG}"; then
-            warn "Could not verify tag via Releases API — continuing anyway (pinned version)."
-        fi
-    fi
+    verify_pinned_release_tag
 
     info "Release: $RELEASE_TAG"
 
-    # Construct download URLs (mirror prefix avoids direct github.com where unset defaults apply)
-    local tarball_raw checksum_raw tarball_url checksum_url
-    tarball_raw="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/qmanager.tar.gz"
-    checksum_raw="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/sha256sum.txt"
-    tarball_url="$(qm_install_mirror_url "$tarball_raw")"
-    checksum_url="$(qm_install_mirror_url "$checksum_raw")"
+    local tarball_url checksum_url
+    qm_release_tarball_and_checksum_urls
 
     # Download tarball
     step "Downloading QManager ${RELEASE_TAG}..."
@@ -262,6 +393,9 @@ do_install() {
     rm -f "$ARCHIVE_PATH"
     if ! download_file "$tarball_url" "$ARCHIVE_PATH"; then
         printf "\n"
+        if qm_use_gitee; then
+            die "Download failed (Gitee). Check network and that Release assets exist for tag ${RELEASE_TAG}."
+        fi
         die "Download failed. Check your internet connection."
     fi
     [ -f "$ARCHIVE_PATH" ] || die "Download failed — archive not found"
@@ -353,18 +487,16 @@ do_download_only() {
     # Resolve release version
     step "Checking latest release..."
     if ! resolve_release_tag; then
+        if qm_use_gitee; then
+            die "Could not resolve release version (Gitee)."
+        fi
         die "Could not resolve release version."
     fi
 
-    if [ -n "${QMANAGER_VERSION:-}" ]; then
-        if ! fetch_release_info "${GITHUB_API_BASE}/tags/${RELEASE_TAG}"; then
-            warn "Could not verify tag via Releases API — download may still proceed."
-        fi
-    fi
+    verify_pinned_release_tag
 
-    local tarball_raw tarball_url
-    tarball_raw="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/qmanager.tar.gz"
-    tarball_url="$(qm_install_mirror_url "$tarball_raw")"
+    local tarball_url checksum_url
+    qm_release_tarball_and_checksum_urls
 
     step "Downloading QManager ${RELEASE_TAG}..."
     printf "     %s\n" "$tarball_url"
@@ -372,6 +504,9 @@ do_download_only() {
     rm -f "$ARCHIVE_PATH"
     if ! download_file "$tarball_url" "$ARCHIVE_PATH"; then
         printf "\n"
+        if qm_use_gitee; then
+            die "Download failed (Gitee). Check Release assets for tag ${RELEASE_TAG}."
+        fi
         die "Download failed. Check your internet connection."
     fi
 
