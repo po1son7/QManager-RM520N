@@ -1,5 +1,5 @@
 #!/bin/sh
-# config.sh — QManager Configuration Helper (RM520N-GL)
+# config.sh — QManager Configuration Helper (RG501Q-EU port)
 # Drop-in replacement for UCI get/set/commit operations.
 # Uses a single JSON config file with jq for reads and writes.
 

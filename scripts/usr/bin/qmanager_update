@@ -51,16 +51,20 @@ get_current_version() {
 
 http_download() {
     local url="$1" dest="$2" timeout="${3:-120}"
-    # curl first — BusyBox wget on RM520N-GL lacks TLS support for HTTPS URLs
-    if command -v curl >/dev/null 2>&1; then
-        curl -fSL --max-time "$timeout" -o "$dest" "$url"
-    elif command -v wget >/dev/null 2>&1; then
-        wget -qO "$dest" -T "$timeout" "$url"
-    elif command -v uclient-fetch >/dev/null 2>&1; then
-        uclient-fetch -qO "$dest" --timeout="$timeout" "$url"
-    else
-        return 1
+    # RG501Q-EU stock images often ship wget without curl — prefer Entware/system wget.
+    if [ -x /opt/bin/wget ]; then
+        /opt/bin/wget -q -O "$dest" -T "$timeout" "$url" && return 0
     fi
+    if command -v wget >/dev/null 2>&1; then
+        wget -qO "$dest" -T "$timeout" "$url" && return 0
+    fi
+    if command -v curl >/dev/null 2>&1; then
+        curl -fSL --max-time "$timeout" -o "$dest" "$url" && return 0
+    fi
+    if command -v uclient-fetch >/dev/null 2>&1; then
+        uclient-fetch -qO "$dest" --timeout="$timeout" "$url" && return 0
+    fi
+    return 1
 }
 
 # Validate a tarball URL against the GitHub origin whitelist.

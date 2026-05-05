@@ -1,5 +1,5 @@
 #!/bin/sh
-# system_config.sh — System settings abstraction (RM520N-GL)
+# system_config.sh — System settings abstraction (RG501Q-EU / RM520N-derived)
 # Replaces UCI system.@system[0].* reads/writes with standard Linux APIs.
 # Hostname and timezone are stored in qmanager.conf for persistence across
 # read-only rootfs remounts, and applied to the live system.
@@ -12,14 +12,14 @@ _SYSTEM_CONFIG_LOADED=1
 # --- Hostname ----------------------------------------------------------------
 
 # Get current hostname
-# Falls back to qmanager.conf → /etc/hostname → "RM520N-GL"
+# Falls back to qmanager.conf → /etc/hostname → "RG501Q-EU"
 sys_get_hostname() {
     local h
     h=$(qm_config_get settings hostname "")
     if [ -z "$h" ] && [ -f /etc/hostname ]; then
         h=$(cat /etc/hostname 2>/dev/null | tr -d '[:space:]')
     fi
-    [ -z "$h" ] && h="RM520N-GL"
+    [ -z "$h" ] && h="RG501Q-EU"
     printf '%s' "$h"
 }
 

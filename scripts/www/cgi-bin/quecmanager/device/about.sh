@@ -43,11 +43,42 @@ if [ "$REQUEST_METHOD" != "GET" ]; then
 fi
 
 # =============================================================================
-# 1. Fire off public IP fetches FIRST (background, non-blocking)
-#    These run in parallel while we do everything else.
+# 1. Fire off public IP fetches FIRST (background, non-blocking).
+#    RG501Q-EU reference firmware has wget but no curl — prefer wget (Entware first).
 # =============================================================================
-if command -v curl >/dev/null 2>&1; then
-    # Prefer endpoints reachable from mainland CN; fall back to ipify / ident.me.
+QM_WGET=""
+if [ -x /opt/bin/wget ]; then
+    QM_WGET=/opt/bin/wget
+elif command -v wget >/dev/null 2>&1; then
+    QM_WGET=$(command -v wget)
+fi
+
+if [ -n "$QM_WGET" ]; then
+    (
+        _ok=0
+        for url in "https://api-ipv4.ip.sb/ip" "https://api.ipify.org" "https://ident.me"; do
+            if "$QM_WGET" -qO- -T "$PUB_IP_TIMEOUT" "$url" > "$pub4_file" 2>/dev/null \
+                && grep -qE '^([0-9]{1,3}\.){3}[0-9]{1,3}([[:space:]]|$)' "$pub4_file"; then
+                _ok=1
+                break
+            fi
+        done
+        [ "$_ok" != 1 ] && rm -f "$pub4_file"
+    ) &
+    pid4=$!
+    (
+        _ok=0
+        for url in "https://api-ipv6.ip.sb/ip" "https://api6.ipify.org" "https://ipv6.icanhazip.com"; do
+            if "$QM_WGET" -qO- -T "$PUB_IP_TIMEOUT" "$url" > "$pub6_file" 2>/dev/null \
+                && grep -q ':' "$pub6_file"; then
+                _ok=1
+                break
+            fi
+        done
+        [ "$_ok" != 1 ] && rm -f "$pub6_file"
+    ) &
+    pid6=$!
+elif command -v curl >/dev/null 2>&1; then
     (
         _ok=0
         for url in "https://api-ipv4.ip.sb/ip" "https://api.ipify.org" "https://ident.me"; do
@@ -64,31 +95,6 @@ if command -v curl >/dev/null 2>&1; then
         _ok=0
         for url in "https://api-ipv6.ip.sb/ip" "https://api6.ipify.org" "https://ipv6.icanhazip.com"; do
             if curl -sLk --max-time "$PUB_IP_TIMEOUT" "$url" > "$pub6_file" 2>/dev/null \
-                && grep -q ':' "$pub6_file"; then
-                _ok=1
-                break
-            fi
-        done
-        [ "$_ok" != 1 ] && rm -f "$pub6_file"
-    ) &
-    pid6=$!
-elif command -v wget >/dev/null 2>&1; then
-    (
-        _ok=0
-        for url in "https://api-ipv4.ip.sb/ip" "https://api.ipify.org" "https://ident.me"; do
-            if wget -qO- -T "$PUB_IP_TIMEOUT" "$url" > "$pub4_file" 2>/dev/null \
-                && grep -qE '^([0-9]{1,3}\.){3}[0-9]{1,3}([[:space:]]|$)' "$pub4_file"; then
-                _ok=1
-                break
-            fi
-        done
-        [ "$_ok" != 1 ] && rm -f "$pub4_file"
-    ) &
-    pid4=$!
-    (
-        _ok=0
-        for url in "https://api-ipv6.ip.sb/ip" "https://api6.ipify.org" "https://ipv6.icanhazip.com"; do
-            if wget -qO- -T "$PUB_IP_TIMEOUT" "$url" > "$pub6_file" 2>/dev/null \
                 && grep -q ':' "$pub6_file"; then
                 _ok=1
                 break

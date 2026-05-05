@@ -1,8 +1,9 @@
 #!/bin/bash
 # =============================================================================
-# QManager Installation Script — RM520N-GL
+# QManager Installation Script — Quectel RG501Q-EU
 # =============================================================================
-# Installs QManager frontend and backend onto the RM520N-GL modem,
+# Installs QManager frontend and backend onto RG501Q-EU (validated against
+# firmware build RG501QEUAAR13A01M4G_04.200.04.200). Descended from RM520N-GL port.
 # replacing SimpleAdmin as the web management interface.
 #
 # Expected archive layout (tar.gz extracted to /tmp/qmanager_install/):
@@ -269,15 +270,15 @@ detect_modem_firmware() {
     # Fall back to AT stack
     if [ -z "$model" ] && [ -x "$BIN_DIR/atcli_smd11" ]; then
         model=$(timeout 5 "$BIN_DIR/atcli_smd11" "ATI" 2>/dev/null \
-            | grep -i "RM520N" | head -1 | tr -d '[:space:]') || true
+            | grep -iE "RM520N|RG501Q" | head -1 | tr -d '[:space:]') || true
         [ -z "$model" ] && model=$(timeout 5 "$BIN_DIR/atcli_smd11" "AT+GMR" 2>/dev/null \
-            | grep -i "RM520N" | head -1 | tr -d '[:space:]') || true
+            | grep -iE "RM520N|RG501Q" | head -1 | tr -d '[:space:]') || true
     fi
 
     # Fall back to poller cache
     if [ -z "$model" ]; then
         for f in /tmp/qmanager_status.json /etc/qmanager/status.json; do
-            [ -f "$f" ] && model=$(grep -o '"RM520N[^"]*"' "$f" 2>/dev/null | head -1 \
+            [ -f "$f" ] && model=$(grep -oE '"(RM520N|RG501Q)[^"]*"' "$f" 2>/dev/null | head -1 \
                 | tr -d '"[:space:]') && [ -n "$model" ] && break
         done
     fi
@@ -307,8 +308,19 @@ preflight() {
                 RM551E*)
                     die "Incompatible device: $project_name detected. Use the QManager RM551E installer."
                     ;;
+                RG501Q*)
+                    info "Detected: RG501Q-EU ($ver)"
+                    info "Reference firmware: RG501QEUAAR13A01M4G_04.200.04.200"
+                    ;;
                 RM520N*)
-                    info "Detected: RM520N-GL ($ver)"
+                    warn "Primary target is RG501Q-EU; detected RM520N-GL ($ver) — may be incompatible."
+                    printf "\n  Continue anyway? [y/N] "
+                    local answer
+                    read -r answer
+                    case "$answer" in
+                        [Yy]|[Yy][Ee][Ss]) info "Proceeding on user request" ;;
+                        *) die "Installation aborted by user" ;;
+                    esac
                     ;;
                 "")
                     warn "Cannot parse device model from firmware version — proceeding anyway"
@@ -317,7 +329,7 @@ preflight() {
                     warn "Unrecognized device: $project_name"
                     printf "\n"
                     printf "%s\n" "$ver" | sed 's/^/    /'
-                    printf "\n  This installer targets RM520N-GL devices. Your device may not be compatible.\n"
+                    printf "\n  This installer targets RG501Q-EU (reference: RG501QEUAAR13A01M4G_04.200.04.200).\n"
                     printf "  Do you want to proceed anyway? [y/N] "
                     local answer
                     read -r answer
@@ -633,11 +645,16 @@ RCEOF
         rm -f /tmp/speedtest.tgz
         _st_dl=0
         SPEEDTEST_MIRROR_TRY="$(qm_dl_mirror_url "$SPEEDTEST_PRIMARY")"
-        if wget -q "$SPEEDTEST_PRIMARY" -O /tmp/speedtest.tgz 2>/dev/null || \
+        _wget_try() {
+            [ -x /opt/bin/wget ] && /opt/bin/wget -q "$1" -O /tmp/speedtest.tgz 2>/dev/null && return 0
+            command -v wget >/dev/null 2>&1 && wget -q "$1" -O /tmp/speedtest.tgz 2>/dev/null && return 0
+            return 1
+        }
+        if _wget_try "$SPEEDTEST_PRIMARY" || \
            curl -fsSL "$SPEEDTEST_PRIMARY" -o /tmp/speedtest.tgz 2>/dev/null; then
             _st_dl=1
         elif [ "$SPEEDTEST_MIRROR_TRY" != "$SPEEDTEST_PRIMARY" ] && \
-            { wget -q "$SPEEDTEST_MIRROR_TRY" -O /tmp/speedtest.tgz 2>/dev/null || \
+            { _wget_try "$SPEEDTEST_MIRROR_TRY" || \
               curl -fsSL "$SPEEDTEST_MIRROR_TRY" -o /tmp/speedtest.tgz 2>/dev/null; }; then
             _st_dl=1
         fi
@@ -1377,7 +1394,7 @@ print_summary() {
     printf "\n"
     printf "  ══════════════════════════════════════════\n"
     printf "  ${GREEN}${BOLD}  QManager — Installation Complete${NC}\n"
-    printf "  ${DIM}  RM520N-GL Edition${NC}\n"
+    printf "  ${DIM}  RG501Q-EU Edition${NC}\n"
     printf "  ══════════════════════════════════════════\n\n"
 
     printf "  ${DIM}Frontend:  ${NC}%s\n" "$WWW_ROOT"
@@ -1402,7 +1419,7 @@ print_summary() {
 # --- Usage -------------------------------------------------------------------
 
 usage() {
-    printf "QManager Installer (RM520N-GL) v%s\n\n" "$VERSION"
+    printf "QManager Installer (RG501Q-EU) v%s\n\n" "$VERSION"
     printf "Usage: bash install_rm520n.sh [OPTIONS]\n\n"
     printf "Options:\n"
     printf "  --frontend-only    Only install frontend files\n"
@@ -1443,7 +1460,7 @@ main() {
 
     printf "\n"
     printf "  ══════════════════════════════════════════\n"
-    printf "  ${BOLD}  QManager — RM520N-GL Installer${NC}\n"
+    printf "  ${BOLD}  QManager — RG501Q-EU Installer${NC}\n"
     printf "  ${DIM}  Version: %s${NC}\n" "$VERSION"
     printf "  ══════════════════════════════════════════\n"
 

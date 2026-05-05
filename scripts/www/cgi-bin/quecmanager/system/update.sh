@@ -96,21 +96,22 @@ check_lock() {
 }
 
 # Fetch URL to a file, capturing HTTP headers for rate-limit detection.
-# curl first — BusyBox wget on RM520N-GL lacks TLS support for HTTPS URLs.
+# RG501Q-EU firmware often lacks curl — prefer Entware/system wget first.
 http_api_fetch() {
     local url="$1" out_file="$2" header_file="$3" timeout="${4:-15}"
 
-    # curl — supports HTTPS, -D captures response headers
-    if command -v curl >/dev/null 2>&1; then
-        curl -sL --max-time "$timeout" -o "$out_file" -D "$header_file" "$url" && return 0
+    if [ -x /opt/bin/wget ]; then
+        /opt/bin/wget -qO "$out_file" -T "$timeout" -S "$url" 2>"$header_file" && return 0
     fi
 
-    # wget (full wget-ssl supports -S; BusyBox wget may not handle HTTPS)
     if command -v wget >/dev/null 2>&1; then
         wget -qO "$out_file" -T "$timeout" -S "$url" 2>"$header_file" && return 0
     fi
 
-    # uclient-fetch — OpenWRT only
+    if command -v curl >/dev/null 2>&1; then
+        curl -sL --max-time "$timeout" -o "$out_file" -D "$header_file" "$url" && return 0
+    fi
+
     if command -v uclient-fetch >/dev/null 2>&1; then
         uclient-fetch -qO "$out_file" --timeout="$timeout" "$url" 2>"$header_file" && return 0
     fi

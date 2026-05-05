@@ -7,14 +7,14 @@
 
   ![Version](https://img.shields.io/badge/version-v0.1.6-blue?style=flat-square)
   ![License](https://img.shields.io/badge/license-MIT%20%2B%20Commons%20Clause-green?style=flat-square)
-  ![Platform](https://img.shields.io/badge/platform-RM520N--GL-orange?style=flat-square)
+  ![Platform](https://img.shields.io/badge/platform-RG501Q--EU-orange?style=flat-square)
   ![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square)
   ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square)
 </div>
 
 ---
 
-> **说明：** QManager 是 [SimpleAdmin](https://github.com/dr-dolomite/simpleadmin-mockup) 的继任者，采用全新技术栈与交互。本分支面向在内部 Linux（SDXLEMUR、ARMv7l、内核 5.4.180）上运行的 **Quectel RM520N-GL** 模组。
+> **说明：** QManager 是 [SimpleAdmin](https://github.com/dr-dolomite/simpleadmin-mockup) 的继任者。本 **`cn/edition`** 分支面向 **Quectel RG501Q-EU**，在固件 **RG501QEUAAR13A01M4G_04.200.04.200** 上对照验证；代码由 RM520N-GL 版本移植而来，仍有大量共用逻辑。
 
 ---
 
@@ -72,30 +72,30 @@
 
 ## 前提条件
 
-- **Quectel RM520N-GL** 模组，具备 RGMII 以太网连接  
-- **`/opt` 上的 Entware**（安装器可在联网时自动引导安装）  
-- 具备 **ADB** 或 **SSH** 登录模组  
+- **Quectel RG501Q-EU** 模组（参考验证固件：**RG501QEUAAR13A01M4G_04.200.04.200**），具备以太网调试/接入能力  
+- **`/opt` 上的 Entware**（安装器可在联网时自动引导安装；当前脚本仍沿用 RM520 移植时的 **armv7sf-k3.2** Entware 架构，若与你的 RG501Q 镜像不符需自行调整 `install_rm520n.sh` 中的 `ENTWARE_ARCH`）  
+- **ADB** 或 **SSH** 登录模组  
 
-> **说明：** QManager 独立运行，**不需要**预先安装 SimpleAdmin 或 RGMII Toolkit。安装脚本会处理 Entware、lighttpd、用户/组与服务等。
+> **说明：** 参考固件环境下通常 **没有 `curl`**，文档与安装脚本均以 **`wget`** 下载；安装脚本内部下载同样 **优先 wget**（含 `/opt/bin/wget`），其次才尝试 `curl`。
 
 ---
 
 ## 快速安装
 
-通过 ADB 或 SSH 登录模组后执行：
+通过 ADB 或 SSH 登录模组后执行（**推荐 wget**，与本参考固件一致）：
 
 ```sh
-curl -fsSL -o /tmp/qmanager-installer.sh \
+wget -q -O /tmp/qmanager-installer.sh \
   "https://cdn.jsdelivr.net/gh/dr-dolomite/QManager-RM520N@main/qmanager-installer.sh" && \
   bash /tmp/qmanager-installer.sh
 ```
 
-上述地址使用 **jsDelivr CDN** 读取仓库中的安装脚本，**请求域名不含 github.com**，适合 GitHub 无法直连的环境。
+上述地址使用 **jsDelivr CDN** 读取仓库中的安装脚本，**浏览器侧域名不含 github.com**，适合 GitHub 无法直连的环境。
 
 **备选：** 若 jsDelivr 不可用，可通过镜像前缀封装 Raw 地址：
 
 ```sh
-curl -fsSL -o /tmp/qmanager-installer.sh \
+wget -q -O /tmp/qmanager-installer.sh \
   "https://gh.llkk.cc/https://github.com/dr-dolomite/QManager-RM520N/raw/refs/heads/main/qmanager-installer.sh" && \
   bash /tmp/qmanager-installer.sh
 ```
@@ -106,7 +106,8 @@ curl -fsSL -o /tmp/qmanager-installer.sh \
    - 维护发布时请尽量保证 **`main` 分支的 `package.json` 版本号与 GitHub Release 标签一致**。  
    - 若希望始终用 Releases API 解析最新标签，可设置：`export QMANAGER_PREFER_GITHUB_RELEASES_API=1`。
 2. **下载安装包**：从 `releases/download/<tag>/qmanager.tar.gz` 获取内容；默认对 `https://github.com/...` 与 `https://api.github.com/...` 使用镜像前缀 **`https://gh.llkk.cc/`**，实际 TLS 连接到加速端，而非直连 GitHub。
-3. **Entware**：默认引导地址为 **`http://mirror.nju.edu.cn/entware`**（路径与官方 `bin.entware.net/{arch}/installer` 相同，**不含错误的 `/binaries` 段**）。
+3. **传输工具**：安装脚本及运行时使用 **`wget`** 优先下载资源（参考固件无 `curl`）；安装 Entware 后亦可使用 `/opt/bin/wget`。  
+4. **Entware**：默认引导地址为 **`http://mirror.nju.edu.cn/entware`**（路径与官方 `bin.entware.net/{arch}/installer` 一致）。
 
 安装器会校验 SHA-256（若提供 `sha256sum.txt`）、按需引导 Entware、安装 lighttpd、部署前后端、配置 systemd，并可选安装 dropbear（SSH）。首次引导时 Web 管理密码会与 root SSH 密码对齐。完成后通常会重启模组。
 
@@ -114,7 +115,7 @@ curl -fsSL -o /tmp/qmanager-installer.sh \
 
 ```sh
 export QMANAGER_DISABLE_MIRROR=1
-curl -fsSL -o /tmp/qmanager-installer.sh \
+wget -q -O /tmp/qmanager-installer.sh \
   https://github.com/dr-dolomite/QManager-RM520N/raw/refs/heads/main/qmanager-installer.sh && \
   bash /tmp/qmanager-installer.sh
 ```
@@ -203,14 +204,14 @@ Browser --- authFetch() --- lighttpd --- CGI Scripts --- qcmd --- atcli_smd11 --
 - **React Hooks** 轮询 CGI 并处理加载/错误/过期状态  
 - **AT 传输** 直接使用 `/dev/smd11`，无需 socat PTY  
 
-**平台要点（RM520N-GL）**
+**平台要点（RG501Q-EU / RM520 衍生移植）**
 
 | 项目 | 说明 |
 |------|------|
-| OS | Linux（SDXLEMUR，ARMv7l，内核 5.4.180） |
+| OS | Quectel 内置 Linux（具体内核以模组固件为准） |
 | Init | systemd |
 | 根文件系统 | 默认只读（必要时 remount rw） |
-| 持久化 | `/usrdata/` |
+| 持久化 | `/usrdata/`（与 RM520 移植假设一致） |
 | Web | Entware lighttpd |
 | 防火墙 | iptables |
 | 配置 | `/etc/qmanager/` 等 |

@@ -1,8 +1,8 @@
 #!/bin/bash
 # =============================================================================
-# QManager Uninstall Script — RM520N-GL
+# QManager Uninstall Script — RG501Q-EU
 # =============================================================================
-# Removes QManager from the RM520N-GL modem.
+# Removes QManager from the RG501Q-EU modem (RM520N-derived port).
 # Preserves /etc/qmanager/ (config, passwords, profiles) unless --purge.
 # Entware (/opt/) is NEVER removed by this script regardless of flags.
 #
@@ -95,7 +95,7 @@ FORCE=0
 NO_REBOOT=0
 
 usage() {
-    printf "QManager Uninstaller (RM520N-GL)\n\n"
+    printf "QManager Uninstaller (RG501Q-EU)\n\n"
     printf "Usage: bash uninstall_rm520n.sh [OPTIONS]\n\n"
     printf "Options:\n"
     printf "  --purge       Also remove /etc/qmanager/ (config, passwords, profiles)\n"
@@ -152,7 +152,7 @@ confirm_uninstall() {
         return 0
     fi
 
-    printf "\n  ${BOLD}QManager — RM520N-GL Uninstaller${NC}\n\n"
+    printf "\n  ${BOLD}QManager — RG501Q-EU Uninstaller${NC}\n\n"
     printf "  The following will be removed:\n"
     printf "    • All QManager systemd services and boot symlinks\n"
     printf "    • Daemons and binaries: /usr/bin/qmanager_*, qcmd, atcli_smd11, sms_tool\n"
@@ -186,7 +186,7 @@ log_init "$ORIGINAL_ARGS"
 
 printf "\n"
 printf "  ══════════════════════════════════════════\n"
-printf "  ${BOLD}  QManager — RM520N-GL Uninstaller${NC}\n"
+printf "  ${BOLD}  QManager — RG501Q-EU Uninstaller${NC}\n"
 printf "  ══════════════════════════════════════════\n"
 
 confirm_uninstall

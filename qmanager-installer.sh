@@ -1,15 +1,15 @@
 #!/bin/bash
 # ==============================================================================
-# QManager — Installer Bootstrap for RM520N-GL
-# Quectel Modem Manager
+# QManager — Installer Bootstrap for Quectel RG501Q-EU
+# （参考验证固件：RG501QEUAAR13A01M4G_04.200.04.200）
 #
-# 下载本脚本（推荐：不经 github.com / raw.githubusercontent.com）
-#   curl -fsSL -o /tmp/qmanager-installer.sh \
+# 下载本脚本（RG501Q 该固件通常无 curl，请用 wget）
+#   wget -q -O /tmp/qmanager-installer.sh \
 #     "https://cdn.jsdelivr.net/gh/dr-dolomite/QManager-RM520N@main/qmanager-installer.sh" && \
 #     bash /tmp/qmanager-installer.sh
 #
 # 备选（镜像封装 GitHub Raw）
-#   curl -fsSL -o /tmp/qmanager-installer.sh \
+#   wget -q -O /tmp/qmanager-installer.sh \
 #     "https://gh.llkk.cc/https://github.com/dr-dolomite/QManager-RM520N/raw/refs/heads/main/qmanager-installer.sh" && \
 #     bash /tmp/qmanager-installer.sh
 #
@@ -96,9 +96,9 @@ check_root() {
 }
 
 check_platform() {
-    # RM520N-GL runs SDXLEMUR kernel on ARMv7l
+    # RG501Q-EU internal Linux — expect persistent /usrdata (align with RM5xx layout)
     if [ ! -d /usrdata ]; then
-        die "RM520N-GL platform not detected (/usrdata missing)"
+        die "RG501Q-EU platform not detected (/usrdata missing)"
     fi
 }
 
@@ -111,19 +111,17 @@ is_installed() {
 download_file() {
     local url="$1" dest="$2"
 
-    # curl (native on RM520N-GL, has TLS support)
-    if command -v curl >/dev/null 2>&1; then
-        curl -fsSL -o "$dest" "$url" 2>/dev/null && return 0
-    fi
-
-    # Entware wget (has SSL support — BusyBox wget does not)
+    # RG501Q stock firmware: wget present, curl often missing — prefer Entware then system wget.
     if [ -x /opt/bin/wget ]; then
         /opt/bin/wget -q -O "$dest" "$url" 2>/dev/null && return 0
     fi
 
-    # Fallback: system wget (may fail on HTTPS)
     if command -v wget >/dev/null 2>&1; then
         wget -q -O "$dest" "$url" 2>/dev/null && return 0
+    fi
+
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL -o "$dest" "$url" 2>/dev/null && return 0
     fi
 
     return 1
@@ -399,7 +397,7 @@ show_menu() {
     printf "\n"
     printf "  ${CYAN}==========================================${NC}\n"
     printf "  ${BOLD}       QManager — Setup Wizard${NC}\n"
-    printf "  ${DIM}   Quectel RM520N-GL Modem Manager${NC}\n"
+    printf "  ${DIM}   Quectel RG501Q-EU Modem Manager${NC}\n"
     printf "  ${CYAN}==========================================${NC}\n"
     printf "\n"
 
