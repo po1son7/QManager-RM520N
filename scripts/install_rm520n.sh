@@ -38,6 +38,12 @@
 #   --force            Skip modem firmware detection in preflight
 #   --help             Show this help
 #
+# Entware install tuning (environment variables):
+#   ENTWARE_BIN_HOST     First mirror to try for installer opkg/opkg.conf (default: NJU)
+#   ENTWARE_MIRROR_TRY   Space-separated mirror list (default: NJU, USTC, TUNA, bin.entware.net)
+#   ENTWARE_FEED_BASE    Force-rewrite opkg feed base in opkg.conf (default: mirror that succeeded)
+#   ENTWARE_WGET_OPTS    Extra wget flags (default: -T 25 -t 2); set empty if device wget lacks -T
+#
 # =============================================================================
 
 set -e
@@ -110,6 +116,46 @@ qm_dl_mirror_url() {
     else
         printf '%s' "$1"
     fi
+}
+
+# Entware installer / feed tuning (China-friendly defaults)
+#   ENTWARE_BIN_HOST       Primary installer mirror base (default: NJU)
+#   ENTWARE_FEED_BASE      Rewrite target for bin.entware.net in opkg.conf (default: ENTWARE_BIN_HOST used for successful bootstrap)
+#   ENTWARE_MIRROR_TRY     Space-separated mirror bases to try (default: NJU → USTC → TUNA → upstream)
+#   ENTWARE_WGET_OPTS      Extra wget flags (default: bounded timeout + retries for faster failover)
+ENTWARE_WGET_OPTS="${ENTWARE_WGET_OPTS:--T 25 -t 2}"
+
+qm_entware_rewrite_opkg_feeds() {
+    local conf="$1"
+    local feed_base="${ENTWARE_FEED_BASE:-${ENTWARE_BIN_HOST:-http://mirror.nju.edu.cn/entware}}"
+    feed_base="${feed_base%/}"
+    [ -f "$conf" ] || return 1
+    local tmp="${conf}.qmrewrite.$$"
+    sed \
+        -e "s|https://bin.entware.net|${feed_base}|g" \
+        -e "s|http://bin.entware.net|${feed_base}|g" \
+        "$conf" > "$tmp" && mv "$tmp" "$conf"
+}
+
+qm_entware_download_installer_pair() {
+    local arch="$1"
+    local base="$2"
+    base="${base%/}"
+    local url="${base}/${arch}/installer"
+    rm -f /opt/bin/opkg.tmp /opt/etc/opkg.conf.tmp
+    # shellcheck disable=SC2086
+    wget $ENTWARE_WGET_OPTS -q "$url/opkg" -O /opt/bin/opkg.tmp &
+    local p1=$!
+    # shellcheck disable=SC2086
+    wget $ENTWARE_WGET_OPTS -q "$url/opkg.conf" -O /opt/etc/opkg.conf.tmp &
+    local p2=$!
+    wait $p1 || return 1
+    wait $p2 || return 1
+    [ -s /opt/bin/opkg.tmp ] && [ -s /opt/etc/opkg.conf.tmp ] || return 1
+    chmod 755 /opt/bin/opkg.tmp
+    mv /opt/bin/opkg.tmp /opt/bin/opkg
+    mv /opt/etc/opkg.conf.tmp /opt/etc/opkg.conf
+    return 0
 }
 
 # Optional packages (not bundled — installed from Entware if available)
@@ -434,16 +480,21 @@ install_dependencies() {
         warn "sms_tool not found — SMS features will not work"
     fi
 
+    _qm_entware_bootstrapped_here=0
+
     # --- Entware bootstrap -------------------------------------------------------
     # If opkg is not installed, bootstrap Entware from scratch.
     # This replicates the RGMII toolkit's Entware installation process.
     if [ ! -x "$OPKG" ]; then
         ENTWARE_ARCH="armv7sf-k3.2"
-        # Same layout as bin.entware.net: ${HOST}/${ARCH}/installer (not .../binaries/${ARCH})
         ENTWARE_BIN_HOST="${ENTWARE_BIN_HOST:-http://mirror.nju.edu.cn/entware}"
-        ENTWARE_URL="${ENTWARE_BIN_HOST}/${ENTWARE_ARCH}/installer"
 
-        info "Entware not found — bootstrapping from ${ENTWARE_BIN_HOST}"
+        local _mirrors="${ENTWARE_MIRROR_TRY:-}"
+        if [ -z "$_mirrors" ]; then
+            _mirrors="${ENTWARE_BIN_HOST} http://mirrors.ustc.edu.cn/entware http://mirrors.tuna.tsinghua.edu.cn/entware http://bin.entware.net"
+        fi
+
+        info "Entware not found — bootstrapping (mirrors + parallel installer fetch; feeds rewritten off bin.entware.net)"
 
         # Prevent library conflicts during bootstrap
         unset LD_LIBRARY_PATH
@@ -504,15 +555,24 @@ SVCEOF
         done
         chmod 777 /opt/tmp
 
-        # Download opkg binary and config
-        wget -q "$ENTWARE_URL/opkg" -O /opt/bin/opkg \
-            || die "Failed to download opkg from $ENTWARE_URL"
-        chmod 755 /opt/bin/opkg
-        wget -q "$ENTWARE_URL/opkg.conf" -O /opt/etc/opkg.conf \
-            || die "Failed to download opkg.conf from $ENTWARE_URL"
+        local _dl_ok=0 _base=""
+        for _base in $_mirrors; do
+            info "Trying Entware installer mirror: $_base"
+            if qm_entware_download_installer_pair "$ENTWARE_ARCH" "$_base"; then
+                ENTWARE_BIN_HOST="${_base%/}"
+                _dl_ok=1
+                break
+            fi
+            rm -f /opt/bin/opkg.tmp /opt/etc/opkg.conf.tmp 2>/dev/null || true
+        done
+        [ "$_dl_ok" = "1" ] || die "Failed to download Entware opkg / opkg.conf from any mirror"
+
+        qm_entware_rewrite_opkg_feeds /opt/etc/opkg.conf
+        info "Entware feeds pinned to ${ENTWARE_FEED_BASE:-$ENTWARE_BIN_HOST}"
+
         info "Downloaded opkg package manager"
 
-        # Install base Entware
+        # Install base Entware (single metadata refresh — feeds already domestic)
         /opt/bin/opkg update >/dev/null 2>&1 \
             || die "opkg update failed — check internet connectivity"
         /opt/bin/opkg install entware-opt >/dev/null 2>&1 \
@@ -551,6 +611,7 @@ RCEOF
 
         systemctl daemon-reload
         info "Entware bootstrap complete"
+        _qm_entware_bootstrapped_here=1
     else
         info "Entware already installed at $OPKG"
     fi
@@ -558,7 +619,12 @@ RCEOF
     # --- Entware packages (requires opkg to be available) ---------------------
     _opkg_ready=0
     if [ -x "$OPKG" ]; then
-        if "$OPKG" update >/dev/null 2>&1; then
+        qm_entware_rewrite_opkg_feeds /opt/etc/opkg.conf 2>/dev/null || true
+
+        if [ "$_qm_entware_bootstrapped_here" = "1" ]; then
+            info "Skipping redundant opkg update (indexes fresh from bootstrap)"
+            _opkg_ready=1
+        elif "$OPKG" update >/dev/null 2>&1; then
             _opkg_ready=1
         else
             warn "opkg update failed — no internet connection?"
@@ -568,71 +634,113 @@ RCEOF
     fi
 
     if [ "$_opkg_ready" = "1" ]; then
-        # lighttpd (web server + required modules)
         if [ -x /opt/sbin/lighttpd ]; then
-            info "lighttpd is already installed"
-            # Upgrade lighttpd + all modules together to prevent version mismatch
-            # (plugin-version must match lighttpd-version or modules fail to load)
+            info "lighttpd is already installed — syncing packages"
             "$OPKG" upgrade lighttpd lighttpd-mod-cgi lighttpd-mod-openssl \
                 lighttpd-mod-redirect lighttpd-mod-proxy >/dev/null 2>&1 \
-                && info "lighttpd packages synced" \
                 || true
-        else
-            "$OPKG" install lighttpd >/dev/null 2>&1 \
-                && info "lighttpd installed from Entware" \
-                || die "Failed to install lighttpd from Entware"
         fi
-        # Install required modules (Entware packages them ALL separately)
+
+        _batch=""
+        if [ ! -x /opt/sbin/lighttpd ]; then
+            _batch="lighttpd"
+        fi
         for mod in lighttpd-mod-cgi lighttpd-mod-openssl lighttpd-mod-redirect lighttpd-mod-proxy; do
-            "$OPKG" install "$mod" >/dev/null 2>&1 \
-                && info "$mod installed" \
-                || warn "$mod not available"
+            _batch="$_batch $mod"
         done
 
-        # sudo (privilege escalation for CGI)
-        if command -v sudo >/dev/null 2>&1; then
-            info "sudo is already installed"
+        if ! command -v sudo >/dev/null 2>&1; then
+            _batch="$_batch sudo"
         else
-            "$OPKG" install sudo >/dev/null 2>&1 \
-                && info "sudo installed from Entware" \
-                || warn "sudo not available — CGI privilege escalation will not work"
+            info "sudo is already installed"
         fi
 
-        # jq
         if command -v jq >/dev/null 2>&1; then
             info "jq is already installed"
         elif ls "$SRC_DEPS"/jq*.ipk >/dev/null 2>&1; then
-            "$OPKG" install "$SRC_DEPS"/jq*.ipk >/dev/null 2>&1 \
-                && info "jq installed from bundled package" \
-                || die "Failed to install jq from bundled package"
+            for f in "$SRC_DEPS"/jq*.ipk; do
+                [ -f "$f" ] && _batch="$_batch $f"
+            done
         else
-            "$OPKG" install jq >/dev/null 2>&1 \
-                && info "jq installed from Entware" \
-                || die "Failed to install jq"
+            _batch="$_batch jq"
         fi
 
-        # Ensure jq is in standard PATH (lighttpd CGI won't see /opt/bin)
-        [ -x /opt/bin/jq ] && ln -sf /opt/bin/jq /usr/bin/jq 2>/dev/null || true
-
-        # coreutils-timeout
         if command -v timeout >/dev/null 2>&1; then
             info "timeout is already installed"
         else
-            "$OPKG" install coreutils-timeout >/dev/null 2>&1 \
-                && info "coreutils-timeout installed from Entware" \
-                || warn "coreutils-timeout not available — some commands may hang without timeout safety"
+            _batch="$_batch coreutils-timeout"
         fi
 
-        # dropbear (SSH server)
         if command -v dropbear >/dev/null 2>&1; then
             info "dropbear is already installed"
         elif ls "$SRC_DEPS"/dropbear*.ipk >/dev/null 2>&1; then
-            "$OPKG" install "$SRC_DEPS"/dropbear*.ipk >/dev/null 2>&1 \
-                && info "dropbear installed from bundled package" \
-                || warn "dropbear install failed (optional — SSH server)"
+            for f in "$SRC_DEPS"/dropbear*.ipk; do
+                [ -f "$f" ] && _batch="$_batch $f"
+            done
         else
-            info "dropbear not bundled and not installed (optional)"
+            info "dropbear not bundled (optional SSH)"
         fi
+
+        for pkg in $OPTIONAL_PACKAGES; do
+            if command -v "$pkg" >/dev/null 2>&1; then
+                info "$pkg is already installed"
+            else
+                _batch="$_batch $pkg"
+            fi
+        done
+
+        _batch_trim=$(echo "$_batch" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+        if [ -n "$_batch_trim" ]; then
+            info "opkg batch install (single resolver pass): $_batch_trim"
+            if ! "$OPKG" install $_batch_trim >/dev/null 2>&1; then
+                warn "Batch opkg failed — retrying serial installs"
+                if [ ! -x /opt/sbin/lighttpd ]; then
+                    "$OPKG" install lighttpd >/dev/null 2>&1 \
+                        || die "Failed to install lighttpd from Entware"
+                    info "lighttpd installed from Entware"
+                fi
+                for mod in lighttpd-mod-cgi lighttpd-mod-openssl lighttpd-mod-redirect lighttpd-mod-proxy; do
+                    "$OPKG" install "$mod" >/dev/null 2>&1 \
+                        && info "$mod installed" \
+                        || warn "$mod not available"
+                done
+                if ! command -v sudo >/dev/null 2>&1; then
+                    "$OPKG" install sudo >/dev/null 2>&1 \
+                        && info "sudo installed from Entware" \
+                        || warn "sudo not available — CGI privilege escalation will not work"
+                fi
+                if ! command -v jq >/dev/null 2>&1; then
+                    if ls "$SRC_DEPS"/jq*.ipk >/dev/null 2>&1; then
+                        "$OPKG" install "$SRC_DEPS"/jq*.ipk >/dev/null 2>&1 \
+                            && info "jq installed from bundled package" \
+                            || die "Failed to install jq from bundled package"
+                    else
+                        "$OPKG" install jq >/dev/null 2>&1 \
+                            && info "jq installed from Entware" \
+                            || die "Failed to install jq"
+                    fi
+                fi
+                if ! command -v timeout >/dev/null 2>&1; then
+                    "$OPKG" install coreutils-timeout >/dev/null 2>&1 \
+                        && info "coreutils-timeout installed from Entware" \
+                        || warn "coreutils-timeout not available — some commands may hang without timeout safety"
+                fi
+                if ! command -v dropbear >/dev/null 2>&1 && ls "$SRC_DEPS"/dropbear*.ipk >/dev/null 2>&1; then
+                    "$OPKG" install "$SRC_DEPS"/dropbear*.ipk >/dev/null 2>&1 \
+                        && info "dropbear installed from bundled package" \
+                        || warn "dropbear install failed (optional — SSH server)"
+                fi
+                for pkg in $OPTIONAL_PACKAGES; do
+                    command -v "$pkg" >/dev/null 2>&1 && continue
+                    "$OPKG" install "$pkg" >/dev/null 2>&1 && info "$pkg installed" \
+                        || warn "$pkg not available (optional)"
+                done
+            else
+                info "Entware dependency batch finished (lighttpd stack, sudo, jq, timeout, optional SSH/msmtp)"
+            fi
+        fi
+
+        [ -x /opt/bin/jq ] && ln -sf /opt/bin/jq /usr/bin/jq 2>/dev/null || true
     fi
 
     # --- Ookla Speedtest CLI (speed test from web UI) ---
@@ -646,16 +754,22 @@ RCEOF
         _st_dl=0
         SPEEDTEST_MIRROR_TRY="$(qm_dl_mirror_url "$SPEEDTEST_PRIMARY")"
         _wget_try() {
-            [ -x /opt/bin/wget ] && /opt/bin/wget -q "$1" -O /tmp/speedtest.tgz 2>/dev/null && return 0
-            command -v wget >/dev/null 2>&1 && wget -q "$1" -O /tmp/speedtest.tgz 2>/dev/null && return 0
+            # shellcheck disable=SC2086
+            [ -x /opt/bin/wget ] && /opt/bin/wget $ENTWARE_WGET_OPTS -q "$1" -O /tmp/speedtest.tgz 2>/dev/null && return 0
+            command -v wget >/dev/null 2>&1 && wget $ENTWARE_WGET_OPTS -q "$1" -O /tmp/speedtest.tgz 2>/dev/null && return 0
             return 1
         }
-        if _wget_try "$SPEEDTEST_PRIMARY" || \
+        # Prefer gh.llkk-wrapped URL first on mainland (mirror prefix enabled); otherwise try Ookla directly first.
+        if [ -z "${QMANAGER_DISABLE_MIRROR:-}" ] && \
+           [ -n "$SPEEDTEST_MIRROR_TRY" ] && [ "$SPEEDTEST_MIRROR_TRY" != "$SPEEDTEST_PRIMARY" ] && \
+           { _wget_try "$SPEEDTEST_MIRROR_TRY" || curl -fsSL "$SPEEDTEST_MIRROR_TRY" -o /tmp/speedtest.tgz 2>/dev/null; }; then
+            _st_dl=1
+        elif _wget_try "$SPEEDTEST_PRIMARY" || \
            curl -fsSL "$SPEEDTEST_PRIMARY" -o /tmp/speedtest.tgz 2>/dev/null; then
             _st_dl=1
-        elif [ "$SPEEDTEST_MIRROR_TRY" != "$SPEEDTEST_PRIMARY" ] && \
-            { _wget_try "$SPEEDTEST_MIRROR_TRY" || \
-              curl -fsSL "$SPEEDTEST_MIRROR_TRY" -o /tmp/speedtest.tgz 2>/dev/null; }; then
+        elif [ -n "${QMANAGER_DISABLE_MIRROR:-}" ] && \
+           [ "$SPEEDTEST_MIRROR_TRY" != "$SPEEDTEST_PRIMARY" ] && \
+           { _wget_try "$SPEEDTEST_MIRROR_TRY" || curl -fsSL "$SPEEDTEST_MIRROR_TRY" -o /tmp/speedtest.tgz 2>/dev/null; }; then
             _st_dl=1
         fi
         if [ "$_st_dl" = "1" ] && [ -s /tmp/speedtest.tgz ]; then
