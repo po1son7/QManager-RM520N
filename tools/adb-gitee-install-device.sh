@@ -1,6 +1,7 @@
 #!/bin/sh
 # Ephemeral helper: pushed to modem via adb for unattended Gitee install.
-# Uses release tag from cn/edition package.json; runs install_rm520n.sh --force (non-interactive SSH skip).
+# Uses release tag from cn/edition package.json; runs install_rm520n.sh --force.
+# Feeds "y" so dropbear SSH is enabled at end. Run as: adb shell "/bin/sh /data/local/tmp/adb-gitee-install-device.sh"
 set -eu
 
 GITEE_OWNER=aowu2048
