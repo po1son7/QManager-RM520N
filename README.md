@@ -100,7 +100,18 @@ wget -q -O /tmp/qmanager-installer.sh \
   bash /tmp/qmanager-installer.sh
 ```
 
+**Gitee（推荐大陆环境）：** 安装脚本与国内镜像仓库 **Release** 同源，安装器会从 **Gitee** 下载 `qmanager.tar.gz` / `sha256sum.txt`（不经 `gh.llkk.cc`）。
+
+```sh
+wget -q -O /tmp/qmanager-installer.sh \
+  "https://gitee.com/aowu2048/qmanager-rm520n/raw/cn/edition/qmanager-installer.sh" && \
+  QMANAGER_USE_GITEE=1 QMANAGER_GITEE_REPO=aowu2048/qmanager-rm520n QMANAGER_GITEE_REF=cn/edition \
+  bash /tmp/qmanager-installer.sh
+```
+
 安装脚本默认行为：
+
+> 下列第 1～2 条针对上方 **jsDelivr** 与 **gh.llkk.cc** 两条命令；若使用 **Gitee** 一键命令，则版本解析与安装包均从 **Gitee** 获取（见该段说明）。
 
 1. **解析版本号**：优先从 jsDelivr 拉取 **`cn/edition/package.json`** 中的 `"version"`（**不调用 GitHub Releases API**）。仅在失败时再回退到 GitHub Releases API（默认同样经过镜像前缀，避免直连 `api.github.com`）。  
    - 维护发布时请尽量保证 **`cn/edition` 分支的 `package.json` 版本号与 GitHub Release 标签一致**。  
