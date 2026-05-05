@@ -39,18 +39,18 @@ const BAND_CARDS: {
 }[] = [
   {
     category: "lte",
-    title: "LTE Band Locking",
-    description: "Select the LTE bands to lock for your device.",
+    title: "LTE 频段锁定",
+    description: "选择要在设备上锁定的 LTE 频段。",
   },
   {
     category: "nsa_nr5g",
-    title: "NSA Band Locking",
-    description: "Select the 5G NSA bands to lock (5G via LTE anchor).",
+    title: "NSA 频段锁定",
+    description: "选择要锁定的 5G NSA 频段（通过 LTE 锚点）。",
   },
   {
     category: "sa_nr5g",
-    title: "SA Band Locking",
-    description: "Select the 5G SA bands to lock (standalone 5G).",
+    title: "SA 频段锁定",
+    description: "选择要锁定的 5G SA（独立组网）频段。",
   },
 ];
 
@@ -117,9 +117,9 @@ const BandLockingComponent = () => {
           <InfoIcon className="size-4" />
           <AlertDescription>
             <p>
-              Band configuration is managed by the{" "}
+              频段配置当前由场景{" "}
               <span className="font-semibold">{activeScenarioName}</span>{" "}
-              scenario.
+              控制。
             </p>
           </AlertDescription>
         </Alert>

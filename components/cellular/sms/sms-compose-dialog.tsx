@@ -52,12 +52,12 @@ export default function SmsComposeDialog({
 
     const success = await onSend(phone.trim(), message);
     if (success) {
-      toast.success("SMS sent successfully");
+      toast.success("短信已发送");
       setPhone("");
       setMessage("");
       onOpenChange(false);
     } else {
-      toast.error("Failed to send SMS");
+      toast.error("发送短信失败");
     }
   };
 
@@ -129,7 +129,7 @@ export default function SmsComposeDialog({
               onClick={() => onOpenChange(false)}
               disabled={isSaving}
             >
-              Cancel
+              取消
             </Button>
             <Button type="submit" disabled={isSaving || !isValid}>
               {isSaving ? (

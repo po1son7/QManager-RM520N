@@ -123,7 +123,7 @@ const LteFreqLockingComponent = ({
     if (checked) {
       const earfcns = buildEarfcns();
       if (earfcns.length === 0) {
-        toast.warning("No frequencies entered", {
+        toast.warning("未输入频率", {
           description: "Enter at least one channel number before enabling.",
         });
         return;
@@ -154,9 +154,9 @@ const LteFreqLockingComponent = ({
     setShowUnsupportedWarning(false);
     const success = await onLock(pendingEarfcns);
     if (success) {
-      toast.success("LTE frequency lock applied");
+      toast.success("已应用 LTE 频率锁");
     } else {
-      toast.error("Failed to apply LTE frequency lock");
+      toast.error("应用 LTE 频率锁失败");
     }
   };
 
@@ -164,9 +164,9 @@ const LteFreqLockingComponent = ({
     setShowUnlockDialog(false);
     const success = await onUnlock();
     if (success) {
-      toast.success("LTE frequency lock cleared");
+      toast.success("已清除 LTE 频率锁");
     } else {
-      toast.error("Failed to clear LTE frequency lock");
+      toast.error("清除 LTE 频率锁失败");
     }
   };
 
@@ -175,9 +175,9 @@ const LteFreqLockingComponent = ({
     const earfcn = modemData?.lte?.earfcn;
     if (earfcn != null) {
       setEarfcn1(String(earfcn));
-      toast.info("Filled from current connected tower");
+      toast.info("已从当前连接的基站填充");
     } else {
-      toast.warning("No active LTE connection");
+      toast.warning("无活动 LTE 连接");
     }
   };
 
@@ -392,7 +392,7 @@ const LteFreqLockingComponent = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmLock}>
               Lock Frequency
             </AlertDialogAction>
@@ -429,7 +429,7 @@ const LteFreqLockingComponent = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmLock}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -451,7 +451,7 @@ const LteFreqLockingComponent = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmUnlock}>
               Remove Lock
             </AlertDialogAction>

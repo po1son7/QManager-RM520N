@@ -94,7 +94,7 @@ const IMEIToolsCard = () => {
   const handleCopy = () => {
     if (!imei) return;
     navigator.clipboard.writeText(imei).then(
-      () => toast.success("Copied to clipboard"),
+      () => toast.success("已复制到剪贴板"),
       () => {
         const ta = document.createElement("textarea");
         ta.value = imei;
@@ -104,7 +104,7 @@ const IMEIToolsCard = () => {
         ta.select();
         document.execCommand("copy");
         document.body.removeChild(ta);
-        toast.success("Copied to clipboard");
+        toast.success("已复制到剪贴板");
       },
     );
   };
@@ -146,7 +146,7 @@ const IMEIToolsCard = () => {
                       ))}
                       <SelectSeparator />
                       <SelectItem value={IMEI_CUSTOM_ID}>
-                        Custom Prefix
+                        自定义 Prefix
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -157,7 +157,7 @@ const IMEIToolsCard = () => {
 
                 {isCustom && (
                   <Field>
-                    <FieldLabel>Custom Prefix</FieldLabel>
+                    <FieldLabel>自定义 Prefix</FieldLabel>
                     <InputGroup>
                       <InputGroupInput
                         placeholder="Enter 8–12 digit prefix"

@@ -30,7 +30,7 @@ import { useSimProfiles } from "@/hooks/use-sim-profiles";
 // =============================================================================
 // TTLSettingsCard — TTL/HL Configuration with SIM Profile Override
 // =============================================================================
-// When a Custom SIM Profile is active and has TTL > 0 or HL > 0, the
+// When a 自定义 SIM Profile is active and has TTL > 0 or HL > 0, the
 // form is disabled and an Alert banner informs the user that TTL/HL is
 // managed by the active profile.  Same pattern as BandLocking ↔ Scenarios.
 // =============================================================================
@@ -173,10 +173,10 @@ function TTLForm({
       toast.success(
         ttl > 0 || hl > 0
           ? `Applied — TTL: ${ttl}, Hop Limit: ${hl}`
-          : "Custom TTL/Hop Limit disabled",
+          : "自定义 TTL/Hop Limit disabled",
       );
     } else {
-      toast.error(error || "Failed to apply TTL/Hop Limit settings");
+      toast.error(error || "应用 TTL/Hop Limit 设置失败");
     }
   }, [isEnabled, ttlValue, hlValue, saveTtlHl, error, markSaved]);
 
@@ -196,7 +196,7 @@ function TTLForm({
             <AlertDescription>
               <p>
                 TTL/HL configuration is managed by the{" "}
-                <span className="font-semibold">{profileName}</span> Custom SIM
+                <span className="font-semibold">{profileName}</span> 自定义 SIM
                 Profile.
               </p>
             </AlertDescription>
@@ -215,7 +215,7 @@ function TTLForm({
               <div className="grid gap-2">
                 <Field orientation="horizontal" className="w-fit">
                   <FieldLabel htmlFor="ttl-setting">
-                    Enable Custom TTL/HL
+                    Enable 自定义 TTL/HL
                   </FieldLabel>
                   <Switch
                     id="ttl-setting"

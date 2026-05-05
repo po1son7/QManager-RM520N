@@ -172,7 +172,7 @@ const LTELockingComponent = ({
 
   const handleToggle = (checked: boolean) => {
     if (checked && isWatcherRunning) {
-      toast.warning("Failover check in progress", {
+      toast.warning("正在进行故障转移检查", {
         description: "Signal quality check is running, please wait.",
       });
       return;
@@ -180,7 +180,7 @@ const LTELockingComponent = ({
     if (checked) {
       const cells = buildCells();
       if (cells.length === 0) {
-        toast.warning("No cell targets", {
+        toast.warning("无小区目标", {
           description: "Enter a channel and cell ID first.",
         });
         return;
@@ -197,9 +197,9 @@ const LTELockingComponent = ({
     setShowLockDialog(false);
     const success = await onLock(pendingCells);
     if (success) {
-      toast.success("LTE tower lock applied");
+      toast.success("已应用 LTE 基站锁");
     } else {
-      toast.error("Failed to lock tower — check modem connection");
+      toast.error("锁定基站失败，请检查模组连接");
     }
   };
 
@@ -207,9 +207,9 @@ const LTELockingComponent = ({
     setShowUnlockDialog(false);
     const success = await onUnlock();
     if (success) {
-      toast.success("LTE tower lock cleared");
+      toast.success("已清除 LTE 基站锁");
     } else {
-      toast.error("Failed to remove tower lock");
+      toast.error("解除基站锁定失败");
     }
   };
 
@@ -233,9 +233,9 @@ const LTELockingComponent = ({
           ) : currentEarfcn && currentPci ? (
             <span
               className="min-w-0 italic text-muted-foreground line-clamp-1"
-              title={`Custom: EARFCN ${currentEarfcn}, PCI ${currentPci}`}
+              title={`自定义: EARFCN ${currentEarfcn}, PCI ${currentPci}`}
             >
-              {`Custom: EARFCN ${currentEarfcn}, PCI ${currentPci}`}
+              {`自定义: EARFCN ${currentEarfcn}, PCI ${currentPci}`}
             </span>
           ) : (
             <SelectValue placeholder="Pick an LTE carrier" />
@@ -518,7 +518,7 @@ const LTELockingComponent = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmLock}>
               Lock Tower
             </AlertDialogAction>
@@ -538,7 +538,7 @@ const LTELockingComponent = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmUnlock}>
               Remove Lock
             </AlertDialogAction>

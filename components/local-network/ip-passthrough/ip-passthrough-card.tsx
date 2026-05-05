@@ -148,7 +148,7 @@ const IPPassthroughCard = () => {
     e.preventDefault();
 
     if (!macValid) {
-      toast.error("Enter a valid MAC address (XX:XX:XX:XX:XX:XX)");
+      toast.error("请输入有效 MAC（XX:XX:XX:XX:XX:XX）");
       return;
     }
 
@@ -169,9 +169,9 @@ const IPPassthroughCard = () => {
 
     if (success) {
       markSaved();
-      toast.success("Settings applied — device is rebooting…");
+      toast.success("设置已应用，设备正在重启…");
     } else {
-      toast.error("Failed to save IP Passthrough settings");
+      toast.error("保存 IP 透传设置失败");
     }
   };
 
@@ -323,7 +323,7 @@ const IPPassthroughCard = () => {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="automatic">
-                                Automatic — First Connected Device
+                                自动 — First Connected Device
                               </SelectItem>
                               <SelectItem value="manual">
                                 Enter Manually…
@@ -396,13 +396,13 @@ const IPPassthroughCard = () => {
 
                   {/* Field 4: USB Modem Protocol */}
                   <Field>
-                    <FieldLabel>USB Connection Mode</FieldLabel>
+                    <FieldLabel>USB 连接模式</FieldLabel>
                     <Select
                       value={localUsbMode}
                       onValueChange={(v) => setLocalUsbMode(v as UsbModeLocal)}
                       disabled={isSaving}
                     >
-                      <SelectTrigger aria-label="USB Connection Mode">
+                      <SelectTrigger aria-label="USB 连接模式">
                         <SelectValue placeholder="Choose USB Modem Protocol" />
                       </SelectTrigger>
                       <SelectContent>
@@ -491,7 +491,7 @@ const IPPassthroughCard = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>取消</AlertDialogCancel>
               <AlertDialogAction onClick={handleConfirmedApply}>
                 Apply &amp; Reboot
               </AlertDialogAction>

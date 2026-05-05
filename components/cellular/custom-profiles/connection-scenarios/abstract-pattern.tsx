@@ -136,7 +136,7 @@ export const AbstractPattern = ({ type, className }: AbstractPatternProps) => {
       </svg>
     );
   }
-  // Custom/default pattern
+  // 自定义/default pattern
   return (
     <svg
       className={className}

@@ -39,25 +39,23 @@ const DonateDialog = ({ open, onOpenChange }: DonateDialogProps) => {
       <DialogContent className="max-w-sm md:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-xl">
-            Donate to QManager
+            赞助 QManager
           </DialogTitle>
           <DialogDescription>
-            Support the development of this project.
+            支持本项目的开发与维护。
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-2 text-sm text-pretty font-medium leading-relaxed">
-          <p>Hi, I&apos;m Rus 👋</p>
+          <p>感谢使用 QManager。</p>
           <p>
-            QuecManager is a little side project I maintain for free as part
-            of Cameron&apos;s Toolkit. If you&apos;ve found it useful,
-            consider supporting it with a small donation &mdash; it means a
-            lot and keeps me going.
+            若本工具对您有帮助，欢迎通过下方链接自愿打赏作者 Rus（PayPal / Ko-fi）。
+            您的支持有助于持续维护与改进。
           </p>
-          <p>Thanks so much for being awesome! 💙</p>
+          <p>谢谢！</p>
         </div>
         <div className="mt-2">
           <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-            GCash via Remitly
+            GCash（Remitly）
           </h3>
           <p className="text-sm font-semibold tabular-nums">+639544817486</p>
         </div>

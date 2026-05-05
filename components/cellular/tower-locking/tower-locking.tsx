@@ -30,14 +30,14 @@ const TowerLockingComponent = () => {
             isLoading={tower.isLoading}
             onPersistChange={(persist) => {
               if (!tower.config) {
-                toast.error("Settings unavailable — try refreshing the page");
+                toast.error("无法读取设置，请尝试刷新页面");
                 return;
               }
               tower.updateSettings(persist, tower.config.failover);
             }}
             onFailoverChange={async (enabled) => {
               if (!tower.config) {
-                toast.error("Settings unavailable — try refreshing the page");
+                toast.error("无法读取设置，请尝试刷新页面");
                 return false;
               }
               return tower.updateSettings(tower.config.persist, {
@@ -48,7 +48,7 @@ const TowerLockingComponent = () => {
             isFailoverSaving={tower.isSavingFailover}
             onThresholdChange={async (threshold) => {
               if (!tower.config) {
-                toast.error("Settings unavailable — try refreshing the page");
+                toast.error("无法读取设置，请尝试刷新页面");
                 return false;
               }
               return tower.updateSettings(tower.config.persist, {

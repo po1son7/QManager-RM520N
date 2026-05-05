@@ -383,11 +383,11 @@ export function SpeedtestDialog({ open, onOpenChange }: SpeedtestDialogProps) {
                     }
                   >
                     <SelectTrigger className="w-full" aria-label="Select server">
-                      <SelectValue placeholder="Automatic (nearest)" />
+                      <SelectValue placeholder="自动 (nearest)" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl max-h-64">
                       <SelectItem value="auto" className="rounded-lg">
-                        Automatic (nearest)
+                        自动 (nearest)
                       </SelectItem>
                       {servers.map((s) => (
                         <SelectItem

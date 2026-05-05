@@ -44,7 +44,7 @@ interface BandSettingsProps {
   onToggleFailover: (enabled: boolean) => Promise<boolean>;
   /** True while initial data is loading */
   isLoading: boolean;
-  /** True when a Connection Scenario controls bands — disables failover toggle */
+  /** True when a 连接 Scenario controls bands — disables failover toggle */
   isScenarioControlled?: boolean;
 }
 
@@ -113,9 +113,9 @@ const BandSettingsComponent = ({
   const handleFailoverToggle = async (checked: boolean) => {
     const success = await onToggleFailover(checked);
     if (success) {
-      toast.success(`Band failover ${checked ? "enabled" : "disabled"}`);
+      toast.success(checked ? "频段故障转移已启用" : "频段故障转移已关闭");
     } else {
-      toast.error("Failed to update band failover");
+      toast.error("更新频段故障转移失败");
     }
   };
 
@@ -235,10 +235,10 @@ const BandSettingsComponent = ({
           </div>
           <Separator />
 
-          {/* Active LTE Bands */}
+          {/* Active LTE 频段 */}
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold text-muted-foreground">
-              Active LTE Bands
+              Active LTE 频段
             </p>
             <div className="flex items-center gap-1.5">
               {isLoading ? (

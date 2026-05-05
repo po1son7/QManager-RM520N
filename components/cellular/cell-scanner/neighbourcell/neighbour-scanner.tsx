@@ -86,17 +86,17 @@ const NeighbourCellScanner = () => {
       const data = await res.json();
 
       if (data.success) {
-        toast.success("Cell Locked", {
+        toast.success("已锁定小区", {
           description: `Locked to LTE PCI ${lockTarget.pci} on EARFCN ${lockTarget.frequency}`,
         });
       } else {
-        toast.error("Lock Failed", {
+        toast.error("锁定失败", {
           description: data.detail || data.error || "Unknown error",
         });
       }
     } catch {
-      toast.error("Lock Failed", {
-        description: "Failed to connect to modem",
+      toast.error("锁定失败", {
+        description: "无法连接到模组",
       });
     } finally {
       setIsLocking(false);
@@ -184,7 +184,7 @@ const NeighbourCellScanner = () => {
             )}
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLocking}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isLocking}>取消</AlertDialogCancel>
             <AlertDialogAction onClick={(e) => { e.preventDefault(); confirmLockCell(); }} disabled={isLocking}>
               {isLocking ? (
                 <>

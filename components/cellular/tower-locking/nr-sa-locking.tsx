@@ -186,7 +186,7 @@ const NRSALockingComponent = ({
 
   const handleToggle = (checked: boolean) => {
     if (checked && isWatcherRunning) {
-      toast.warning("Failover check in progress", {
+      toast.warning("正在进行故障转移检查", {
         description: "Signal quality check is running, please wait.",
       });
       return;
@@ -203,7 +203,7 @@ const NRSALockingComponent = ({
         Number.isNaN(parsedBand) ||
         Number.isNaN(parsedScs)
       ) {
-        toast.warning("Incomplete fields", {
+        toast.warning("字段不完整", {
           description: "Please fill in all required tower fields before locking.",
         });
         return;
@@ -227,9 +227,9 @@ const NRSALockingComponent = ({
     if (pendingCell) {
       const success = await onLock(pendingCell);
       if (success) {
-        toast.success("NR-SA tower lock applied");
+        toast.success("已应用 NR-SA 基站锁");
       } else {
-        toast.error("Failed to lock tower — check modem connection");
+        toast.error("锁定基站失败，请检查模组连接");
       }
     }
   };
@@ -238,9 +238,9 @@ const NRSALockingComponent = ({
     setShowUnlockDialog(false);
     const success = await onUnlock();
     if (success) {
-      toast.success("NR-SA tower lock cleared");
+      toast.success("已清除 NR-SA 基站锁");
     } else {
-      toast.error("Failed to remove tower lock");
+      toast.error("解除基站锁定失败");
     }
   };
 
@@ -393,9 +393,9 @@ const NRSALockingComponent = ({
                               ) : arfcn && pci ? (
                                 <span
                                   className="min-w-0 italic text-muted-foreground line-clamp-1"
-                                  title={`Custom: ARFCN ${arfcn}, PCI ${pci}`}
+                                  title={`自定义: ARFCN ${arfcn}, PCI ${pci}`}
                                 >
-                                  {`Custom: ARFCN ${arfcn}, PCI ${pci}`}
+                                  {`自定义: ARFCN ${arfcn}, PCI ${pci}`}
                                 </span>
                               ) : (
                                 <SelectValue placeholder="Pick a 5G carrier" />
@@ -508,7 +508,7 @@ const NRSALockingComponent = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmLock}>
               Lock Tower
             </AlertDialogAction>
@@ -528,7 +528,7 @@ const NRSALockingComponent = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmUnlock}>
               Remove Lock
             </AlertDialogAction>

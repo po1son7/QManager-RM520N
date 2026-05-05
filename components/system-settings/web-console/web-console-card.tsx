@@ -52,20 +52,20 @@ function StatusBar({ connectionState, onReconnect }: StatusBarProps) {
         <>
           <LoaderCircleIcon className="size-3 animate-spin text-warning" />
           <span className="text-muted-foreground text-xs">
-            {connectionState === "reconnecting" ? "Reconnecting..." : "Connecting..."}
+            {connectionState === "reconnecting" ? "正在重连…" : "正在连接…"}
           </span>
         </>
       )}
       {isConnected && (
         <>
           <span className="bg-success size-2 rounded-full" />
-          <span className="text-muted-foreground text-xs">Connected</span>
+          <span className="text-muted-foreground text-xs">已连接</span>
         </>
       )}
       {isDisconnected && (
         <>
           <span className="bg-destructive size-2 rounded-full" />
-          <span className="text-muted-foreground text-xs">Disconnected</span>
+          <span className="text-muted-foreground text-xs">已断开</span>
           <div className="ml-auto">
             <Button
               variant="ghost"
@@ -74,7 +74,7 @@ function StatusBar({ connectionState, onReconnect }: StatusBarProps) {
               onClick={onReconnect}
             >
               <RefreshCwIcon />
-              Reconnect
+              重新连接
             </Button>
           </div>
         </>
@@ -246,14 +246,14 @@ export default function WebConsoleCard() {
           <div className="flex flex-1 flex-col items-center justify-center gap-3 py-12">
             <WifiOffIcon className="text-muted-foreground size-10 opacity-50" />
             <div className="text-center">
-              <p className="text-sm font-medium">Web Console is not available</p>
+              <p className="text-sm font-medium">Web 控制台不可用</p>
               <p className="text-muted-foreground text-xs">
-                ttyd is not installed or not running.
+                未安装或未启动 ttyd。
               </p>
             </div>
             <Button variant="outline" size="sm" onClick={reconnect}>
               <RefreshCwIcon />
-              Retry
+              重试
             </Button>
           </div>
         )}

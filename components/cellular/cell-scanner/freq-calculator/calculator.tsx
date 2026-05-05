@@ -203,7 +203,7 @@ const FrequencyCalculator = () => {
   const [activeTab, setActiveTab] = useState<"auto" | "lte" | "nr">("auto");
   const [history, setHistory] = useState<HistoryEntry[]>(getInitialHistory);
 
-  // Save history to localStorage whenever it changes
+  // 保存 history to localStorage whenever it changes
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       try {

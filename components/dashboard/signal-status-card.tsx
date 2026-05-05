@@ -47,7 +47,7 @@ function getSignalBarIcon(quality: string) {
   }
 }
 
-// --- Connection state display ---
+// --- 连接 state display ---
 function getStateDisplay(state: string) {
   switch (state) {
     case "connected":

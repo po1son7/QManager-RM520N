@@ -284,11 +284,11 @@ const NetworkEventsCard = () => {
                       <Radio className="@sm/card:hidden" />
                     </TabsTrigger>
                     <TabsTrigger value="networkMode">
-                      <span className="hidden @sm/card:inline">Network Mode</span>
+                      <span className="hidden @sm/card:inline">网络模式</span>
                       <Signal className="@sm/card:hidden" />
                     </TabsTrigger>
                     <TabsTrigger value="dataConnection">
-                      <span className="hidden @sm/card:inline">Data Connection</span>
+                      <span className="hidden @sm/card:inline">数据连接</span>
                       <Wifi className="@sm/card:hidden" />
                     </TabsTrigger>
                   </TabsList>
@@ -419,7 +419,7 @@ const NetworkEventsCard = () => {
 
                 <TabsContent value="networkMode">
                   <div className="grid gap-1.5 mb-4">
-                    <h3 className="text-sm font-medium">Network Mode</h3>
+                    <h3 className="text-sm font-medium">网络模式</h3>
                     <p className="text-sm text-muted-foreground">
                       Signal quality changes and network mode transitions.
                     </p>
@@ -438,7 +438,7 @@ const NetworkEventsCard = () => {
 
                 <TabsContent value="dataConnection">
                   <div className="grid gap-1.5 mb-4">
-                    <h3 className="text-sm font-medium">Data Connection</h3>
+                    <h3 className="text-sm font-medium">数据连接</h3>
                     <p className="text-sm text-muted-foreground">
                       Internet connectivity, latency, and packet loss events.
                     </p>

@@ -207,7 +207,7 @@ function SystemSettingsForm({
     }
   }, []);
 
-  // --- Save handler (items 2-4) ---
+  // --- 保存 handler (items 2-4) ---
   const handleSave = useCallback(async () => {
     if (!canSave) return;
 
@@ -221,9 +221,9 @@ function SystemSettingsForm({
 
     if (success) {
       markSaved();
-      toast.success("Settings saved");
+      toast.success("设置已保存");
     } else {
-      toast.error(error || "Failed to save settings");
+      toast.error(error || "保存设置失败");
     }
   }, [
     canSave,
@@ -352,7 +352,7 @@ function SystemSettingsForm({
             </Popover>
           </motion.div>
 
-          {/* ── Save Button ───────────────────────────────────────── */}
+          {/* ── 保存 Button ───────────────────────────────────────── */}
           <Separator />
           <motion.div variants={itemVariants} className="flex justify-end">
             <SaveButton

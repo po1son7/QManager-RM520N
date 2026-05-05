@@ -99,7 +99,7 @@ const BackupIMEICard = ({
     e.preventDefault();
 
     if (localEnabled && !isValidImei) {
-      toast.error("Backup IMEI must be exactly 15 digits");
+      toast.error("备份 IMEI 须为 15 位数字");
       return;
     }
 
@@ -108,16 +108,16 @@ const BackupIMEICard = ({
     const imeiChanged = localImei !== (backupImei ?? "");
 
     if (!enabledChanged && !imeiChanged) {
-      toast.info("No changes to save");
+      toast.info("没有需要保存的更改");
       return;
     }
 
     const success = await onSave({ enabled: localEnabled, imei: localImei });
     if (success) {
       markSaved();
-      toast.success("Backup IMEI configuration saved");
+      toast.success("备份 IMEI 配置已保存");
     } else {
-      toast.error("Failed to save backup configuration");
+      toast.error("保存备份 IMEI 配置失败");
     }
   };
 
@@ -142,7 +142,7 @@ const BackupIMEICard = ({
         <CardHeader>
           <CardTitle>Backup Device IMEI</CardTitle>
           <CardDescription>
-            Automatically sets up a backup IMEI for your device to ensure
+            自动ally sets up a backup IMEI for your device to ensure
             connectivity in case of primary IMEI issues.
           </CardDescription>
         </CardHeader>
@@ -282,7 +282,7 @@ const BackupIMEICard = ({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel onClick={handleInfoCancel}>
-                Cancel
+                取消
               </AlertDialogCancel>
               <AlertDialogAction onClick={handleInfoConfirm}>
                 Enable Backup

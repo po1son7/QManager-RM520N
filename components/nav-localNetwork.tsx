@@ -52,7 +52,7 @@ export function NavLocalNetwork({
   return (
     <SidebarGroup>
       <SidebarGroupLabel>
-        Local Network
+        局域网
       </SidebarGroupLabel>
       <SidebarMenu>
         {localNetwork.map((item) => {
@@ -77,7 +77,7 @@ export function NavLocalNetwork({
                   <CollapsibleTrigger asChild>
                     <SidebarMenuAction className="data-[state=open]:rotate-90">
                       <ChevronRight />
-                      <span className="sr-only">Toggle</span>
+                      <span className="sr-only">展开子菜单</span>
                     </SidebarMenuAction>
                   </CollapsibleTrigger>
                   <CollapsibleContent>

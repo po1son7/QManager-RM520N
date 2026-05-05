@@ -93,14 +93,14 @@ const FPLMNCard = () => {
       if (!mountedRef.current) return;
 
       if (data.success) {
-        toast.success("Blocked networks cleared");
+        toast.success("已清除禁止网络列表");
         await fetchStatus(true);
       } else {
-        toast.error(data.detail || "Failed to clear blocked networks");
+        toast.error(data.detail || "清除禁止网络失败");
       }
     } catch {
       if (mountedRef.current) {
-        toast.error("Failed to clear blocked networks");
+        toast.error("清除禁止网络失败");
       }
     } finally {
       if (mountedRef.current) {

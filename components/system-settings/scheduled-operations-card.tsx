@@ -86,9 +86,9 @@ const ScheduledOperationsCard = ({
       rebootSaveTimerRef.current = setTimeout(async () => {
         const success = await saveScheduledReboot(payload);
         if (success) {
-          toast.success("Reboot schedule saved");
+          toast.success("重启计划已保存");
         } else {
-          toast.error("Failed to save reboot schedule");
+          toast.error("保存重启计划失败");
         }
       }, 800);
     },
@@ -119,7 +119,7 @@ const ScheduledOperationsCard = ({
       );
     } else {
       setRebootEnabled(!checked);
-      toast.error("Failed to update reboot schedule");
+      toast.error("更新重启计划失败");
     }
   };
 

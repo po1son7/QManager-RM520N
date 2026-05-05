@@ -199,7 +199,7 @@ const NrFreqLockingComponent = ({
     if (checked) {
       const entries = buildEntries();
       if (entries.length === 0) {
-        toast.warning("No frequencies entered", {
+        toast.warning("未输入频率", {
           description: "Enter at least one NR-ARFCN and SCS before enabling.",
         });
         return;
@@ -209,7 +209,7 @@ const NrFreqLockingComponent = ({
       for (const slot of slots) {
         const a = parseInt(slot.arfcn, 10);
         if (!isNaN(a) && (slot.scs === "" || isNaN(parseInt(slot.scs, 10)))) {
-          toast.warning("Missing SCS", {
+          toast.warning("缺少 SCS", {
             description:
               "Each NR-ARFCN requires an SCS value. Please select the sub-carrier spacing.",
           });
@@ -240,9 +240,9 @@ const NrFreqLockingComponent = ({
     setShowUnsupportedWarning(false);
     const success = await onLock(pendingEntries);
     if (success) {
-      toast.success("NR5G frequency lock applied");
+      toast.success("已应用 NR5G 频率锁");
     } else {
-      toast.error("Failed to apply NR5G frequency lock");
+      toast.error("应用 NR5G 频率锁失败");
     }
   };
 
@@ -250,9 +250,9 @@ const NrFreqLockingComponent = ({
     setShowUnlockDialog(false);
     const success = await onUnlock();
     if (success) {
-      toast.success("NR5G frequency lock cleared");
+      toast.success("已清除 NR5G 频率锁");
     } else {
-      toast.error("Failed to clear NR5G frequency lock");
+      toast.error("清除 NR5G 频率锁失败");
     }
   };
 
@@ -273,9 +273,9 @@ const NrFreqLockingComponent = ({
       } else {
         updateSlotArfcn(0, String(nrArfcn));
       }
-      toast.info("Populated from active NR PCell");
+      toast.info("已从当前 NR 主小区填充");
     } else {
-      toast.warning("No active NR cell");
+      toast.warning("无活动 NR 小区");
     }
   };
 
@@ -470,7 +470,7 @@ const NrFreqLockingComponent = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmLock}>
               Lock Frequency
             </AlertDialogAction>
@@ -508,7 +508,7 @@ const NrFreqLockingComponent = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmLock}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -530,7 +530,7 @@ const NrFreqLockingComponent = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmUnlock}>
               Unlock
             </AlertDialogAction>

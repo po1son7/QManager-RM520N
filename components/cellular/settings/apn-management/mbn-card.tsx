@@ -79,10 +79,10 @@ const MBNCard = ({
     if (localAutoSel === "1" && currentAutoSel !== "1") {
       const success = await onSave({ action: "auto_sel", auto_sel: 1 });
       if (success) {
-        toast.success("Auto-select enabled — reboot required");
+        toast.success("已启用自动选择运营商，需重启生效");
         setShowRebootDialog(true);
       } else {
-        toast.error("Failed to enable auto-select");
+        toast.error("启用自动选择失败");
       }
       return;
     }
@@ -91,10 +91,10 @@ const MBNCard = ({
     if (localAutoSel === "0" && currentAutoSel !== "0" && selectedProfile === currentProfile?.name) {
       const success = await onSave({ action: "auto_sel", auto_sel: 0 });
       if (success) {
-        toast.success("Auto-select disabled — reboot required");
+        toast.success("已关闭自动选择运营商，需重启生效");
         setShowRebootDialog(true);
       } else {
-        toast.error("Failed to disable auto-select");
+        toast.error("关闭自动选择失败");
       }
       return;
     }
@@ -106,15 +106,15 @@ const MBNCard = ({
         profile_name: selectedProfile,
       });
       if (success) {
-        toast.success("Carrier profile applied — reboot required");
+        toast.success("已应用运营商配置，需重启生效");
         setShowRebootDialog(true);
       } else {
-        toast.error("Failed to apply carrier profile");
+        toast.error("应用运营商配置失败");
       }
       return;
     }
 
-    toast.info("No changes to save");
+    toast.info("没有需要保存的更改");
   };
 
   const handleReset = () => {
@@ -132,9 +132,9 @@ const MBNCard = ({
     setIsRebooting(true);
     const sent = await onReboot();
     if (sent) {
-      toast.success("Device is rebooting...");
+      toast.success("设备正在重启…");
     } else {
-      toast.error("Reboot failed — restart the device manually");
+      toast.error("重启失败，请手动重启设备");
       setIsRebooting(false);
     }
   };
@@ -237,7 +237,7 @@ const MBNCard = ({
                   Saving...
                 </>
               ) : (
-                "Save Settings"
+                "保存设置"
               )}
             </Button>
             <Button
@@ -275,10 +275,10 @@ const MBNCard = ({
                 {isRebooting ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
-                    Rebooting...
+                    正在重启…
                   </>
                 ) : (
-                  "Reboot Now"
+                  "立即重启"
                 )}
               </AlertDialogAction>
             </AlertDialogFooter>

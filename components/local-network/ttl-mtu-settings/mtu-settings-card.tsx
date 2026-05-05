@@ -121,9 +121,9 @@ function MTUForm({
       const success = await disableMtu();
       if (success) {
         markSaved();
-        toast.success("Custom MTU disabled");
+        toast.success("已关闭自定义 MTU");
       } else {
-        toast.error(error || "Failed to disable MTU settings");
+        toast.error(error || "关闭 MTU 设置失败");
       }
       return;
     }
@@ -134,9 +134,9 @@ function MTUForm({
     const success = await saveMtu(mtu);
     if (success) {
       markSaved();
-      toast.success(`MTU set to ${mtu}`);
+      toast.success(`MTU 已设为 ${mtu}`);
     } else {
-      toast.error(error || "Failed to apply MTU settings");
+      toast.error(error || "应用 MTU 设置失败");
     }
   }, [isEnabled, mtuValue, saveMtu, disableMtu, error, markSaved]);
 
@@ -162,7 +162,7 @@ function MTUForm({
               <div className="grid gap-2">
                 <Field orientation="horizontal" className="w-fit">
                   <FieldLabel htmlFor="mtu-setting">
-                    Enable Custom MTU
+                    Enable 自定义 MTU
                   </FieldLabel>
                   <Switch
                     id="mtu-setting"

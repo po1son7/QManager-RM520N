@@ -50,7 +50,7 @@ import type { UseTailscaleReturn } from "@/hooks/use-tailscale";
 // TailscaleConnectionCard — Multi-state connection + settings card
 // =============================================================================
 // States: Loading → Error → Not Installed → Service Stopped →
-//         NeedsLogin → Connected → Disconnected
+//         Needs登录 → Connected → Disconnected
 
 type TailscaleConnectionCardProps = Omit<UseTailscaleReturn, "refresh"> & {
   refresh: () => void;
@@ -138,7 +138,7 @@ export function TailscaleConnectionCard({
                 Rebooting…
               </>
             ) : (
-              "Reboot Now"
+              "立即重启"
             )}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -151,7 +151,7 @@ export function TailscaleConnectionCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Tailscale Connection</CardTitle>
+          <CardTitle>Tailscale 连接</CardTitle>
           <CardDescription>
             Manage your Tailscale VPN connection.
           </CardDescription>
@@ -174,7 +174,7 @@ export function TailscaleConnectionCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Tailscale Connection</CardTitle>
+          <CardTitle>Tailscale 连接</CardTitle>
           <CardDescription>
             Manage your Tailscale VPN connection.
           </CardDescription>
@@ -204,7 +204,7 @@ export function TailscaleConnectionCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Tailscale Connection</CardTitle>
+          <CardTitle>Tailscale 连接</CardTitle>
           <CardDescription>
             Manage your Tailscale VPN connection.
           </CardDescription>
@@ -397,16 +397,16 @@ export function TailscaleConnectionCard({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>取消</AlertDialogCancel>
               <AlertDialogAction
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 onClick={async () => {
                   const success = await uninstall();
                   if (success) {
-                    toast.success("Tailscale uninstalled");
+                    toast.success("Tailscale 已卸载");
                     setShowRebootDialog(true);
                   } else {
-                    toast.error("Failed to uninstall Tailscale");
+                    toast.error("卸载 Tailscale 失败");
                   }
                 }}
               >
@@ -424,7 +424,7 @@ export function TailscaleConnectionCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Tailscale Connection</CardTitle>
+          <CardTitle>Tailscale 连接</CardTitle>
           <CardDescription>
             {version ? `Tailscale v${version} · ` : ""}Manage your Tailscale VPN
             connection.
@@ -449,9 +449,9 @@ export function TailscaleConnectionCard({
                 onClick={async () => {
                   const success = await startService();
                   if (success) {
-                    toast.success("Tailscale service started");
+                    toast.success("Tailscale 服务已启动");
                   } else {
-                    toast.error("Failed to start Tailscale service");
+                    toast.error("启动 Tailscale 服务失败");
                   }
                 }}
                 disabled={isTogglingService}
@@ -474,12 +474,12 @@ export function TailscaleConnectionCard({
     );
   }
 
-  // --- Needs Login -----------------------------------------------------------
-  if (backendState === "NeedsLogin" || backendState === "NeedsMachineAuth") {
+  // --- Needs 登录 -----------------------------------------------------------
+  if (backendState === "Needs登录" || backendState === "NeedsMachineAuth") {
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Tailscale Connection</CardTitle>
+          <CardTitle>Tailscale 连接</CardTitle>
           <CardDescription>
             {version ? `Tailscale v${version} · ` : ""}Manage your Tailscale VPN
             connection.
@@ -494,7 +494,7 @@ export function TailscaleConnectionCard({
               </p>
               <Badge variant="outline" className="bg-warning/15 text-warning hover:bg-warning/20 border-warning/30">
                 <LogInIcon className="size-3" />
-                Needs Login
+                Needs 登录
               </Badge>
             </div>
 
@@ -514,7 +514,7 @@ export function TailscaleConnectionCard({
                       onClick={() => window.open(authUrl, "_blank", "noopener,noreferrer")}
                     >
                       <ExternalLinkIcon className="size-3.5" />
-                      Open Login Page
+                      Open 登录 Page
                     </Button>
                     <p className="text-xs text-muted-foreground animate-pulse motion-reduce:animate-none">
                       Waiting for authentication…
@@ -530,7 +530,7 @@ export function TailscaleConnectionCard({
                     onClick={async () => {
                       const success = await connect();
                       if (!success) {
-                        toast.error("Failed to initiate connection");
+                        toast.error("发起连接失败");
                       }
                     }}
                     disabled={isConnecting}
@@ -557,9 +557,9 @@ export function TailscaleConnectionCard({
                 onClick={async () => {
                   const success = await stopService();
                   if (success) {
-                    toast.success("Tailscale service stopped");
+                    toast.success("Tailscale 服务已停止");
                   } else {
-                    toast.error("Failed to stop Tailscale service");
+                    toast.error("停止 Tailscale 服务失败");
                   }
                 }}
                 disabled={isTogglingService}
@@ -635,7 +635,7 @@ export function TailscaleConnectionCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Tailscale Connection</CardTitle>
+          <CardTitle>Tailscale 连接</CardTitle>
           <CardDescription>
             {version ? `Tailscale v${version} · ` : ""}Manage your Tailscale VPN
             connection.
@@ -706,9 +706,9 @@ export function TailscaleConnectionCard({
                 onClick={async () => {
                   const success = await disconnect();
                   if (success) {
-                    toast.success("Tailscale disconnected");
+                    toast.success("Tailscale 已断开");
                   } else {
-                    toast.error("Failed to disconnect");
+                    toast.error("断开连接失败");
                   }
                 }}
                 disabled={isDisconnecting}
@@ -742,14 +742,14 @@ export function TailscaleConnectionCard({
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>取消</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={async () => {
                         const success = await logout();
                         if (success) {
-                          toast.success("Logged out from Tailscale");
+                          toast.success("已从 Tailscale 注销");
                         } else {
-                          toast.error("Failed to logout");
+                          toast.error("注销失败");
                         }
                       }}
                     >
@@ -769,7 +769,7 @@ export function TailscaleConnectionCard({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Tailscale Connection</CardTitle>
+        <CardTitle>Tailscale 连接</CardTitle>
         <CardDescription>
           {version ? `Tailscale v${version} · ` : ""}Manage your Tailscale VPN
           connection.
@@ -796,7 +796,7 @@ export function TailscaleConnectionCard({
               onClick={async () => {
                 const success = await connect();
                 if (!success) {
-                  toast.error("Failed to connect");
+                  toast.error("连接失败");
                 }
               }}
               disabled={isConnecting}
@@ -830,14 +830,14 @@ export function TailscaleConnectionCard({
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>取消</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={async () => {
                       const success = await logout();
                       if (success) {
-                        toast.success("Logged out from Tailscale");
+                        toast.success("已从 Tailscale 注销");
                       } else {
-                        toast.error("Failed to logout");
+                        toast.error("注销失败");
                       }
                     }}
                   >

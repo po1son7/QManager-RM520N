@@ -77,16 +77,16 @@ const CellularSettingsCard = ({
     }
 
     if (Object.keys(changes).length === 0) {
-      toast.info("No changes to save");
+      toast.info("没有需要保存的更改");
       return;
     }
 
     const success = await onSave(changes);
     if (success) {
       markSaved();
-      toast.success("Modem settings saved");
+      toast.success("模组设置已保存");
     } else {
-      toast.error("Failed to save modem settings");
+      toast.error("保存模组设置失败");
     }
   };
 
@@ -211,16 +211,16 @@ const CellularSettingsCard = ({
                         <SelectValue placeholder="Choose Network Type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="AUTO">Automatic</SelectItem>
-                        <SelectItem value="LTE">LTE Only</SelectItem>
-                        <SelectItem value="NR5G">5G Only</SelectItem>
+                        <SelectItem value="AUTO">自动</SelectItem>
+                        <SelectItem value="LTE">仅 LTE</SelectItem>
+                        <SelectItem value="NR5G">仅 5G</SelectItem>
                         <SelectItem value="LTE:NR5G">LTE + 5G</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>
 
                   <Field>
-                    <FieldLabel>5G Architecture</FieldLabel>
+                    <FieldLabel>5G 组网架构</FieldLabel>
                     <Select
                       value={nr5gMode || (settings ? String(settings.nr5g_mode) : "")}
                       onValueChange={setNr5gMode}
@@ -230,9 +230,9 @@ const CellularSettingsCard = ({
                         <SelectValue placeholder="Choose 5G Mode" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="0">Auto (SA + NSA)</SelectItem>
-                        <SelectItem value="1">NSA Only (5G via LTE)</SelectItem>
-                        <SelectItem value="2">SA Only (Standalone)</SelectItem>
+                        <SelectItem value="0">自动（SA + NSA）</SelectItem>
+                        <SelectItem value="1">仅 NSA (5G via LTE)</SelectItem>
+                        <SelectItem value="2">仅 SA (Standalone)</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>

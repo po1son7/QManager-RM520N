@@ -55,7 +55,7 @@ interface BandCardsProps {
   isLoading: boolean;
   /** Error from the hook (shared) */
   error: string | null;
-  /** True when a Connection Scenario controls bands — disables all interactions */
+  /** True when a 连接 Scenario controls bands — disables all interactions */
   disabled?: boolean;
 }
 
@@ -131,27 +131,25 @@ const BandCardsComponent = ({
   const handleLock = async () => {
     const bands = [...checkedBands].sort((a, b) => a - b);
     if (bands.length === 0) {
-      toast.error("Select at least one band to lock");
+      toast.error("请至少选择一个要锁定的频段");
       return;
     }
 
     const success = await onLock(bands);
     if (success) {
       markSaved();
-      toast.success(
-        `${title.replace(" Locking", "")} bands locked successfully`,
-      );
+      toast.success(`「${title}」所选频段已成功锁定`);
     } else {
-      toast.error(error || "Failed to apply band lock");
+      toast.error(error || "应用频段锁定失败");
     }
   };
 
   const handleUnlockAll = async () => {
     const success = await onUnlockAll();
     if (success) {
-      toast.success(`${title.replace(" Locking", "")} bands unlocked`);
+      toast.success(`「${title}」频段已解锁`);
     } else {
-      toast.error(error || "Failed to unlock bands");
+      toast.error(error || "解除频段锁定失败");
     }
   };
 

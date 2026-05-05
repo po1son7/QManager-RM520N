@@ -75,7 +75,7 @@ const statusBadge = (status: string) => {
     case "complete":
       return (
         <Badge className="bg-success/10 text-success border-success/20">
-          Complete
+          完成
         </Badge>
       );
     case "partial":

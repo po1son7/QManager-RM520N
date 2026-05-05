@@ -92,12 +92,12 @@ export const ActiveConfigCard = ({
         {/* Config Details */}
         <div className="grid gap-2">
           <Separator />
-          <ConfigRow label="Network Mode" value={scenario.config.mode} />
+          <ConfigRow label="网络模式" value={scenario.config.mode} />
           <Separator />
           <ConfigRow label="Optimization" value={scenario.config.optimization} />
           <Separator />
           <ConfigRow
-            label="LTE Bands"
+            label="LTE 频段"
             value={bandsToDisplay(scenario.config.lte_bands)}
           />
           <Separator />

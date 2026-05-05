@@ -121,7 +121,7 @@ export function UpdateStatusCard({
     try {
       await downloadUpdate();
     } catch {
-      toast.error("Failed to start download");
+      toast.error("开始下载失败");
     }
   }, [downloadUpdate]);
 
@@ -130,7 +130,7 @@ export function UpdateStatusCard({
     try {
       await installStaged();
     } catch {
-      toast.error("Failed to start installation");
+      toast.error("开始安装失败");
     }
   }, [installStaged]);
 
@@ -435,7 +435,7 @@ export function UpdateStatusCard({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={handleInstall}>
               <DownloadIcon className="size-4" />
               Install Now

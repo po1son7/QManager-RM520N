@@ -37,7 +37,7 @@ export default function SetupPage() {
         .then((r) => r.json())
         .then((data) => {
           if (!data.setup_required) {
-            // Password already set — go to normal login
+            // 密码 already set — go to normal login
             window.location.href = "/login/";
             return;
           }

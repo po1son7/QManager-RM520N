@@ -213,13 +213,13 @@ const NetworkPriorityCard = () => {
   }
 
   // ---------------------------------------------------------------------------
-  // Save
+  // 保存
   // ---------------------------------------------------------------------------
   const handleSave = async () => {
     const newOrder = networks.map((n) => n.id).join(":");
 
     if (newOrder === fetchedOrder) {
-      toast.info("No changes to save");
+      toast.info("没有需要保存的更改");
       return;
     }
 
@@ -238,12 +238,12 @@ const NetworkPriorityCard = () => {
       if (!mountedRef.current) return;
 
       if (!data.success) {
-        toast.error(data.detail || "Failed to set network priority");
+        toast.error(data.detail || "设置网络优先级失败");
         return;
       }
 
       markSaved();
-      toast.success("Network priority updated");
+      toast.success("网络优先级已更新");
 
       // Brief recovery delay for network re-registration
       await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -252,7 +252,7 @@ const NetworkPriorityCard = () => {
       await fetchOrder(true);
     } catch {
       if (mountedRef.current) {
-        toast.error("Failed to set network priority");
+        toast.error("设置网络优先级失败");
       }
     } finally {
       if (mountedRef.current) {

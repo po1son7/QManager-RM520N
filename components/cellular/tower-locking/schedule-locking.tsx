@@ -83,7 +83,7 @@ const ScheduleTowerLockingComponent = ({
   // Reverts local state if the backend rejects (e.g., no lock targets configured)
   const handleEnabledChange = async (checked: boolean) => {
     setEnabled(checked);
-    // Cancel any pending debounced save
+    // 取消 any pending debounced save
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
       saveTimerRef.current = null;
@@ -98,7 +98,7 @@ const ScheduleTowerLockingComponent = ({
       // Backend rejected — revert toggle
       setEnabled(!checked);
       toast.warning(
-        "No lock targets configured"
+        "未配置锁定目标"
       );
     }
   };

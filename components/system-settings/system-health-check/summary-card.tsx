@@ -118,7 +118,7 @@ export default function SummaryCard({
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>取消</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={onClear}
                       className={buttonVariants({ variant: "destructive" })}

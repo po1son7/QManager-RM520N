@@ -97,7 +97,7 @@ export function UpdatePreferencesCard({
             : "Pre-release updates disabled",
         );
       } catch {
-        toast.error("Failed to update preference");
+        toast.error("更新偏好失败");
       } finally {
         setPrereleaseToggling(false);
       }
@@ -111,7 +111,7 @@ export function UpdatePreferencesCard({
     try {
       await downloadUpdate(selectedVersion);
     } catch {
-      toast.error("Failed to start download");
+      toast.error("开始下载失败");
     }
   }, [selectedVersion, downloadUpdate]);
 
@@ -121,10 +121,10 @@ export function UpdatePreferencesCard({
       try {
         await saveAutoUpdate(checked, autoUpdateTime);
         toast.success(
-          checked ? "Automatic updates enabled" : "Automatic updates disabled",
+          checked ? "自动 updates enabled" : "自动 updates disabled",
         );
       } catch {
-        toast.error("Failed to update preference");
+        toast.error("更新偏好失败");
       } finally {
         setAutoUpdateToggling(false);
       }
@@ -142,9 +142,9 @@ export function UpdatePreferencesCard({
       autoTimerRef.current = setTimeout(async () => {
         try {
           await saveAutoUpdate(true, newTime);
-          toast.success("Update schedule saved");
+          toast.success("更新计划已保存");
         } catch {
-          toast.error("Failed to save schedule");
+          toast.error("保存计划失败");
         }
       }, AUTO_UPDATE_DEBOUNCE);
     },
@@ -224,12 +224,12 @@ export function UpdatePreferencesCard({
               </div>
             </motion.div>
 
-            {/* ── Automatic updates ─────────────────────────────── */}
+            {/* ── 自动 updates ─────────────────────────────── */}
             <Separator />
             <motion.div variants={itemVariants} className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-muted-foreground text-sm">
-                  Automatic updates
+                  自动 updates
                 </p>
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -245,7 +245,7 @@ export function UpdatePreferencesCard({
               </div>
             </motion.div>
 
-            {/* Time Configuration for Automatic Updates */}
+            {/* Time Configuration for 自动 Updates */}
             {updateInfo?.auto_update_enabled && (
               <>
                 <Separator />
@@ -272,7 +272,7 @@ export function UpdatePreferencesCard({
                         handleAutoUpdateTimeChange(e.target.value)
                       }
                       disabled={isUpdating || autoUpdateToggling}
-                      aria-label="Automatic update time"
+                      aria-label="自动 update time"
                       className="w-28 shrink-0"
                     />
                   </div>
@@ -370,7 +370,7 @@ export function UpdatePreferencesCard({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={handleVersionInstall}>
               <DownloadIcon className="size-4" />
               {selectedVersion === updateInfo?.current_version

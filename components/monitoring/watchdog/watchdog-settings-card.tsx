@@ -208,7 +208,7 @@ function WatchdogSettingsForm({
 
   const canSave = !hasValidationErrors && isDirty && !isSaving;
 
-  // --- Save handler ---
+  // --- 保存 handler ---
   const handleSave = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -231,9 +231,9 @@ function WatchdogSettingsForm({
       const success = await saveSettings(payload);
       if (success) {
         markSaved();
-        toast.success("Watchdog settings saved");
+        toast.success("看门狗设置已保存");
       } else {
-        toast.error(error || "Failed to save watchdog settings");
+        toast.error(error || "保存看门狗设置失败");
       }
     },
     [
@@ -479,7 +479,7 @@ function WatchdogSettingsForm({
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>
-                          Automatically skipped when tower lock is active <br />{" "}
+                          自动ally skipped when tower lock is active <br />{" "}
                           to preserve your locked cells.
                         </p>
                       </TooltipContent>
@@ -510,7 +510,7 @@ function WatchdogSettingsForm({
                 </Field>
 
                 <Field orientation="horizontal" className="w-fit">
-                  <FieldLabel htmlFor="tier4-enabled">Reboot Device</FieldLabel>
+                  <FieldLabel htmlFor="tier4-enabled">重启设备</FieldLabel>
                   <Switch
                     id="tier4-enabled"
                     checked={tier4Enabled}
@@ -520,7 +520,7 @@ function WatchdogSettingsForm({
                 </Field>
               </div>
 
-              {/* Save Button */}
+              {/* 保存 Button */}
               <div className="flex items-center gap-2 pt-2">
                 <SaveButton
                   type="submit"

@@ -113,9 +113,9 @@ export default function SmsInboxCard({
     setIsDeleting(false);
     setDeleteTarget(null);
     if (success) {
-      toast.success("Message deleted");
+      toast.success("短信已删除");
     } else {
-      toast.error("Failed to delete message");
+      toast.error("删除单条短信失败");
     }
   };
 
@@ -126,9 +126,9 @@ export default function SmsInboxCard({
     setShowDeleteAll(false);
     setRowSelection({});
     if (success) {
-      toast.success("All messages deleted");
+      toast.success("已清空所有短信");
     } else {
-      toast.error("Failed to delete messages");
+      toast.error("删除短信失败");
     }
   };
 
@@ -148,7 +148,7 @@ export default function SmsInboxCard({
         `${selectedRows.length} message${selectedRows.length !== 1 ? "s" : ""} deleted`,
       );
     } else {
-      toast.error("Failed to delete selected messages");
+      toast.error("删除所选短信失败");
     }
   };
 
@@ -510,7 +510,7 @@ export default function SmsInboxCard({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>取消</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
@@ -543,7 +543,7 @@ export default function SmsInboxCard({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>取消</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAll}
               disabled={isDeleting}
@@ -576,7 +576,7 @@ export default function SmsInboxCard({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>取消</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteSelected}
               disabled={isDeleting}

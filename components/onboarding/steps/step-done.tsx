@@ -96,26 +96,26 @@ export function StepDone() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-semibold tracking-tight">You&apos;re all set!</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">全部完成！</h2>
         <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
-          QManager is ready. Everything you configured is active, and you can
-          change any setting anytime from the sidebar.
+          QManager 已就绪。您所做的配置均已生效，可随时在侧栏修改各项设置。
         </p>
       </div>
 
       {/* Tip callout */}
       <div className="w-full rounded-xl bg-muted/60 border border-border px-4 py-3 text-left">
         <p className="text-xs text-muted-foreground leading-relaxed">
-          <span className="font-medium text-foreground">Pro tip:</span> Visit{" "}
-          <span className="font-medium">Cellular › Band Locking</span> to
-          fine-tune signal strength, or{" "}
-          <span className="font-medium">Monitoring › Watchdog</span> to set up
-          automatic recovery.
+          <span className="font-medium text-foreground">提示：</span>
+          可在{" "}
+          <span className="font-medium">蜂窝 › 频段锁定</span>{" "}
+          微调信号；或在{" "}
+          <span className="font-medium">监控 › 看门狗</span>{" "}
+          中配置异常自动恢复。
         </p>
       </div>
 
       <Button ref={dashboardBtnRef} onClick={handleGoToDashboard} className="w-full" size="lg">
-        Go to Dashboard
+        进入控制台
       </Button>
     </div>
   );

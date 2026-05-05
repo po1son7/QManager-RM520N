@@ -405,7 +405,7 @@ export default function ATTerminalCard() {
                   Send Anyway
                 </Button>
                 <Button variant="outline" size="xs" onClick={handleCancelWarning}>
-                  Cancel
+                  取消
                 </Button>
               </div>
             </div>

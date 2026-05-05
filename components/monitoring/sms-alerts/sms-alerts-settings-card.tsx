@@ -114,18 +114,18 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
     const success = await saveSettings(payload);
     if (success) {
       markSaved();
-      toast.success("SMS alert settings saved");
+      toast.success("短信告警设置已保存");
     } else {
-      toast.error(error || "Failed to save SMS alert settings");
+      toast.error(error || "保存短信告警设置失败");
     }
   };
 
   const handleSendTest = async () => {
     const success = await sendTestSms();
     if (success) {
-      toast.success("Test SMS sent successfully");
+      toast.success("测试短信已发送");
     } else {
-      toast.error("Failed to send test SMS — check your configuration");
+      toast.error("测试短信发送失败，请检查配置");
     }
     onTestSmsSent?.();
   };
@@ -311,7 +311,7 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
                 </div>
                 {isDirty && !canSendTest && isEnabled && (
                   <p className="text-xs text-muted-foreground">
-                    Save your changes before sending a test SMS.
+                    发送测试短信前请先保存更改。
                   </p>
                 )}
               </div>

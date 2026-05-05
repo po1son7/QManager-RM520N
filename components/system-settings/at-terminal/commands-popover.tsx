@@ -168,7 +168,7 @@ export default function CommandsPopover({
               </CommandGroup>
 
               {customCommands.length > 0 && (
-                <CommandGroup heading="Custom">
+                <CommandGroup heading="自定义">
                   {customCommands.map((preset) => (
                     <CommandItem
                       key={preset.command}
@@ -212,13 +212,13 @@ export default function CommandsPopover({
       <Dialog open={manageOpen} onOpenChange={setManageOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Manage Custom Commands</DialogTitle>
+            <DialogTitle>Manage 自定义 Commands</DialogTitle>
             <DialogDescription>
               Add and remove custom AT command presets.
             </DialogDescription>
           </DialogHeader>
 
-          {/* Custom command list */}
+          {/* 自定义 command list */}
           {customCommands.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">
               No custom commands yet.

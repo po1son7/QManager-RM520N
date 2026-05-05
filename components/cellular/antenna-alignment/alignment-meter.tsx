@@ -379,7 +379,7 @@ function RecordingSlotCard({
             onClick={onCancel}
             className="w-full h-7 text-xs"
           >
-            Cancel
+            取消
           </Button>
         </div>
       )}

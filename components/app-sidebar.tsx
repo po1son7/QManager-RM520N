@@ -43,14 +43,17 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
+/** 侧栏「赞助」项标题，须与下方 navSecondary 条目一致以便打开对话框 */
+const DONATE_SIDEBAR_TITLE = "赞助项目";
+
 const data = {
   user: {
-    name: "Admin",
+    name: "管理员",
     avatar: QManagerLogo.src,
   },
   navMain: [
     {
-      title: "Home",
+      title: "首页",
       url: "/dashboard",
       icon: HomeIcon,
       isActive: true,
@@ -58,134 +61,134 @@ const data = {
   ],
   system: [
     {
-      title: "System Settings",
+      title: "系统设置",
       url: "/system-settings",
       icon: SettingsIcon,
       items: [
         {
-          title: "Logs",
+          title: "日志",
           url: "/system-settings/logs",
         },
         {
-          title: "System Health Check",
+          title: "系统健康检查",
           url: "/system-settings/system-health-check",
         },
       ],
     },
     {
-      title: "Software Update",
+      title: "软件更新",
       url: "/system-settings/software-update",
       icon: DownloadIcon,
     },
     {
-      title: "AT Terminal",
+      title: "AT 终端",
       url: "/system-settings/at-terminal",
       icon: TerminalIcon,
     },
     {
-      title: "Web Console",
+      title: "Web 控制台",
       url: "/system-settings/web-console",
       icon: TerminalSquareIcon,
     },
   ],
   navSecondary: [
     {
-      title: "About Device",
+      title: "关于设备",
       url: "/about-device",
       icon: RouterIcon,
     },
     {
-      title: "Support",
+      title: "帮助与支持",
       url: "/support",
       icon: LifeBuoy,
     },
     {
-      title: "Donate to the Project",
+      title: DONATE_SIDEBAR_TITLE,
       url: "#",
       icon: HeartIcon,
     },
   ],
   cellular: [
     {
-      title: "Cellular Information",
+      title: "蜂窝信息",
       url: "/cellular",
       icon: RadioTowerIcon,
       items: [
         {
-          title: "Antenna Statistics",
+          title: "天线统计",
           url: "/cellular/antenna-statistics",
         },
         {
-          title: "Antenna Alignment",
+          title: "天线对准",
           url: "/cellular/antenna-alignment",
         }
       ],
     },
     {
-      title: "SMS Center",
+      title: "短信中心",
       url: "/cellular/sms",
       icon: MessageCircleIcon,
     },
     {
-      title: "Custom Profiles",
+      title: "自定义场景",
       url: "/cellular/custom-profiles",
       icon: User2Icon,
       items: [
         {
-          title: "Connection Scenarios",
+          title: "连接场景",
           url: "/cellular/custom-profiles/connection-scenarios",
         },
       ],
     },
     {
-      title: "Band Locking",
+      title: "频段锁定",
       url: "/cellular/cell-locking",
       icon: LucideSignal,
       items: [
         {
-          title: "Tower Locking",
+          title: "基站锁定",
           url: "/cellular/cell-locking/tower-locking",
         },
         {
-          title: "Frequency Locking",
+          title: "频率锁定",
           url: "/cellular/cell-locking/frequency-locking",
         },
       ],
     },
     {
-      title: "Cell Scanner",
+      title: "小区扫描",
       url: "/cellular/cell-scanner",
       icon: ScanIcon,
       items: [
         {
-          title: "Neighboring Cells",
+          title: "邻区",
           url: "/cellular/cell-scanner/neighbourcell-scanner",
         },
         {
-          title: "Frequency Calculator",
+          title: "频率计算器",
           url: "/cellular/cell-scanner/frequency-calculator",
         },
       ],
     },
     {
-      title: "Settings",
+      title: "蜂窝设置",
       url: "/cellular/settings",
       icon: Settings2,
       items: [
         {
-          title: "APN Management",
+          title: "APN 管理",
           url: "/cellular/settings/apn-management",
         },
         {
-          title: "Network Priority",
+          title: "网络优先级",
           url: "/cellular/settings/network-priority",
         },
         {
-          title: "IMEI Settings",
+          title: "IMEI 设置",
           url: "/cellular/settings/imei-settings",
         },
         {
-          title: "FPLMN Settings",
+          title: "FPLMN 设置",
           url: "/cellular/settings/fplmn-settings",
         },
       ],
@@ -193,12 +196,12 @@ const data = {
   ],
   localNetwork: [
     {
-      title: "Settings",
+      title: "局域网设置",
       url: "/local-network/ip-passthrough",
       icon: Settings2,
       items: [
         {
-          title: "TTL & MTU Settings",
+          title: "TTL 与 MTU",
           url: "/local-network/ttl-settings",
         },
       ],
@@ -206,26 +209,26 @@ const data = {
   ],
   monitoring: [
     {
-      title: "Network Events",
+      title: "网络事件",
       url: "/monitoring",
       icon: PieChart,
       items: [
         {
-          title: "Latency Monitor",
+          title: "延迟监控",
           url: "/monitoring/latency",
         },
         {
-          title: "Email Alerts",
+          title: "邮件告警",
           url: "/monitoring/email-alerts",
         },
         {
-          title: "SMS Alerts",
+          title: "短信告警",
           url: "/monitoring/sms-alerts",
         },
       ],
     },
     {
-      title: "Watchdog",
+      title: "看门狗",
       url: "/monitoring/watchdog",
       icon: DogIcon,
     },
@@ -241,7 +244,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [donateOpen, setDonateOpen] = React.useState(false);
 
   const navSecondaryItems = data.navSecondary.map((item) =>
-    item.title === "Donate to the Project"
+    item.title === DONATE_SIDEBAR_TITLE
       ? { ...item, onClick: () => setDonateOpen(true) }
       : item,
   );
@@ -256,14 +259,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Image
                     src={QManagerLogo}
-                    alt="QManager Logo"
+                    alt="QManager"
                     className="size-full"
                     priority
                   />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">QManager</span>
-                  <span className="truncate text-xs">Admin</span>
+                  <span className="truncate text-xs">管理员</span>
                 </div>
               </Link>
             </SidebarMenuButton>

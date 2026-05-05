@@ -171,7 +171,7 @@ const SystemLogsCard = () => {
         }
       } catch {
         if (mountedRef.current && !silent) {
-          toast.error("Failed to load system logs");
+          toast.error("加载系统日志失败");
         }
       } finally {
         if (mountedRef.current && !silent) {
@@ -224,15 +224,15 @@ const SystemLogsCard = () => {
       if (!mountedRef.current) return;
 
       if (data.success) {
-        toast.success("Log files cleared");
+        toast.success("日志已清空");
         setShowClearDialog(false);
         await fetchLogs(true);
       } else {
-        toast.error(data.detail || "Failed to clear log files");
+        toast.error(data.detail || "清空日志失败");
       }
     } catch {
       if (mountedRef.current) {
-        toast.error("Failed to clear log files");
+        toast.error("清空日志失败");
       }
     } finally {
       if (mountedRef.current) {
@@ -473,7 +473,7 @@ const SystemLogsCard = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isClearing}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isClearing}>取消</AlertDialogCancel>
             <AlertDialogAction
               disabled={isClearing}
               onClick={handleClearLogs}

@@ -87,7 +87,7 @@ const CustomProfileComponent = () => {
   );
 
   // ---------------------------------------------------------------------------
-  // Handle Save: create or update depending on edit state
+  // Handle 保存: create or update depending on edit state
   // ---------------------------------------------------------------------------
   const handleSave = useCallback(
     async (data: ProfileFormData): Promise<string | null> => {
@@ -106,7 +106,7 @@ const CustomProfileComponent = () => {
   );
 
   // ---------------------------------------------------------------------------
-  // Handle Cancel Edit
+  // Handle 取消 Edit
   // ---------------------------------------------------------------------------
   const handleCancelEdit = useCallback(() => {
     setEditingProfile(null);
@@ -177,7 +177,7 @@ const CustomProfileComponent = () => {
   return (
     <div className="@container/main mx-auto p-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Custom SIM Profile</h1>
+        <h1 className="text-3xl font-bold mb-2">自定义 SIM Profile</h1>
         <p className="text-muted-foreground">
           Bundle APN, IMEI, and TTL/HL settings into one-click profiles.
         </p>
@@ -219,7 +219,7 @@ const CustomProfileComponent = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={handleActivateConfirm}>
               Activate
             </AlertDialogAction>
@@ -243,7 +243,7 @@ const CustomProfileComponent = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeactivating}>
-              Cancel
+              取消
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeactivateConfirm}

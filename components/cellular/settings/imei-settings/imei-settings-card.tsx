@@ -77,16 +77,16 @@ const IMEISettingsCard = ({
     if (!isValidImei) return;
 
     if (!hasChanged) {
-      toast.info("No changes to save");
+      toast.info("没有需要保存的更改");
       return;
     }
 
     const success = await onSave(imei);
     if (success) {
-      toast.success("IMEI saved — reboot required to apply");
+      toast.success("IMEI 已保存，需重启生效");
       setShowRebootDialog(true);
     } else {
-      toast.error("Failed to save IMEI");
+      toast.error("保存 IMEI 失败");
     }
   };
 
@@ -101,9 +101,9 @@ const IMEISettingsCard = ({
     setIsRebooting(true);
     const sent = await onReboot();
     if (sent) {
-      toast.success("Device is rebooting...");
+      toast.success("设备正在重启…");
     } else {
-      toast.error("Reboot failed — restart the device manually");
+      toast.error("重启失败，请手动重启设备");
       setIsRebooting(false);
     }
   };
@@ -254,10 +254,10 @@ const IMEISettingsCard = ({
                 {isRebooting ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
-                    Rebooting...
+                    正在重启…
                   </>
                 ) : (
-                  "Reboot Now"
+                  "立即重启"
                 )}
               </AlertDialogAction>
             </AlertDialogFooter>

@@ -59,7 +59,7 @@ interface CustomProfileFormProps {
 
 const DEFAULT_FORM_STATE: ProfileFormData = {
   name: "",
-  mno: "Custom",
+  mno: MNO_CUSTOM_ID,
   sim_iccid: "",
   cid: 1,
   apn_name: "",
@@ -172,7 +172,7 @@ const CustomProfileFormComponent = ({
         hl: preset.hl,
       }));
     } else {
-      setForm((prev) => ({ ...prev, mno: "Custom" }));
+      setForm((prev) => ({ ...prev, mno: MNO_CUSTOM_ID }));
     }
   };
 
@@ -180,7 +180,7 @@ const CustomProfileFormComponent = ({
     const newErrors: Record<string, string> = {};
 
     if (!form.name.trim()) {
-      newErrors.name = "Profile name is required.";
+      newErrors.name = "必须填写场景名称。";
     }
 
     if (form.cid < 1 || form.cid > 15) {
@@ -215,8 +215,8 @@ const CustomProfileFormComponent = ({
     if (result) {
       toast.success(
         isEditing
-          ? "Profile updated successfully."
-          : "Profile created successfully.",
+          ? "场景已更新。"
+          : "场景已创建。",
       );
       if (!isEditing) {
         setForm(DEFAULT_FORM_STATE);
@@ -224,8 +224,8 @@ const CustomProfileFormComponent = ({
     } else {
       toast.error(
         isEditing
-          ? "Failed to update profile."
-          : "Failed to create profile.",
+          ? "更新场景失败。"
+          : "创建场景失败。",
       );
     }
   };
@@ -243,7 +243,7 @@ const CustomProfileFormComponent = ({
     <Card className="@container/card">
       <CardHeader>
         <CardTitle>
-          {isEditing ? "Edit Profile" : "Create Custom SIM Profile"}
+          {isEditing ? "Edit Profile" : "Create 自定义 SIM Profile"}
         </CardTitle>
         <CardDescription>
           {isEditing
@@ -267,7 +267,7 @@ const CustomProfileFormComponent = ({
               {/* --- Profile Identity --- */}
               <div className="grid grid-cols-1 @md/card:grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel htmlFor="profileName">Profile Name *</FieldLabel>
+                  <FieldLabel htmlFor="profileName">场景名称 *</FieldLabel>
                   <Input
                     id="profileName"
                     type="text"
@@ -296,7 +296,7 @@ const CustomProfileFormComponent = ({
                   <FieldLabel>Mobile Network Operator</FieldLabel>
                   <Select value={selectedMno} onValueChange={handleMnoChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select carrier…" />
+                      <SelectValue placeholder="选择运营商…" />
                     </SelectTrigger>
                     <SelectContent>
                       {MNO_PRESETS.map((preset) => (
@@ -304,13 +304,13 @@ const CustomProfileFormComponent = ({
                           {preset.label}
                         </SelectItem>
                       ))}
-                      <SelectItem value={MNO_CUSTOM_ID}>Custom</SelectItem>
+                      <SelectItem value={MNO_CUSTOM_ID}>自定义</SelectItem>
                     </SelectContent>
                   </Select>
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="apnName">APN Name</FieldLabel>
+                  <FieldLabel htmlFor="apnName">APN 名称</FieldLabel>
                   <Input
                     id="apnName"
                     type="text"
@@ -323,7 +323,7 @@ const CustomProfileFormComponent = ({
 
               <div className="grid grid-cols-1 @md/card:grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>IP Protocol</FieldLabel>
+                  <FieldLabel>IP 协议</FieldLabel>
                   <Select
                     value={form.pdp_type}
                     onValueChange={(v) => updateField("pdp_type", v)}
@@ -418,7 +418,7 @@ const CustomProfileFormComponent = ({
                   onClick={handleReset}
                   disabled={isSaving}
                 >
-                  {isEditing ? "Cancel" : "Reset"}
+                  {isEditing ? "取消" : "Reset"}
                 </Button>
               </div>
             </FieldGroup>

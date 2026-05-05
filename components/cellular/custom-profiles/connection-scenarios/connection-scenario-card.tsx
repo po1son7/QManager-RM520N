@@ -86,7 +86,7 @@ const DEFAULT_SCENARIOS: Scenario[] = [
     isDefault: true,
     config: {
       atModeValue: "NR5G",
-      mode: "5G SA Only",
+      mode: "5G 仅 SA",
       optimization: "Latency",
       lte_bands: "",
       nsa_nr_bands: "",
@@ -204,7 +204,7 @@ const ConnectionScenariosCard = () => {
     const success = await activateScenario(selectedId, selectedScenario.config);
 
     if (success) {
-      toast.success(`Switched to ${selectedScenario.name} scenario.`);
+      toast.success(`已切换到场景「${selectedScenario.name}」。`);
     } else {
       toast.error(
         `Failed to activate ${selectedScenario.name} scenario.`,
@@ -229,12 +229,12 @@ const ConnectionScenariosCard = () => {
     setIsSaving(true);
     const scenarioData = {
       name: addName,
-      description: addDescription || "Custom configuration",
+      description: addDescription || "自定义 configuration",
       gradient: addGradient,
       config: {
         atModeValue: addMode,
         mode: modeValueToLabel(addMode),
-        optimization: "Custom",
+        optimization: "自定义",
         lte_bands: inputToBands(addLteBands),
         nsa_nr_bands: inputToBands(addNsaNrBands),
         sa_nr_bands: inputToBands(addSaNrBands),
@@ -248,7 +248,7 @@ const ConnectionScenariosCard = () => {
       setSelectedId(newId);
       setShowAddDialog(false);
       resetAddForm();
-      toast.success("Scenario created successfully.");
+      toast.success("场景创建成功。");
     } else {
       toast.error("Failed to create scenario.");
     }
@@ -274,9 +274,9 @@ const ConnectionScenariosCard = () => {
       if (selectedId === id) {
         setSelectedId(activeScenarioId === id ? DEFAULT_SCENARIOS[0].id : activeScenarioId);
       }
-      toast.success("Scenario deleted.");
+      toast.success("场景已删除。");
     } else {
-      toast.error("Failed to delete scenario.");
+      toast.error("删除场景失败。");
     }
   };
 
@@ -320,7 +320,7 @@ const ConnectionScenariosCard = () => {
 
     if (updatedId) {
       setShowEditDialog(false);
-      toast.success("Scenario updated.");
+      toast.success("场景已更新。");
     } else {
       toast.error("Failed to update scenario.");
     }
@@ -410,7 +410,7 @@ const ConnectionScenariosCard = () => {
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>New Connection Scenario</DialogTitle>
+            <DialogTitle>新建连接场景</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-5 py-4">
@@ -436,11 +436,11 @@ const ConnectionScenariosCard = () => {
               />
             </div>
 
-            {/* Network Mode */}
+            {/* 网络模式 */}
             <div className="space-y-2">
-              <Label>Network Mode</Label>
+              <Label>网络模式</Label>
               <Select value={addMode} onValueChange={setAddMode}>
-                <SelectTrigger aria-label="Network Mode">
+                <SelectTrigger aria-label="网络模式">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -523,7 +523,7 @@ const ConnectionScenariosCard = () => {
                     {addName || "Scenario Name"}
                   </p>
                   <p className="text-sm text-white/70">
-                    {addDescription || "Custom configuration"}
+                    {addDescription || "自定义 configuration"}
                   </p>
                 </div>
               </div>
@@ -532,7 +532,7 @@ const ConnectionScenariosCard = () => {
 
           <DialogFooter className="gap-2">
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">取消</Button>
             </DialogClose>
             <Button
               onClick={handleAddScenario}
@@ -574,11 +574,11 @@ const ConnectionScenariosCard = () => {
               />
             </div>
 
-            {/* Network Mode */}
+            {/* 网络模式 */}
             <div className="space-y-2">
-              <Label>Network Mode</Label>
+              <Label>网络模式</Label>
               <Select value={editMode} onValueChange={setEditMode}>
-                <SelectTrigger aria-label="Network Mode">
+                <SelectTrigger aria-label="网络模式">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -598,7 +598,7 @@ const ConnectionScenariosCard = () => {
                 id="edit-optimization"
                 value={editOptimization}
                 onChange={(e) => setEditOptimization(e.target.value)}
-                placeholder="e.g., Latency, Throughput, Custom"
+                placeholder="e.g., Latency, Throughput, 自定义"
               />
             </div>
 
@@ -670,7 +670,7 @@ const ConnectionScenariosCard = () => {
                 <div className="relative p-4 text-white">
                   <p className="font-medium">{editName || "Scenario Name"}</p>
                   <p className="text-sm text-white/70">
-                    {editDescription || "Custom configuration"}
+                    {editDescription || "自定义 configuration"}
                   </p>
                 </div>
               </div>
@@ -679,10 +679,10 @@ const ConnectionScenariosCard = () => {
 
           <DialogFooter className="gap-2">
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">取消</Button>
             </DialogClose>
             <Button onClick={handleSaveEdit} disabled={!editName.trim() || isSaving}>
-              {isSaving ? "Saving…" : "Save Changes"}
+              {isSaving ? "保存中…" : "保存更改"}
             </Button>
           </DialogFooter>
         </DialogContent>

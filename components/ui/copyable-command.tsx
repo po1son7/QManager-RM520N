@@ -10,7 +10,7 @@ export function CopyableCommand({ command }: CopyableCommandProps) {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(command);
-      toast.success("Copied to clipboard");
+      toast.success("已复制到剪贴板");
     } catch {
       const textarea = document.createElement("textarea");
       textarea.value = command;
@@ -20,7 +20,7 @@ export function CopyableCommand({ command }: CopyableCommandProps) {
       textarea.select();
       document.execCommand("copy");
       document.body.removeChild(textarea);
-      toast.success("Copied to clipboard");
+      toast.success("已复制到剪贴板");
     }
   };
 

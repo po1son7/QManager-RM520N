@@ -34,7 +34,7 @@ const EmptyProfileViewComponent = ({ onRefresh }: EmptyProfileViewProps) => {
     >
     <Card className="@container/card h-full">
       <CardHeader>
-        <CardTitle>Saved Profiles</CardTitle>
+        <CardTitle>已保存的场景</CardTitle>
         <CardDescription>
           Manage your custom SIM profiles here.
         </CardDescription>
@@ -45,7 +45,7 @@ const EmptyProfileViewComponent = ({ onRefresh }: EmptyProfileViewProps) => {
             <EmptyMedia variant="icon">
               <SmartphoneIcon />
             </EmptyMedia>
-            <EmptyTitle>No Custom Profiles</EmptyTitle>
+            <EmptyTitle>No 自定义场景s</EmptyTitle>
             <EmptyDescription>
               You have not created any custom SIM profiles yet. Use the form to
               create your first profile.

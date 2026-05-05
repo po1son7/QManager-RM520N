@@ -121,9 +121,9 @@ const APNSettingsCard = ({
     const success = await onSave(request);
     if (success) {
       markSaved();
-      toast.success("APN settings applied successfully");
+      toast.success("APN 设置已应用");
     } else {
-      toast.error("Failed to apply APN settings");
+      toast.error("应用 APN 失败");
     }
   };
 
@@ -210,7 +210,7 @@ const APNSettingsCard = ({
                   </Field>
 
                   <Field>
-                    <FieldLabel>Carrier Preset</FieldLabel>
+                    <FieldLabel>运营商预设</FieldLabel>
                     <Select
                       value={
                         autoApnPreset ||
@@ -220,7 +220,7 @@ const APNSettingsCard = ({
                       disabled={isSaving}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose Carrier Preset" />
+                        <SelectValue placeholder="Choose 运营商预设" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">None</SelectItem>
@@ -236,7 +236,7 @@ const APNSettingsCard = ({
 
                 <div className="grid @md/card:grid-cols-2 grid-cols-1 grid-flow-row gap-4">
                   <Field>
-                    <FieldLabel>Connection Profile</FieldLabel>
+                    <FieldLabel>运营商场景</FieldLabel>
                     <Select
                       value={
                         selectedCid ||
@@ -246,7 +246,7 @@ const APNSettingsCard = ({
                       disabled={isSaving}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose Connection Profile" />
+                        <SelectValue placeholder="选择运营商场景" />
                       </SelectTrigger>
                       <SelectContent>
                         {profiles?.map((p) => (
@@ -260,7 +260,7 @@ const APNSettingsCard = ({
                   </Field>
 
                   <Field>
-                    <FieldLabel>IP Protocol</FieldLabel>
+                    <FieldLabel>IP 协议</FieldLabel>
                     <Select
                       value={
                         pdpType ||
@@ -273,14 +273,14 @@ const APNSettingsCard = ({
                       disabled={isSaving}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose IP Protocol" />
+                        <SelectValue placeholder="Choose IP 协议" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="IPV4V6">
-                          IPv4 + IPv6 (Default)
+                          IPv4 + IPv6（默认）
                         </SelectItem>
-                        <SelectItem value="IP">IPv4 Only</SelectItem>
-                        <SelectItem value="IPV6">IPv6 Only</SelectItem>
+                        <SelectItem value="IP">仅 IPv4</SelectItem>
+                        <SelectItem value="IPV6">仅 IPv6</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>

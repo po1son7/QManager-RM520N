@@ -46,7 +46,7 @@ const euclid = Euclid({
 export const metadata: Metadata = {
   title: "QManager",
   description:
-    "QManager is a modern web-based GUI for managing Quectel modems — from APN and band locking to advanced diagnostics and cellular device management.",
+    "QManager 是面向移远模组的现代化 Web 管理界面：APN、频段锁定、诊断与蜂窝网络管理等一站式工具。",
 };
 
 export default function RootLayout({
@@ -55,7 +55,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <body className={`${euclid.variable} ${euclid.className} antialiased`}>
         <ThemeProvider
           attribute="class"

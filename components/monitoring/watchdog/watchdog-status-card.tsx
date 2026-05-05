@@ -94,7 +94,7 @@ const TIER_LABELS: Record<number, string> = {
   1: "Restart Network Interface",
   2: "Restart Modem Radio",
   3: "Switch to Backup SIM",
-  4: "Reboot Device",
+  4: "重启设备",
 };
 
 export function WatchdogStatusCard({
@@ -112,10 +112,10 @@ export function WatchdogStatusCard({
       const success = await revertSim();
       if (success) {
         toast.success(
-          "SIM revert requested. The watchdog will process this shortly.",
+          "已请求恢复 SIM，看门狗将稍后处理。",
         );
       } else {
-        toast.error("Failed to request SIM revert");
+        toast.error("请求恢复 SIM 失败");
       }
     } finally {
       setIsReverting(false);
@@ -330,7 +330,7 @@ export function WatchdogStatusCard({
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>取消</AlertDialogCancel>
                     <AlertDialogAction onClick={handleRevertSim}>
                       Revert SIM
                     </AlertDialogAction>

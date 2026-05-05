@@ -90,7 +90,7 @@ const TowerLockingSettingsComponent = ({
   const thresholdDirty =
     thresholdInput !== String(config?.failover?.threshold ?? "");
 
-  // Save threshold via Update button
+  // 保存 threshold via Update button
   const handleThresholdSave = useCallback(async () => {
     const val = parseInt(thresholdInput, 10);
     if (isNaN(val) || val < 0 || val > 100) return;
@@ -99,7 +99,7 @@ const TowerLockingSettingsComponent = ({
     setIsSavingThreshold(false);
     if (ok) {
       markThresholdSaved();
-      toast.success("Failover threshold updated");
+      toast.success("故障转移阈值已更新");
     }
   }, [thresholdInput, onThresholdChange, markThresholdSaved]);
 
@@ -265,7 +265,7 @@ const TowerLockingSettingsComponent = ({
     );
   };
 
-  // --- Connection state badge ---
+  // --- 连接 state badge ---
   const renderConnectionStateBadge = () => {
     const serviceStatus = modemData?.network?.service_status;
 
@@ -389,7 +389,7 @@ const TowerLockingSettingsComponent = ({
               <Skeleton className="h-5 w-16 rounded-full" />
             </div>
             <Separator />
-            {/* Connection State */}
+            {/* 连接 State */}
             <div className="flex items-center justify-between">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-5 w-20 rounded-full" />
@@ -492,12 +492,12 @@ const TowerLockingSettingsComponent = ({
                   const ok = await onFailoverChange(checked);
                   if (ok) {
                     if (checked) {
-                      toast.success("Signal Failover enabled");
+                      toast.success("信号故障转移已启用");
                     } else {
-                      toast.warning("Signal Failover disabled");
+                      toast.warning("信号故障转移已关闭");
                     }
                   } else {
-                    toast.error(checked ? "Failed to enable Signal Failover" : "Failed to disable Signal Failover");
+                    toast.error(checked ? "启用信号故障转移失败" : "关闭信号故障转移失败");
                   }
                 }}
               />
@@ -597,7 +597,7 @@ const TowerLockingSettingsComponent = ({
           <Separator />
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-muted-foreground">
-              Connection State
+              连接状态
             </span>
             <div className="flex items-center gap-1.5">
               {renderConnectionStateBadge()}

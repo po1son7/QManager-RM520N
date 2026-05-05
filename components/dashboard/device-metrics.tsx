@@ -288,11 +288,11 @@ const DeviceMetricsComponent = ({
             </div>
           </div>
 
-          {/* Connection Uptime */}
+          {/* 连接 Uptime */}
           <Separator />
           <div className="flex items-center justify-between">
             <p className="font-semibold text-muted-foreground text-sm">
-              Connection Uptime
+              连接时长
             </p>
             <p className="font-semibold text-sm tabular-nums">
               {displayConnUptime > 0 ? formatUptime(displayConnUptime) : "-"}

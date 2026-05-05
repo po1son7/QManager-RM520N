@@ -79,7 +79,7 @@ const EmailAlertsLogCard = ({ refreshKey }: EmailAlertsLogCardProps) => {
   // ---------------------------------------------------------------------------
   const fetchLog = useCallback(
     async (mode: "initial" | "refresh" | "silent" = "initial") => {
-      // Cancel any in-flight request
+      // 取消 any in-flight request
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
