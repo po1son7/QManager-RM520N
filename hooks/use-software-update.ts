@@ -126,7 +126,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
           if (pollRef.current) clearInterval(pollRef.current);
           pollRef.current = null;
           setIsDownloading(false);
-          setError(json.message || "Download failed");
+          setError(json.message || "下载失败");
         }
       } catch {
         // Silently retry on next interval
@@ -149,7 +149,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
       if (!mountedRef.current) return;
 
       if (!json.success) {
-        setError(json.detail || json.error || "Failed to check for updates");
+        setError(json.detail || json.error || "检查更新失败");
         return;
       }
 
@@ -171,7 +171,11 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
       setLastChecked(now);
     } catch (err) {
       if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Failed to check for updates");
+      if (err instanceof SyntaxError) {
+        setError("更新接口返回异常（非 JSON）。请确认已通过设备访问界面且 CGI 可用。");
+      } else {
+        setError(err instanceof Error ? err.message : "检查更新失败");
+      }
     } finally {
       if (mountedRef.current && !silent) setIsLoading(false);
     }
@@ -213,7 +217,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
           if (pollRef.current) clearInterval(pollRef.current);
           pollRef.current = null;
           setIsUpdating(false);
-          setError(json.message || "Update failed");
+          setError(json.message || "更新失败");
         }
       } catch {
         // Device may be rebooting — stop polling and redirect
@@ -255,7 +259,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
 
       const json = await resp.json();
       if (!json.success) {
-        setError(json.detail || json.error || "Failed to start download");
+        setError(json.detail || json.error || "无法开始下载");
         setIsDownloading(false);
         setDownloadState(null);
         return;
@@ -264,7 +268,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
       startDownloadPolling();
     } catch (err) {
       if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Failed to start download");
+      setError(err instanceof Error ? err.message : "无法开始下载");
       setIsDownloading(false);
       setDownloadState(null);
     }
@@ -273,7 +277,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
   const installStaged = useCallback(async () => {
     setError(null);
     setIsUpdating(true);
-    setUpdateStatus({ status: "installing", message: "Installing update..." });
+    setUpdateStatus({ status: "installing", message: "正在安装更新…" });
 
     try {
       const resp = await authFetch(CGI_ENDPOINT, {
@@ -284,7 +288,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
 
       const json = await resp.json();
       if (!json.success) {
-        setError(json.detail || json.error || "Failed to start installation");
+        setError(json.detail || json.error || "无法开始安装");
         setIsUpdating(false);
         return;
       }
@@ -292,7 +296,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
       startPolling();
     } catch (err) {
       if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Failed to start installation");
+      setError(err instanceof Error ? err.message : "无法开始安装");
       setIsUpdating(false);
     }
   }, [startPolling]);
@@ -318,7 +322,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
 
       const json = await resp.json();
       if (!json.success) {
-        setError(json.detail || json.error || "Failed to start update");
+        setError(json.detail || json.error || "无法开始更新");
         setIsUpdating(false);
         return;
       }
@@ -326,7 +330,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
       startPolling();
     } catch (err) {
       if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Failed to start update");
+      setError(err instanceof Error ? err.message : "无法开始更新");
       setIsUpdating(false);
     }
   }, [updateInfo, startPolling]);
@@ -341,7 +345,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
 
       const json = await resp.json();
       if (!json.success) {
-        setError(json.detail || json.error || "Failed to save preference");
+        setError(json.detail || json.error || "保存偏好失败");
         return;
       }
 
@@ -349,7 +353,7 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
       await fetchUpdateInfo(true);
     } catch (err) {
       if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Failed to save preference");
+      setError(err instanceof Error ? err.message : "保存偏好失败");
     }
   }, [fetchUpdateInfo]);
 
@@ -363,14 +367,14 @@ export function useSoftwareUpdate(): UseSoftwareUpdateReturn {
 
       const json = await resp.json();
       if (!json.success) {
-        setError(json.detail || json.error || "Failed to save auto-update preference");
+        setError(json.detail || json.error || "保存自动更新设置失败");
         return;
       }
 
       await fetchUpdateInfo(true);
     } catch (err) {
       if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Failed to save auto-update preference");
+      setError(err instanceof Error ? err.message : "保存自动更新设置失败");
     }
   }, [fetchUpdateInfo]);
 

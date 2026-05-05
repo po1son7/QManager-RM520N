@@ -72,8 +72,8 @@ export default function TestRow({ test, fetchOutput }: TestRowProps) {
       </button>
       {expanded && (
         <div className="bg-muted/40 border-t px-3 py-2">
-          {loading && <div className="text-xs text-muted-foreground">Loading…</div>}
-          {error && <div className="text-xs text-destructive">Failed to load output: {error}</div>}
+          {loading && <div className="text-xs text-muted-foreground">加载中…</div>}
+          {error && <div className="text-xs text-destructive">加载输出失败：{error}</div>}
           {output !== null && (
             <pre className="text-xs whitespace-pre-wrap break-words font-mono max-h-64 overflow-auto">{output}</pre>
           )}

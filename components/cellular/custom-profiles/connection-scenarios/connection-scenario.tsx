@@ -7,8 +7,7 @@ const ConnectionScenariosComponent = () => {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">连接场景</h1>
         <p className="text-muted-foreground">
-          Manage and customize connection scenarios for your cellular profiles
-          to optimize network performance and reliability.
+          管理蜂窝连接场景，用于在不同网络环境下优化性能与稳定性。
         </p>
       </div>
         <ConnectionScenariosCard />

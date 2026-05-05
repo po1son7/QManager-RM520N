@@ -243,12 +243,12 @@ const CustomProfileFormComponent = ({
     <Card className="@container/card">
       <CardHeader>
         <CardTitle>
-          {isEditing ? "编辑场景" : "新建自定义 SIM 场景"}
+          {isEditing ? "编辑档案" : "新建自定义 SIM 档案"}
         </CardTitle>
         <CardDescription>
           {isEditing
             ? `正在编辑「${editingProfile?.name}」，请在下方修改。`
-            : "创建包含指定 APN、TTL、IMEI 等参数的自定义 SIM 场景。"}
+            : "创建包含指定 APN、TTL、IMEI 等参数的自定义 SIM 档案。"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -267,11 +267,11 @@ const CustomProfileFormComponent = ({
               {/* --- Profile Identity --- */}
               <div className="grid grid-cols-1 @md/card:grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel htmlFor="profileName">场景名称 *</FieldLabel>
+                  <FieldLabel htmlFor="profileName">档案名称 *</FieldLabel>
                   <Input
                     id="profileName"
                     type="text"
-                    placeholder="例如：我的 LTE 场景"
+                    placeholder="例如：我的 LTE 档案"
                     value={form.name}
                     onChange={(e) => updateField("name", e.target.value)}
                     aria-describedby={errors.name ? "profileName-error" : undefined}
@@ -314,7 +314,7 @@ const CustomProfileFormComponent = ({
                   <Input
                     id="apnName"
                     type="text"
-                    placeholder="internet"
+                    placeholder="例如 internet"
                     value={form.apn_name}
                     onChange={(e) => updateField("apn_name", e.target.value)}
                   />
@@ -390,7 +390,7 @@ const CustomProfileFormComponent = ({
                   {errors.ttl && <FieldError id="ttl-error">{errors.ttl}</FieldError>}
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="hl">Hop Limit</FieldLabel>
+                  <FieldLabel htmlFor="hl">跳数限制（HL）</FieldLabel>
                   <Input
                     id="hl"
                     type="number"
@@ -410,7 +410,7 @@ const CustomProfileFormComponent = ({
               <div className="flex gap-3 pt-2">
                 <Button type="submit" disabled={isSaving}>
                   {isSaving && <Spinner className="size-4" />}
-                  {isEditing ? "保存更改" : "创建场景"}
+                  {isEditing ? "保存更改" : "创建档案"}
                 </Button>
                 <Button
                   type="button"

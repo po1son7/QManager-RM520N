@@ -108,7 +108,7 @@ export default function SmsComposeDialog({
             </div>
             <Textarea
               id="sms-message"
-              placeholder="Type your message..."
+              placeholder="输入短信内容…"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               disabled={isSaving}

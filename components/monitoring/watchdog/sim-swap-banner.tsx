@@ -55,18 +55,18 @@ export function SimSwapBanner() {
           <span>
             {hasMatchingProfile ? (
               <>
-                New SIM card detected. Profile{" "}
+                检测到新 SIM 卡，配置文件{" "}
                 <strong className="break-all">{simSwap.matching_profile_name}</strong>{" "}
-                matches this SIM.
+                与该卡匹配。
               </>
             ) : (
-              <>New SIM card detected. No matching profile found.</>
+              <>检测到新 SIM 卡，未找到匹配的配置文件。</>
             )}
           </span>
           <span className="flex items-center gap-2 shrink-0">
             {hasMatchingProfile && (
               <Button size="sm" variant="default" onClick={handleApplyProfile}>
-                Apply Profile
+                应用配置文件
               </Button>
             )}
             <Button
@@ -74,7 +74,7 @@ export function SimSwapBanner() {
               variant="ghost"
               onClick={handleDismiss}
               disabled={isDismissing}
-              aria-label="Dismiss SIM swap notification"
+              aria-label="关闭 SIM 更换提示"
             >
               <XIcon className="size-4" />
             </Button>

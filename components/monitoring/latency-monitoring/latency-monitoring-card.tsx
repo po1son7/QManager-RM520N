@@ -57,28 +57,28 @@ interface ChartDataPoint {
 
 const chartConfig = {
   latency: {
-    label: "Latency",
+    label: "延迟",
     color: "var(--chart-3)",
   },
   packet_loss: {
-    label: "Packet Loss",
+    label: "丢包率",
     color: "var(--chart-6)",
   },
 } satisfies ChartConfig;
 
 const VIEW_INFO: Record<ViewMode, string> = {
   realtime:
-    "Real-time ping results from the last 50 seconds. Each bar represents a single ping.",
-  hourly: "Hourly averages of latency and packet loss over the last 24 hours.",
-  twelvehour: "12-hour period averages of latency and packet loss.",
-  daily: "Daily averages of latency and packet loss.",
+    "最近约 50 秒的实时 Ping，每条柱状图为单次 Ping。",
+  hourly: "过去 24 小时内按小时平均的延迟与丢包率。",
+  twelvehour: "按 12 小时周期平均的延迟与丢包率。",
+  daily: "按日平均的延迟与丢包率。",
 };
 
 const EMPTY_MESSAGES: Record<ViewMode, string> = {
-  realtime: "No real-time data available.",
-  hourly: "No hourly data available.",
-  twelvehour: "No 12-hour data available.",
-  daily: "No daily data available.",
+  realtime: "暂无实时数据。",
+  hourly: "暂无按小时数据。",
+  twelvehour: "暂无 12 小时汇总数据。",
+  daily: "暂无按日数据。",
 };
 
 /** Max entries shown in the chart and table for real-time view */
@@ -299,7 +299,7 @@ const LatencyMonitoringCard = ({
     <Card>
       <CardHeader className="flex flex-col items-stretch border-b p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-6">
-          <CardTitle>Internet Quality Monitor</CardTitle>
+          <CardTitle>互联网质量监控</CardTitle>
           <CardDescription>{VIEW_INFO[viewMode]}</CardDescription>
         </div>
         <div className="flex">
@@ -308,7 +308,7 @@ const LatencyMonitoringCard = ({
               key={key}
               type="button"
               aria-pressed={activeChart === key}
-              aria-label={`Show ${chartConfig[key].label} chart`}
+              aria-label={`显示 ${chartConfig[key].label} 图表`}
               data-active={activeChart === key}
               className="data-[active=true]:bg-muted/50 relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
               onClick={() => setActiveChart(key)}
@@ -339,10 +339,10 @@ const LatencyMonitoringCard = ({
           onValueChange={(value) => setViewMode(value as ViewMode)}
         >
           <TabsList>
-            <TabsTrigger value="realtime">Real Time</TabsTrigger>
-            <TabsTrigger value="hourly">Hourly</TabsTrigger>
-            <TabsTrigger value="twelvehour">12 Hours</TabsTrigger>
-            <TabsTrigger value="daily">Daily</TabsTrigger>
+            <TabsTrigger value="realtime">实时</TabsTrigger>
+            <TabsTrigger value="hourly">按小时</TabsTrigger>
+            <TabsTrigger value="twelvehour">12 小时</TabsTrigger>
+            <TabsTrigger value="daily">按日</TabsTrigger>
           </TabsList>
         </Tabs>
         <ChartContainer

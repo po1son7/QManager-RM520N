@@ -45,11 +45,11 @@ interface SummaryCardProps {
 
 function formatRelative(epochSec: number): string {
   const diff = Math.floor(Date.now() / 1000) - epochSec;
-  if (diff < 5) return "just now";
-  if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 5) return "刚刚";
+  if (diff < 60) return `${diff} 秒前`;
+  if (diff < 3600) return `${Math.floor(diff / 60)} 分钟前`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} 小时前`;
+  return `${Math.floor(diff / 86400)} 天前`;
 }
 
 export default function SummaryCard({
@@ -69,9 +69,9 @@ export default function SummaryCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle as="h2">System Health Check</CardTitle>
+        <CardTitle as="h2">系统健康检查</CardTitle>
         <CardDescription>
-          Run a full diagnostic of binaries, permissions, AT transport, services, and configuration. Download the bundle to share with support.
+          运行完整诊断（二进制、权限、AT 传输、服务与配置）。可下载打包文件提供给技术支持。
         </CardDescription>
         <CardAction>
           <div className="flex flex-wrap items-center justify-end gap-2">
@@ -79,19 +79,19 @@ export default function SummaryCard({
               {isRunning || isStarting ? (
                 <>
                   <Loader2Icon className="size-4 animate-spin" />
-                  Running…
+                  运行中…
                 </>
               ) : (
                 <>
                   <PlayIcon className="size-4" />
-                  Run Diagnostics
+                  运行诊断
                 </>
               )}
             </Button>
             {canDownload && (
               <Button onClick={onDownload} variant="outline">
                 <DownloadIcon className="size-4" />
-                Download Bundle
+                下载打包文件
               </Button>
             )}
             {canClear && (
@@ -107,14 +107,14 @@ export default function SummaryCard({
                     ) : (
                       <Trash2Icon className="size-4" />
                     )}
-                    {isClearing ? "Clearing…" : "Clear"}
+                    {isClearing ? "清空中…" : "清空"}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Clear diagnostic results?</AlertDialogTitle>
+                    <AlertDialogTitle>清空诊断结果？</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This deletes the previous run, all per-test output files, and the downloadable bundle from the device. The page will reset to its empty state.
+                      将删除上次运行的结果、所有单项测试输出文件以及设备上的可下载打包。页面将恢复为未运行状态。
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -123,7 +123,7 @@ export default function SummaryCard({
                       onClick={onClear}
                       className={buttonVariants({ variant: "destructive" })}
                     >
-                      Clear results
+                      清空结果
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -138,28 +138,28 @@ export default function SummaryCard({
             <>
               <Badge variant="outline" className="bg-success/15 text-success hover:bg-success/20 border-success/30">
                 <CheckCircle2Icon className="size-3" />
-                {summary.pass} pass
+                {summary.pass} 通过
               </Badge>
               <Badge variant="outline" className="bg-destructive/15 text-destructive hover:bg-destructive/20 border-destructive/30">
                 <XCircleIcon className="size-3" />
-                {summary.fail} fail
+                {summary.fail} 失败
               </Badge>
               <Badge variant="outline" className="bg-warning/15 text-warning hover:bg-warning/20 border-warning/30">
                 <TriangleAlertIcon className="size-3" />
-                {summary.warn} warn
+                {summary.warn} 警告
               </Badge>
               <Badge variant="outline" className="bg-muted/50 text-muted-foreground border-muted-foreground/30">
                 <MinusCircleIcon className="size-3" />
-                {summary.skip} skip
+                {summary.skip} 跳过
               </Badge>
               {job?.started_at && (
                 <span className="text-xs text-muted-foreground ml-2">
-                  {isRunning ? "Started " : "Last run "} {formatRelative(job.started_at)}
+                  {isRunning ? "已开始 " : "上次运行 "}{formatRelative(job.started_at)}
                 </span>
               )}
             </>
           ) : (
-            <span className="text-sm text-muted-foreground">No diagnostics run yet.</span>
+            <span className="text-sm text-muted-foreground">尚未运行诊断。</span>
           )}
         </div>
       </CardContent>

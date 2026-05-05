@@ -59,8 +59,8 @@ const getStepIcon = (stepStatus: ApplyStepStatus, overallStatus?: string) => {
 };
 
 const stepLabels: Record<string, string> = {
-  apn: "APN Configuration",
-  ttl_hl: "TTL / Hop Limit",
+  apn: "APN 配置",
+  ttl_hl: "TTL / 跳数限制",
   imei: "IMEI",
 };
 
@@ -69,7 +69,7 @@ const statusBadge = (status: string) => {
     case "applying":
       return (
         <Badge className="bg-info/10 text-info border-info/20">
-          Applying…
+          应用中…
         </Badge>
       );
     case "complete":
@@ -81,13 +81,13 @@ const statusBadge = (status: string) => {
     case "partial":
       return (
         <Badge className="bg-warning/10 text-warning border-warning/20">
-          Partial
+          部分完成
         </Badge>
       );
     case "failed":
       return (
         <Badge className="bg-destructive/10 text-destructive border-destructive/20">
-          Failed
+          失败
         </Badge>
       );
     default:
@@ -117,7 +117,7 @@ export function ApplyProgressDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            Applying Profile
+            正在应用档案
             {displayStatus && statusBadge(displayStatus)}
           </DialogTitle>
           {applyState?.profile_name && (
@@ -160,8 +160,7 @@ export function ApplyProgressDialog({
         {/* Reboot notice */}
         {applyState?.requires_reboot && (
           <div className="rounded-md bg-info/10 p-3 text-sm text-info">
-            Modem is restarting to apply IMEI change. Dashboard will reconnect
-            automatically.
+            模组正在重启以应用 IMEI 更改，仪表盘将自动重连。
           </div>
         )}
 
@@ -188,7 +187,7 @@ export function ApplyProgressDialog({
         {(isTerminal || (error && !applyState)) && (
           <div className="flex justify-end pt-2">
             <Button variant="outline" onClick={onClose}>
-              Close
+              关闭
             </Button>
           </div>
         )}

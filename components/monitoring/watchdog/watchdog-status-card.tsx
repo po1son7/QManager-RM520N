@@ -52,37 +52,37 @@ const STATE_BADGE_CONFIG: Record<
   { label: string; variant: "outline"; className: string; icon: React.ReactNode }
 > = {
   monitor: {
-    label: "Monitoring",
+    label: "监控中",
     variant: "outline",
     className: "bg-success/15 text-success hover:bg-success/20 border-success/30",
     icon: <CheckCircle2Icon className="h-3 w-3" />,
   },
   suspect: {
-    label: "Detecting Issue",
+    label: "检测异常",
     variant: "outline",
     className: "bg-warning/15 text-warning hover:bg-warning/20 border-warning/30",
     icon: <TriangleAlertIcon className="h-3 w-3" />,
   },
   recovery: {
-    label: "Recovering",
+    label: "恢复中",
     variant: "outline",
     className: "bg-destructive/15 text-destructive hover:bg-destructive/20 border-destructive/30 animate-pulse motion-reduce:animate-none",
     icon: <AlertCircleIcon className="h-3 w-3" />,
   },
   cooldown: {
-    label: "Cooldown",
+    label: "冷却中",
     variant: "outline",
     className: "bg-info/15 text-info hover:bg-info/20 border-info/30",
     icon: <ClockIcon className="h-3 w-3" />,
   },
   locked: {
-    label: "Locked",
+    label: "已锁定",
     variant: "outline",
     className: "bg-muted/50 text-muted-foreground border-muted-foreground/30",
     icon: <LockIcon className="h-3 w-3" />,
   },
   disabled: {
-    label: "Disabled",
+    label: "已禁用",
     variant: "outline",
     className: "bg-muted/50 text-muted-foreground border-muted-foreground/30",
     icon: <MinusCircleIcon className="h-3 w-3" />,
@@ -91,9 +91,9 @@ const STATE_BADGE_CONFIG: Record<
 
 const TIER_LABELS: Record<number, string> = {
   0: "\u2014",
-  1: "Restart Network Interface",
-  2: "Restart Modem Radio",
-  3: "Switch to Backup SIM",
+  1: "重启网络接口",
+  2: "重启模组射频",
+  3: "切换到备用 SIM",
   4: "重启设备",
 };
 
@@ -130,8 +130,8 @@ export function WatchdogStatusCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Watchdog Status</CardTitle>
-          <CardDescription>Live connection health status.</CardDescription>
+          <CardTitle>看门狗状态</CardTitle>
+          <CardDescription>实时连接健康状态。</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -153,15 +153,14 @@ export function WatchdogStatusCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Watchdog Status</CardTitle>
-          <CardDescription>Live connection health status.</CardDescription>
+          <CardTitle>看门狗状态</CardTitle>
+          <CardDescription>实时连接健康状态。</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8 gap-3">
             <DogIcon className="size-10 text-muted-foreground" />
             <p className="text-sm text-muted-foreground text-center">
-              Watchdog is not active. Enable it in Settings to begin monitoring
-              connection health.
+              看门狗未启用。请在设置中开启以监控连接质量。
             </p>
           </div>
         </CardContent>
@@ -174,14 +173,14 @@ export function WatchdogStatusCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Watchdog Status</CardTitle>
-          <CardDescription>Live connection health status.</CardDescription>
+          <CardTitle>看门狗状态</CardTitle>
+          <CardDescription>实时连接健康状态。</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8 gap-3">
             <Loader2 className="size-10 text-muted-foreground animate-spin" />
             <p className="text-sm text-muted-foreground text-center">
-              Watchdog is starting up. It will begin monitoring shortly.
+              看门狗正在启动，稍后即将开始监控。
             </p>
           </div>
         </CardContent>
@@ -198,35 +197,35 @@ export function WatchdogStatusCard({
   const tierLabel = TIER_LABELS[watchcat.current_tier] || TIER_LABELS[0];
 
   const statusRows: { label: string; value: React.ReactNode }[] = [
-    { label: "Current Step", value: tierLabel },
+    { label: "当前步骤", value: tierLabel },
     {
-      label: "Failed Checks",
+      label: "连续失败次数",
       value: <span className="font-mono">{watchcat.failure_count}</span>,
     },
     ...(watchcat.cooldown_remaining > 0
       ? [
           {
-            label: "Cooldown",
+            label: "冷却剩余",
             value: (
               <span className="font-mono">
-                {watchcat.cooldown_remaining}s remaining
+                剩余 {watchcat.cooldown_remaining} 秒
               </span>
             ),
           },
         ]
       : []),
     {
-      label: "Total Recoveries",
+      label: "累计恢复次数",
       value: <span className="font-mono">{watchcat.total_recoveries}</span>,
     },
     {
-      label: "Reboots This Hour",
+      label: "本小时重启次数",
       value: <span className="font-mono">{watchcat.reboots_this_hour}</span>,
     },
     ...(watchcat.last_recovery_time != null
       ? [
           {
-            label: "Last Recovery",
+            label: "上次恢复",
             value: (
               <span>
                 {TIER_LABELS[watchcat.last_recovery_tier ?? 0]}{" "}
@@ -243,14 +242,14 @@ export function WatchdogStatusCard({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Watchdog Status</CardTitle>
-        <CardDescription>Live connection health status.</CardDescription>
+        <CardTitle>看门狗状态</CardTitle>
+        <CardDescription>实时连接健康状态。</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-2">
           {/* State badge — animates when state changes */}
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-muted-foreground">State</p>
+            <p className="text-sm font-semibold text-muted-foreground">状态</p>
             <AnimatePresence mode="wait">
               <motion.div
                 key={stateKey}
@@ -294,11 +293,11 @@ export function WatchdogStatusCard({
               <Alert className="mb-3">
                 <InfoIcon className="size-4" />
                 <AlertDescription>
-                  Running on backup SIM (slot {simFailover.current_slot}) since{" "}
+                  当前使用备用 SIM（卡槽 {simFailover.current_slot}），自{" "}
                   {simFailover.switched_at
                     ? formatTimeAgo(simFailover.switched_at)
-                    : "recently"}
-                  . Original SIM was in slot {simFailover.original_slot}.
+                    : "不久前"}
+                  起。原 SIM 位于卡槽 {simFailover.original_slot}。
                 </AlertDescription>
               </Alert>
 
@@ -313,26 +312,24 @@ export function WatchdogStatusCard({
                     {isReverting ? (
                       <>
                         <Loader2 className="size-4 animate-spin" />
-                        Reverting…
+                        恢复中…
                       </>
                     ) : (
-                      "Revert to Original SIM"
+                      "切回原 SIM"
                     )}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Revert to Original SIM?</AlertDialogTitle>
+                    <AlertDialogTitle>切回原 SIM？</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will switch back to SIM slot{" "}
-                      {simFailover.original_slot}. Your internet will briefly
-                      disconnect while the modem reconnects.
+                      将切换回 SIM 卡槽 {simFailover.original_slot}。模组重连期间网络会短暂中断。
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>取消</AlertDialogCancel>
                     <AlertDialogAction onClick={handleRevertSim}>
-                      Revert SIM
+                      确认切回
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

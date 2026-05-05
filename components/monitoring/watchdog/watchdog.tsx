@@ -10,10 +10,9 @@ const WatchdogComponent = () => {
   return (
     <div className="@container/main mx-auto p-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Watchdog</h1>
+        <h1 className="text-3xl font-bold mb-2">看门狗</h1>
         <p className="text-muted-foreground">
-          自动ally detect and recover from internet outages with
-          escalating recovery steps.
+          自动检测网络中断并按多级步骤尝试自愈。
         </p>
       </div>
       <div className="grid grid-cols-1 @3xl/main:grid-cols-2 grid-flow-row gap-4">

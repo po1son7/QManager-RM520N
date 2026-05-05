@@ -37,8 +37,8 @@ interface TailscalePeersCardProps {
 }
 
 function formatLastSeen(lastSeen: string, online: boolean): string {
-  if (online) return "Now";
-  if (!lastSeen) return "Unknown";
+  if (online) return "在线";
+  if (!lastSeen) return "未知";
 
   const date = new Date(lastSeen);
   const now = Date.now();
@@ -47,14 +47,14 @@ function formatLastSeen(lastSeen: string, online: boolean): string {
   if (diffMs < 0 || isNaN(diffMs)) return lastSeen;
 
   const diffMin = Math.floor(diffMs / 60_000);
-  if (diffMin < 1) return "Just now";
-  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffMin < 1) return "刚刚";
+  if (diffMin < 60) return `${diffMin} 分钟前`;
 
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
+  if (diffHr < 24) return `${diffHr} 小时前`;
 
   const diffDay = Math.floor(diffHr / 24);
-  return `${diffDay}d ago`;
+  return `${diffDay} 天前`;
 }
 
 function capitalizeOS(os: string): string {
@@ -86,9 +86,9 @@ export function TailscalePeersCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Network Peers</CardTitle>
+          <CardTitle>网络节点</CardTitle>
           <CardDescription>
-            Devices on your Tailscale network.
+            Tailscale 网络中的设备。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -122,16 +122,16 @@ export function TailscalePeersCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Network Peers</CardTitle>
+          <CardTitle>网络节点</CardTitle>
           <CardDescription>
-            Devices on your Tailscale network.
+            Tailscale 网络中的设备。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8 gap-3">
             <AlertCircle className="size-10 text-destructive" />
             <p className="text-sm text-muted-foreground text-center">
-              Failed to load peer data.
+              加载节点数据失败。
             </p>
           </div>
         </CardContent>
@@ -142,15 +142,15 @@ export function TailscalePeersCard({
   // --- Empty / not connected state -------------------------------------------
   if (!isConnected || peers.length === 0) {
     const message = !isConnected
-      ? "Connect to Tailscale to see your network peers."
-      : "No peers found on your Tailscale network.";
+      ? "请先连接 Tailscale 以查看网络节点。"
+      : "Tailscale 网络中未发现节点。";
 
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Network Peers</CardTitle>
+          <CardTitle>网络节点</CardTitle>
           <CardDescription>
-            Devices on your Tailscale network.
+            Tailscale 网络中的设备。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -169,9 +169,9 @@ export function TailscalePeersCard({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Network Peers</CardTitle>
+        <CardTitle>网络节点</CardTitle>
         <CardDescription>
-          Devices on your Tailscale network.
+          Tailscale 网络中的设备。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -179,12 +179,12 @@ export function TailscalePeersCard({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Device</TableHead>
-                <TableHead>IP Address</TableHead>
-                <TableHead className="hidden @sm/card:table-cell">OS</TableHead>
-                <TableHead className="w-20">Status</TableHead>
+                <TableHead>设备</TableHead>
+                <TableHead>IP 地址</TableHead>
+                <TableHead className="hidden @sm/card:table-cell">系统</TableHead>
+                <TableHead className="w-20">状态</TableHead>
                 <TableHead className="hidden @md/card:table-cell w-24">
-                  Last Seen
+                  上次在线
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -200,7 +200,7 @@ export function TailscalePeersCard({
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className="font-medium text-sm truncate">
-                          {peer.hostname || "Unknown"}
+                          {peer.hostname || "未知"}
                         </span>
                         {peer.exit_node && (
                           <Badge
@@ -208,7 +208,7 @@ export function TailscalePeersCard({
                             className="text-xs shrink-0"
                           >
                             <ShieldIcon className="size-3 mr-1" />
-                            Exit Node
+                            Exit 节点
                           </Badge>
                         )}
                       </div>
@@ -229,12 +229,12 @@ export function TailscalePeersCard({
                     {peer.online ? (
                       <Badge variant="outline" className="bg-success/15 text-success hover:bg-success/20 border-success/30">
                         <CheckCircle2Icon className="h-3 w-3" />
-                        Online
+                        在线
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="bg-muted/50 text-muted-foreground border-muted-foreground/30">
                         <MinusCircleIcon className="h-3 w-3" />
-                        Offline
+                        离线
                       </Badge>
                     )}
                   </TableCell>
@@ -249,13 +249,13 @@ export function TailscalePeersCard({
       </CardContent>
       <CardFooter className="flex justify-between items-center">
         <div className="text-xs text-muted-foreground">
-          Showing <strong>{peers.length}</strong>{" "}
-          {peers.length === 1 ? "peer" : "peers"}
+          共 <strong>{peers.length}</strong>{" "}
+          个节点
         </div>
         {hasExitNode && (
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <ShieldIcon className="size-3" />
-            Exit node active
+            Exit 节点已启用
           </div>
         )}
       </CardFooter>

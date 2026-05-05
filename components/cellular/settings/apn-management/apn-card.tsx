@@ -143,10 +143,9 @@ const APNSettingsCard = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>APN Settings</CardTitle>
+          <CardTitle>APN 设置</CardTitle>
           <CardDescription>
-            Configure and manage Access Point Names (APNs) for your cellular
-            connections.
+            配置与管理蜂窝连接的接入点名称（APN）。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -184,10 +183,9 @@ const APNSettingsCard = ({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>APN Settings</CardTitle>
+        <CardTitle>APN 设置</CardTitle>
         <CardDescription>
-          Configure and manage Access Point Names (APNs) for your cellular
-          connections.
+          配置与管理蜂窝连接的接入点名称（APN）。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -197,10 +195,10 @@ const APNSettingsCard = ({
               <FieldGroup>
                 <div className="grid @md/card:grid-cols-2 grid-cols-1 grid-flow-row gap-4">
                   <Field>
-                    <FieldLabel htmlFor="active-apn">Active APN *</FieldLabel>
+                    <FieldLabel htmlFor="active-apn">当前 APN *</FieldLabel>
                     <Input
                       id="active-apn"
-                      placeholder="Enter Active APN"
+                      placeholder="输入 APN"
                       value={activeApn}
                       onChange={(e) => setActiveApn(e.target.value)}
                       disabled={isSaving}
@@ -220,10 +218,10 @@ const APNSettingsCard = ({
                       disabled={isSaving}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose 运营商预设" />
+                        <SelectValue placeholder="选择运营商预设" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="none">无</SelectItem>
                         {MNO_PRESETS.map((p) => (
                           <SelectItem key={p.id} value={p.id}>
                             {p.label}
@@ -251,8 +249,8 @@ const APNSettingsCard = ({
                       <SelectContent>
                         {profiles?.map((p) => (
                           <SelectItem key={p.cid} value={String(p.cid)}>
-                            Profile {p.cid} — {p.apn || "(empty)"}
-                            {p.cid === activeCid ? " (Active)" : ""}
+                            配置文件 {p.cid} — {p.apn || "（空）"}
+                            {p.cid === activeCid ? "（当前）" : ""}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -273,7 +271,7 @@ const APNSettingsCard = ({
                       disabled={isSaving}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose IP 协议" />
+                        <SelectValue placeholder="选择 IP 协议" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="IPV4V6">
@@ -295,7 +293,7 @@ const APNSettingsCard = ({
               variant="outline"
               onClick={handleReset}
               disabled={isSaving}
-              aria-label="Reset to saved values"
+              aria-label="恢复已保存的值"
             >
               <RotateCcwIcon />
             </Button>

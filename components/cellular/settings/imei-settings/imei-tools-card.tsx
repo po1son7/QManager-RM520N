@@ -112,7 +112,7 @@ const IMEIToolsCard = () => {
   return (
     <Card className="@container/card @3xl/main:col-span-2">
       <CardHeader>
-        <CardTitle>IMEI Tools</CardTitle>
+        <CardTitle>IMEI 工具</CardTitle>
         <CardDescription>
           Generate and validate IMEI numbers using the Luhn algorithm. For
           educational purposes only.
@@ -136,7 +136,7 @@ const IMEIToolsCard = () => {
                     onValueChange={handlePresetChange}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a device" />
+                      <SelectValue placeholder="选择设备" />
                     </SelectTrigger>
                     <SelectContent>
                       {IMEI_TAC_PRESETS.map((preset) => (
@@ -160,7 +160,7 @@ const IMEIToolsCard = () => {
                     <FieldLabel>自定义 Prefix</FieldLabel>
                     <InputGroup>
                       <InputGroupInput
-                        placeholder="Enter 8–12 digit prefix"
+                        placeholder="输入 8–12 位前缀"
                         value={customPrefix}
                         onChange={handleCustomPrefixChange}
                         maxLength={12}
@@ -192,7 +192,7 @@ const IMEIToolsCard = () => {
                   <div className="flex items-center gap-2">
                     <InputGroup className="flex-1">
                       <InputGroupInput
-                        placeholder="Generate or enter a 15-digit IMEI"
+                        placeholder="生成或输入 15 位 IMEI"
                         value={imei}
                         onChange={handleImeiChange}
                         maxLength={15}
@@ -206,7 +206,7 @@ const IMEIToolsCard = () => {
                               <InputGroupButton
                                 type="button"
                                 size="icon-xs"
-                                aria-label="Copy IMEI"
+                                aria-label="复制 IMEI"
                                 onClick={handleCopy}
                               >
                                 <CopyIcon />

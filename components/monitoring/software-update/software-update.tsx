@@ -47,7 +47,7 @@ export function StatusBadge({
     return (
       <Badge variant="outline" className="bg-info/15 text-info hover:bg-info/20 border-info/30">
         <DownloadIcon className="h-3 w-3" />
-        Updating
+        更新中
       </Badge>
     );
   }
@@ -55,7 +55,7 @@ export function StatusBadge({
     return (
       <Badge variant="outline" className="bg-info/15 text-info hover:bg-info/20 border-info/30">
         <DownloadIcon className="h-3 w-3" />
-        Downloading
+        下载中
       </Badge>
     );
   }
@@ -63,14 +63,14 @@ export function StatusBadge({
     return (
       <Badge variant="outline" className="bg-warning/15 text-warning hover:bg-warning/20 border-warning/30">
         <TriangleAlertIcon className="h-3 w-3" />
-        Update available
+        有可用更新
       </Badge>
     );
   }
   return (
     <Badge variant="outline" className="bg-success/15 text-success hover:bg-success/20 border-success/30">
       <CheckCircle2Icon className="h-3 w-3" />
-      Up to date
+      已是最新
     </Badge>
   );
 }
@@ -85,26 +85,26 @@ interface StepConfig {
 
 const STEPS: StepConfig[] = [
   {
-    label: "Download",
+    label: "下载",
     detail: {
-      active: "Downloading update package...",
-      done: "Download complete",
+      active: "正在下载更新包…",
+      done: "下载完成",
     },
     icon: <DownloadIcon className="size-4" />,
   },
   {
-    label: "Install",
+    label: "安装",
     detail: {
-      active: "Installing update...",
-      done: "Installation complete",
+      active: "正在安装更新…",
+      done: "安装完成",
     },
     icon: <PackageIcon className="size-4" />,
   },
   {
-    label: "Reboot",
+    label: "重启",
     detail: {
-      active: "Rebooting device...",
-      done: "Reboot complete",
+      active: "正在重启设备…",
+      done: "重启完成",
     },
     icon: <RotateCwIcon className="size-4" />,
   },
@@ -140,7 +140,7 @@ function UpdateProgressStepper({
   const activeIndex = STEP_MAP[status] ?? 0;
 
   return (
-    <div className="space-y-1" role="list" aria-label="Update progress">
+    <div className="space-y-1" role="list" aria-label="更新进度">
       {STEPS.map((step, i) => {
         const state = getStepState(i, activeIndex);
         const detailText =
@@ -148,7 +148,7 @@ function UpdateProgressStepper({
             ? message || step.detail.active
             : state === "done"
               ? step.detail.done
-              : "Waiting...";
+              : "等待中…";
 
         return (
           <motion.div
@@ -204,7 +204,7 @@ function SegmentedProgress({ activeIndex }: { activeIndex: number }) {
       role="progressbar"
       aria-valuenow={activeIndex + 1}
       aria-valuemax={STEPS.length}
-      aria-label="Update progress"
+      aria-label="更新进度"
     >
       {STEPS.map((step, i) => (
         <div
@@ -244,9 +244,9 @@ const SoftwareUpdateComponent = () => {
       <PageWrapper>
         <Card className="@container/card">
           <CardHeader>
-            <CardTitle>Update Status</CardTitle>
+            <CardTitle>更新状态</CardTitle>
             <CardDescription>
-              Unable to check for updates.
+              无法检查更新。
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -263,12 +263,12 @@ const SoftwareUpdateComponent = () => {
                 {isChecking ? (
                   <>
                     <LoaderCircle className="size-4 animate-spin" />
-                    Checking...
+                    检查中…
                   </>
                 ) : (
                   <>
                     <RefreshCwIcon className="size-4" />
-                    Retry
+                    重试
                   </>
                 )}
               </Button>
@@ -287,12 +287,12 @@ const SoftwareUpdateComponent = () => {
       <PageWrapper>
         <Card className="@container/card">
           <CardHeader>
-            <CardTitle>Update in Progress</CardTitle>
+            <CardTitle>正在更新</CardTitle>
             <CardDescription>
               {updateStatus.version
-                ? `Updating to ${updateStatus.version}`
-                : "Updating QManager"}
-              {updateStatus.size && ` (${updateStatus.size})`}
+                ? `正在更新至 ${updateStatus.version}`
+                : "正在更新 QManager"}
+              {updateStatus.size && `（${updateStatus.size}）`}
             </CardDescription>
             <CardAction>
               <StatusBadge
@@ -318,7 +318,7 @@ const SoftwareUpdateComponent = () => {
               <div role="alert" className="flex items-center justify-center gap-2 rounded-lg bg-warning/10 px-4 py-2.5">
                 <AlertTriangleIcon className="size-4 shrink-0 text-warning" />
                 <p className="text-xs font-medium text-warning">
-                  Do not power off the device during the update
+                  更新过程中请勿断开设备电源
                 </p>
               </div>
             </div>
@@ -364,9 +364,9 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div className="@container/main mx-auto p-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">QManager Updates</h1>
+        <h1 className="text-3xl font-bold mb-2">QManager 更新</h1>
         <p className="text-muted-foreground">
-          Check for updates, view release notes, and manage QManager versions.
+          检查更新、查看发行说明并管理 QManager 版本。
         </p>
       </div>
       {children}

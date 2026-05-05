@@ -107,7 +107,7 @@ function DraggableNetworkItem({
         disabled={disabled}
       >
         <IconGripVertical className="text-muted-foreground size-4" />
-        <span className="sr-only">Drag to reorder</span>
+        <span className="sr-only">拖动排序</span>
       </Button>
       <div className="flex items-center gap-x-3">
         <div
@@ -277,9 +277,9 @@ const NetworkPriorityCard = () => {
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Network Priority</CardTitle>
+          <CardTitle>网络优先级</CardTitle>
           <CardDescription>
-            Set the priority order of your network connections.
+            设置各网络连接的优先顺序。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -296,9 +296,9 @@ const NetworkPriorityCard = () => {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Network Priority</CardTitle>
+        <CardTitle>网络优先级</CardTitle>
         <CardDescription>
-          Set the priority order of your network connections.
+          设置各网络连接的优先顺序。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -345,7 +345,7 @@ const NetworkPriorityCard = () => {
             variant="outline"
             onClick={handleReset}
             disabled={isSaving}
-            aria-label="Reset to saved values"
+            aria-label="恢复已保存的值"
           >
             <RotateCcwIcon />
           </Button>

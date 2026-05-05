@@ -105,9 +105,9 @@ const BandLockingComponent = () => {
   return (
     <div className="@container/main mx-auto p-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Band Locking</h1>
+        <h1 className="text-3xl font-bold mb-2">频段锁定</h1>
         <p className="text-muted-foreground">
-          Restrict which LTE and NR bands the modem can use.
+          限制模组可用的 LTE 与 NR 频段范围。
         </p>
       </div>
 

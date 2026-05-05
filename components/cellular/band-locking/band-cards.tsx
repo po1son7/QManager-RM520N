@@ -296,8 +296,8 @@ const BandCardsComponent = ({
             size="icon"
             onClick={handleUnlockAll}
             disabled={isDisabled || isAllUnlocked}
-            aria-label="Unlock all bands"
-            title="Unlock all bands (reset)"
+            aria-label="解锁全部频段"
+            title="解锁全部频段（重置）"
           >
             <RotateCcwIcon />
           </Button>

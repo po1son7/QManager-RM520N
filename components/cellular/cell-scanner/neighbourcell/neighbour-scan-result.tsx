@@ -146,7 +146,7 @@ function getColumns(
                 size="icon"
               >
                 <MoreVertical className="size-4" />
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only">打开菜单</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
@@ -198,7 +198,7 @@ const NeighbourScanResultView = ({
     <div className="relative flex flex-col gap-4 overflow-hidden">
       <div className="flex flex-col @sm/card:flex-row items-start @sm/card:items-center gap-2">
         <Input
-          placeholder="Filter by cell type..."
+          placeholder="按小区类型筛选…"
           value={
             (table.getColumn("cellType")?.getFilterValue() as string) ?? ""
           }

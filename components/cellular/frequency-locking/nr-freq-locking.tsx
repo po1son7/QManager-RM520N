@@ -200,7 +200,7 @@ const NrFreqLockingComponent = ({
       const entries = buildEntries();
       if (entries.length === 0) {
         toast.warning("未输入频率", {
-          description: "Enter at least one NR-ARFCN and SCS before enabling.",
+          description: "启用前请至少填写一组 NR-ARFCN 与 SCS。",
         });
         return;
       }
@@ -210,8 +210,7 @@ const NrFreqLockingComponent = ({
         const a = parseInt(slot.arfcn, 10);
         if (!isNaN(a) && (slot.scs === "" || isNaN(parseInt(slot.scs, 10)))) {
           toast.warning("缺少 SCS", {
-            description:
-              "Each NR-ARFCN requires an SCS value. Please select the sub-carrier spacing.",
+            description: "每个 NR-ARFCN 都需要选择子载波间隔（SCS）。",
           });
           return;
         }
@@ -256,7 +255,7 @@ const NrFreqLockingComponent = ({
     }
   };
 
-  // "Use Current" — copy active NR PCell into slot 1
+  // 使用当前小区 — 将当前 NR 主小区填入槽位 1
   const handleUseCurrent = () => {
     const nrArfcn = modemData?.nr?.arfcn;
     const nrScs = modemData?.nr?.scs;
@@ -286,9 +285,9 @@ const NrFreqLockingComponent = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>NR5G Frequency Locking</CardTitle>
+          <CardTitle>NR5G 频率锁定</CardTitle>
           <CardDescription>
-            Lock to specific NR frequencies (NR-ARFCNs).
+            锁定到指定 NR 频点（NR-ARFCN）。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -321,9 +320,9 @@ const NrFreqLockingComponent = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>NR5G Frequency Locking</CardTitle>
+          <CardTitle>NR5G 频率锁定</CardTitle>
           <CardDescription>
-            Lock to specific NR frequencies (NR-ARFCNs).
+            锁定到指定 NR 频点（NR-ARFCN）。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -334,12 +333,12 @@ const NrFreqLockingComponent = ({
             <AlertCircleIcon className="size-8 text-destructive" />
             <div className="space-y-1">
               <p className="text-sm font-medium">
-                Failed to load frequency lock status
+                无法加载频率锁定状态
               </p>
               <p className="text-xs text-muted-foreground">{error}</p>
             </div>
             <Button variant="outline" size="sm" onClick={onRefresh}>
-              Retry
+              重试
             </Button>
           </div>
         </CardContent>
@@ -354,10 +353,9 @@ const NrFreqLockingComponent = ({
         aria-disabled={towerLockActive || undefined}
       >
         <CardHeader>
-          <CardTitle>NR5G Frequency Locking</CardTitle>
+          <CardTitle>NR5G 频率锁定</CardTitle>
           <CardDescription>
-            Lock to specific NR frequencies. Supports up to 32 entries (4
-            shown).
+            锁定到指定 NR 频点，最多支持 32 条（界面展示前 4 条）。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -367,14 +365,13 @@ const NrFreqLockingComponent = ({
               <div className="flex items-start gap-2 p-2 rounded-md bg-destructive/10 border border-destructive/30 text-destructive text-sm">
                 <TbAlertTriangleFilled className="size-5 mt-0.5 shrink-0" />
                 <p className="font-semibold">
-                  NR Tower Lock is active. Disable it before using frequency
-                  locking.
+                  已启用 NR 基站锁定，请先关闭后再使用频率锁定。
                 </p>
               </div>
             ) : (
               <div className="flex items-start gap-2 p-2 rounded-md bg-warning/10 border border-warning/30 text-warning text-sm">
                 <TbAlertTriangleFilled className="size-5 mt-0.5 shrink-0" />
-                <p className="font-semibold">Experimental Feature</p>
+                <p className="font-semibold">实验性功能</p>
               </div>
             )}
 
@@ -386,22 +383,22 @@ const NrFreqLockingComponent = ({
                     <button
                       type="button"
                       className="inline-flex"
-                      aria-label="More info"
+                      aria-label="更多信息"
                     >
                       <TbInfoCircleFilled className="size-5 text-info" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>
-                      Cannot be used together with NR Tower Lock (AT+QNWLOCK).
+                      不能与 NR 基站锁定（AT+QNWLOCK）同时使用。
                       <br />
-                      SCS is auto-detected from band type but can be overridden.
+                      SCS 通常随频段自动推断，也可手动覆盖。
                     </p>
                   </TooltipContent>
                 </Tooltip>
 
                 <p className="font-semibold text-muted-foreground text-sm">
-                  NR5G Frequency Lock Enabled
+                  NR5G 频率锁定
                 </p>
               </div>
               <div className="flex items-center space-x-2">
@@ -415,7 +412,7 @@ const NrFreqLockingComponent = ({
                   disabled={isDisabled}
                 />
                 <Label htmlFor="nr-freq-locking">
-                  {isEnabled ? "Enabled" : "Disabled"}
+                  {isEnabled ? "已启用" : "已关闭"}
                 </Label>
               </div>
             </div>
@@ -456,23 +453,21 @@ const NrFreqLockingComponent = ({
       <AlertDialog open={showLockDialog} onOpenChange={setShowLockDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Lock NR5G Frequency?</AlertDialogTitle>
+            <AlertDialogTitle>锁定 NR5G 频率？</AlertDialogTitle>
             <AlertDialogDescription>
-              This will lock your modem to{" "}
+              将把模组锁定到{" "}
               {pendingEntries.length === 1
-                ? `NR-ARFCN ${pendingEntries[0].arfcn} (SCS ${pendingEntries[0].scs} kHz)`
-                : `${pendingEntries.length} NR frequencies`}
-              . The modem will only use{" "}
-              {pendingEntries.length === 1
-                ? "this frequency"
-                : "these frequencies"}{" "}
-              and may briefly disconnect.
+                ? `NR-ARFCN ${pendingEntries[0].arfcn}（SCS ${pendingEntries[0].scs} kHz）`
+                : `${pendingEntries.length} 组 NR 频点`}
+              ，仅使用该
+              {pendingEntries.length === 1 ? "频点" : "频点组合"}
+              ，过程中可能短暂断网。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmLock}>
-              Lock Frequency
+              确认锁定
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -486,25 +481,23 @@ const NrFreqLockingComponent = ({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-destructive">
-              Unsupported Band Warning
+              不支持的频段警告
             </AlertDialogTitle>
             <AlertDialogDescription>
-              The NR-ARFCN(s) you entered map to bands not supported by your
-              modem. Locking to an unsupported frequency may cause unexpected
-              behavior.
+              输入的 NR-ARFCN 对应模组不支持的频段，可能导致异常行为。
               <br />
               <br />
-              <strong>Matched bands:</strong>{" "}
+              <strong>解析到的频段：</strong>{" "}
               {matchedBandsPerSlot
                 .flat()
                 .map((b) => `n${b.band}`)
-                .join(", ") || "Unknown"}
+                .join("、") || "未知"}
               <br />
-              <strong>Supported bands:</strong>{" "}
-              {supportedBands.map((b) => `n${b}`).join(", ")}
+              <strong>模组支持的频段：</strong>{" "}
+              {supportedBands.map((b) => `n${b}`).join("、")}
               <br />
               <br />
-              Are you sure you want to proceed?
+              确定要继续吗？
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -513,7 +506,7 @@ const NrFreqLockingComponent = ({
               onClick={confirmLock}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Lock Anyway
+              仍要锁定
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -523,16 +516,15 @@ const NrFreqLockingComponent = ({
       <AlertDialog open={showUnlockDialog} onOpenChange={setShowUnlockDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unlock NR5G Frequency?</AlertDialogTitle>
+            <AlertDialogTitle>解除 NR5G 频率锁定？</AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove the NR5G frequency lock. The modem will be free
-              to use any available NR frequency and may briefly disconnect.
+              将移除 NR5G 频率锁定，模组可重新选择任意 NR 频点，过程中可能短暂断网。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmUnlock}>
-              Unlock
+              解除锁定
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -587,14 +579,14 @@ function NrFreqSlot({
               onClick={onUseCurrent}
               disabled={disabled || !hasActiveCell}
             >
-              Use Current
+              使用当前小区
             </Button>
           )}
         </div>
         <Input
           id={arfcnId}
           type="text"
-          placeholder={`Enter ${arfcnLabel}`}
+          placeholder={`输入 ${arfcnLabel}`}
           value={slot.arfcn}
           onChange={(e) => onArfcnChange(index, e.target.value)}
           disabled={disabled}
@@ -604,7 +596,7 @@ function NrFreqSlot({
           hasInput={slot.arfcn.length > 0}
           supportedBands={supportedBands}
           prefix="n"
-          noMatchLabel="this NR-ARFCN"
+          noMatchLabel="此 NR-ARFCN"
         />
       </Field>
       <Field>
@@ -615,7 +607,7 @@ function NrFreqSlot({
           disabled={disabled}
         >
           <SelectTrigger id={scsId} aria-label={`${scsLabel} slot ${slotNum}`}>
-            <SelectValue placeholder="SCS" />
+            <SelectValue placeholder="选择 SCS" />
           </SelectTrigger>
           <SelectContent>
             {SCS_OPTIONS.map((opt) => (

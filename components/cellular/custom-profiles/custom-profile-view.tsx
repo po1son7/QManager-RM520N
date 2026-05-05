@@ -46,8 +46,8 @@ const CustomProfileViewComponent = ({
     return (
       <Card className="@container/card h-full">
         <CardHeader>
-          <CardTitle>已保存的场景</CardTitle>
-          <CardDescription>Manage your custom SIM profiles.</CardDescription>
+          <CardTitle>已保存的档案</CardTitle>
+          <CardDescription>正在加载自定义 SIM 档案列表…</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -67,9 +67,9 @@ const CustomProfileViewComponent = ({
   return (
     <Card className="@container/card h-full">
       <CardHeader>
-        <CardTitle>已保存的场景</CardTitle>
+        <CardTitle>已保存的档案</CardTitle>
         <CardDescription>
-          {profiles.length} profile{profiles.length !== 1 ? "s" : ""} saved.
+          共 {profiles.length} 条档案。
           {error && (
             <span className="text-destructive ml-2">{error}</span>
           )}

@@ -176,7 +176,7 @@ function CellDataSkeleton() {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Cellular Information</CardTitle>
+        <CardTitle>蜂窝信息</CardTitle>
         <CardDescription>
           Detailed information about the connected cellular network.
         </CardDescription>
@@ -224,7 +224,7 @@ const CellDataComponent = ({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Cellular Information</CardTitle>
+        <CardTitle>蜂窝信息</CardTitle>
         <CardDescription>
           Detailed information about the connected cellular network.
         </CardDescription>
@@ -299,7 +299,7 @@ const CellDataComponent = ({
               {cellId != null && enodebId != null ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button type="button" className="inline-flex" aria-label="More info">
+                    <button type="button" className="inline-flex" aria-label="更多信息">
                       <TbInfoCircleFilled className="size-5 text-info" />
                     </button>
                   </TooltipTrigger>
@@ -342,7 +342,7 @@ const CellDataComponent = ({
               {tac != null ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button type="button" className="inline-flex" aria-label="More info">
+                    <button type="button" className="inline-flex" aria-label="更多信息">
                       <TbInfoCircleFilled className="size-5 text-info" />
                     </button>
                   </TooltipTrigger>
@@ -372,7 +372,7 @@ const CellDataComponent = ({
               {network?.bandwidth_details ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button type="button" className="inline-flex" aria-label="More info">
+                    <button type="button" className="inline-flex" aria-label="更多信息">
                       <TbInfoCircleFilled className="size-5 text-info" />
                     </button>
                   </TooltipTrigger>
@@ -456,7 +456,7 @@ const CellDataComponent = ({
               {network?.wan_ipv6 && compressIPv6(network.wan_ipv6) !== network.wan_ipv6 ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button type="button" className="inline-flex" aria-label="More info">
+                    <button type="button" className="inline-flex" aria-label="更多信息">
                       <TbInfoCircleFilled className="size-5 text-info" />
                     </button>
                   </TooltipTrigger>
@@ -485,7 +485,7 @@ const CellDataComponent = ({
               {network?.primary_dns && compressIPv6(network.primary_dns) !== network.primary_dns ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button type="button" className="inline-flex" aria-label="More info">
+                    <button type="button" className="inline-flex" aria-label="更多信息">
                       <TbInfoCircleFilled className="size-5 text-info" />
                     </button>
                   </TooltipTrigger>
@@ -514,7 +514,7 @@ const CellDataComponent = ({
               {network?.secondary_dns && compressIPv6(network.secondary_dns) !== network.secondary_dns ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button type="button" className="inline-flex" aria-label="More info">
+                    <button type="button" className="inline-flex" aria-label="更多信息">
                       <TbInfoCircleFilled className="size-5 text-info" />
                     </button>
                   </TooltipTrigger>

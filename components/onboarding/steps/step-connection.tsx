@@ -200,7 +200,7 @@ export function StepConnection({
               <FieldLabel htmlFor="conn-apn">APN 名称</FieldLabel>
               <Input
                 id="conn-apn"
-                placeholder="e.g. internet, SMARTLTE"
+                placeholder="例如 internet、SMARTLTE"
                 value={apnName}
                 onChange={(e) => setApnName(e.target.value)}
               />

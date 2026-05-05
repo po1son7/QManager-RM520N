@@ -357,7 +357,7 @@ const EmailAlertsSettingsCard = ({ onTestEmailSent }: EmailAlertsSettingsCardPro
                 <Input
                   id="sender-email"
                   type="email"
-                  placeholder="alerts@gmail.com"
+                  placeholder="例如 alerts@gmail.com"
                   className="max-w-sm"
                   value={senderEmail}
                   onChange={(e) => setSenderEmail(e.target.value)}
@@ -388,7 +388,7 @@ const EmailAlertsSettingsCard = ({ onTestEmailSent }: EmailAlertsSettingsCardPro
                 <Input
                   id="recipient-email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="例如 you@example.com"
                   className="max-w-sm"
                   value={recipientEmail}
                   onChange={(e) => setRecipientEmail(e.target.value)}
@@ -422,7 +422,7 @@ const EmailAlertsSettingsCard = ({ onTestEmailSent }: EmailAlertsSettingsCardPro
                   <Input
                     id="app-password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="xxxx xxxx xxxx xxxx"
+                    placeholder="应用密码（占位示例）"
                     className="pr-10"
                     value={appPassword}
                     onChange={(e) => setAppPassword(e.target.value)}

@@ -12,7 +12,7 @@ const TailscaleComponent = () => {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Tailscale VPN</h1>
         <p className="text-muted-foreground">
-          Manage your Tailscale mesh VPN connection and network peers.
+          管理 Tailscale 组网 VPN 与对等节点。
         </p>
       </div>
       <div className="grid grid-cols-1 @3xl/main:grid-cols-2 grid-flow-row gap-4">

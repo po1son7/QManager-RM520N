@@ -128,7 +128,7 @@ const ActiveBandsComponent = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Active Cellular Bands</CardTitle>
+          <CardTitle>当前蜂窝频段</CardTitle>
           <CardDescription>
             Detailed information about the currently active cellular bands.
           </CardDescription>
@@ -149,7 +149,7 @@ const ActiveBandsComponent = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Active Cellular Bands</CardTitle>
+          <CardTitle>当前蜂窝频段</CardTitle>
           <CardDescription>
             Detailed information about the currently active cellular bands.
           </CardDescription>
@@ -167,7 +167,7 @@ const ActiveBandsComponent = ({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Active Cellular Bands</CardTitle>
+        <CardTitle>当前蜂窝频段</CardTitle>
         <CardDescription>
           {components.length} active carrier{components.length !== 1 ? "s" : ""}
           . Expand each band for detailed signal metrics.

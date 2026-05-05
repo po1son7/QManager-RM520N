@@ -312,10 +312,9 @@ export default function AntennaStatistics() {
   return (
     <div className="@container/main mx-auto p-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Antenna Statistics</h1>
+        <h1 className="text-3xl font-bold mb-2">天线统计</h1>
         <p className="text-muted-foreground">
-          Per-antenna signal metrics for each receiver chain. Compare signal
-          quality across Main, Diversity, and MIMO antenna ports.
+          各接收链路的分天线信号指标，对比主集、分集与 MIMO 端口质量。
         </p>
       </div>
       {isLoading ? (

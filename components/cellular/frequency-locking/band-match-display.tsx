@@ -28,21 +28,21 @@ export function BandMatchDisplay({
   hasInput,
   supportedBands,
   prefix,
-  noMatchLabel = "this frequency",
+  noMatchLabel = "该频点",
 }: BandMatchDisplayProps) {
   if (!hasInput) return null;
 
   if (bands.length === 0) {
     return (
       <p className="text-xs text-destructive mt-1">
-        No matching bands found for {noMatchLabel}
+        无法为{noMatchLabel}匹配到频段
       </p>
     );
   }
 
   return (
     <p className="text-xs text-muted-foreground mt-1">
-      Possible bands:{" "}
+      可能频段：{" "}
       {bands.map((b, i) => {
         const isSupported =
           supportedBands.length === 0 || supportedBands.includes(b.band);
@@ -52,7 +52,7 @@ export function BandMatchDisplay({
             <span
               className={isSupported ? "" : "text-destructive font-medium"}
             >
-              {prefix}{b.band} ({b.name}){!isSupported && " — unsupported"}
+              {prefix}{b.band} ({b.name}){!isSupported && " — 不支持"}
             </span>
           </span>
         );

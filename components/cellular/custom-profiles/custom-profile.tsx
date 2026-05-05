@@ -177,9 +177,9 @@ const CustomProfileComponent = () => {
   return (
     <div className="@container/main mx-auto p-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">自定义 SIM Profile</h1>
+        <h1 className="text-3xl font-bold mb-2">自定义 SIM 档案</h1>
         <p className="text-muted-foreground">
-          Bundle APN, IMEI, and TTL/HL settings into one-click profiles.
+          将 APN、IMEI、TTL/HL 等设置打包为一键可用的 SIM 档案。
         </p>
       </div>
       <div className="grid grid-cols-1 @3xl/main:grid-cols-2 grid-flow-row gap-4">
@@ -211,17 +211,16 @@ const CustomProfileComponent = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Activate Profile</AlertDialogTitle>
+            <AlertDialogTitle>激活档案</AlertDialogTitle>
             <AlertDialogDescription>
-              Apply &ldquo;{activateTarget?.name}&rdquo; to the modem? This will
-              update APN, TTL/HL, and IMEI settings as configured in the
-              profile. Unchanged settings will be skipped.
+              是否将「{activateTarget?.name}」应用到模组？将按档案中的配置更新
+              APN、TTL/HL 与 IMEI；已与当前一致的项将跳过。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={handleActivateConfirm}>
-              Activate
+              激活
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -234,11 +233,10 @@ const CustomProfileComponent = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Deactivate Profile</AlertDialogTitle>
+            <AlertDialogTitle>取消激活档案</AlertDialogTitle>
             <AlertDialogDescription>
-              Clear the active profile marker? The modem&apos;s current settings
-              (APN, IMEI, TTL) will not be reverted — only the &ldquo;Active&rdquo;
-              badge will be removed.
+              是否清除当前激活档案标记？模组现有的 APN、IMEI、TTL
+              等配置不会被恢复为默认值，仅移除「已激活」标识。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -249,7 +247,7 @@ const CustomProfileComponent = () => {
               onClick={handleDeactivateConfirm}
               disabled={isDeactivating}
             >
-              {isDeactivating ? "Deactivating…" : "Deactivate"}
+              {isDeactivating ? "正在取消激活…" : "取消激活"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

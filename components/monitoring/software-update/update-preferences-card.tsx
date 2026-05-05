@@ -93,8 +93,8 @@ export function UpdatePreferencesCard({
         await togglePrerelease(checked);
         toast.success(
           checked
-            ? "Pre-release updates enabled"
-            : "Pre-release updates disabled",
+            ? "已启用预发布更新"
+            : "已关闭预发布更新",
         );
       } catch {
         toast.error("更新偏好失败");
@@ -121,7 +121,7 @@ export function UpdatePreferencesCard({
       try {
         await saveAutoUpdate(checked, autoUpdateTime);
         toast.success(
-          checked ? "自动 updates enabled" : "自动 updates disabled",
+          checked ? "已启用自动更新" : "已关闭自动更新",
         );
       } catch {
         toast.error("更新偏好失败");
@@ -163,9 +163,9 @@ export function UpdatePreferencesCard({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Update Preferences</CardTitle>
+          <CardTitle>更新偏好</CardTitle>
           <CardDescription>
-            Configure update channel and version management.
+            配置更新渠道与版本管理。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -193,9 +193,9 @@ export function UpdatePreferencesCard({
     <>
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Update Preferences</CardTitle>
+          <CardTitle>更新偏好</CardTitle>
           <CardDescription>
-            Configure update channel and version management.
+            配置更新渠道与版本管理。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -209,7 +209,7 @@ export function UpdatePreferencesCard({
             <Separator />
             <motion.div variants={itemVariants} className="flex items-center justify-between">
               <p className="font-semibold text-muted-foreground text-sm">
-                Include pre-releases
+                包含预发布版本
               </p>
               <div className="flex items-center space-x-2">
                 <Switch
@@ -219,7 +219,7 @@ export function UpdatePreferencesCard({
                   disabled={prereleaseToggling || isUpdating}
                 />
                 <Label htmlFor="include-prerelease">
-                  {updateInfo?.include_prerelease ? "Enabled" : "Disabled"}
+                  {updateInfo?.include_prerelease ? "已启用" : "已关闭"}
                 </Label>
               </div>
             </motion.div>
@@ -229,7 +229,7 @@ export function UpdatePreferencesCard({
             <motion.div variants={itemVariants} className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-muted-foreground text-sm">
-                  自动 updates
+                  自动更新
                 </p>
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -239,29 +239,28 @@ export function UpdatePreferencesCard({
                     disabled={autoUpdateToggling || isUpdating}
                   />
                   <Label htmlFor="auto-update">
-                    {updateInfo?.auto_update_enabled ? "Enabled" : "Disabled"}
+                    {updateInfo?.auto_update_enabled ? "已启用" : "已关闭"}
                   </Label>
                 </div>
               </div>
             </motion.div>
 
-            {/* Time Configuration for 自动 Updates */}
+            {/* ── 自动更新时间配置 ─────────────────────────────── */}
             {updateInfo?.auto_update_enabled && (
               <>
                 <Separator />
                 <motion.div variants={itemVariants} className="flex flex-col gap-2">
                   <p className="font-semibold text-sm">
-                    Update Installation Time
+                    安装时间
                   </p>
 
                   <div className="flex flex-col @sm/card:flex-row @sm/card:items-center gap-2 @sm/card:justify-between rounded-lg border bg-muted/50 p-3">
                     <div className="flex flex-col gap-0.5 min-w-0">
                       <span className="text-xs text-muted-foreground">
-                        Update at
+                        每日于
                       </span>
                       <p className="text-xs text-muted-foreground">
-                        Checks for updates and installs automatically. The
-                        device will reboot if an update is found.
+                        自动检查并安装更新；若发现新版本，设备将重启。
                       </p>
                     </div>
                     <Input
@@ -272,7 +271,7 @@ export function UpdatePreferencesCard({
                         handleAutoUpdateTimeChange(e.target.value)
                       }
                       disabled={isUpdating || autoUpdateToggling}
-                      aria-label="自动 update time"
+                      aria-label="自动更新时间"
                       className="w-28 shrink-0"
                     />
                   </div>
@@ -283,10 +282,10 @@ export function UpdatePreferencesCard({
             {/* ── Version Management ──────────────────────────────── */}
             <Separator />
             <motion.div variants={itemVariants} className="flex flex-col gap-2">
-              <p className="font-semibold text-sm">Version Management</p>
+              <p className="font-semibold text-sm">版本管理</p>
               <div className="flex flex-col gap-2 rounded-lg border bg-muted/50 p-3">
                 <span className="text-xs text-muted-foreground">
-                  Select a version to install, reinstall, or rollback.
+                  选择要安装、重装或回退的版本。
                 </span>
                 <div className="flex items-center gap-2">
                   <Select
@@ -294,8 +293,8 @@ export function UpdatePreferencesCard({
                     onValueChange={setSelectedVersion}
                     disabled={isUpdating || isDownloading}
                   >
-                    <SelectTrigger className="flex-1" aria-label="Select version to install">
-                      <SelectValue placeholder="Select version..." />
+                    <SelectTrigger className="flex-1" aria-label="选择要安装的版本">
+                      <SelectValue placeholder="选择版本…" />
                     </SelectTrigger>
                     <SelectContent>
                       {(updateInfo?.available_versions ?? []).map((v) => (
@@ -308,11 +307,11 @@ export function UpdatePreferencesCard({
                             <span>{v.tag}</span>
                             {v.is_current ? (
                               <span className="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-                                current
+                                当前
                               </span>
                             ) : !v.has_assets ? (
                               <span className="text-[10px] text-muted-foreground">
-                                no binary
+                                无安装包
                               </span>
                             ) : v.asset_size ? (
                               <span className="text-[10px] text-muted-foreground">
@@ -332,7 +331,7 @@ export function UpdatePreferencesCard({
                     className="shrink-0"
                   >
                     <DownloadIcon className="size-4" />
-                    Install
+                    安装
                   </Button>
                 </div>
               </div>
@@ -350,23 +349,20 @@ export function UpdatePreferencesCard({
           <AlertDialogHeader>
             <AlertDialogTitle>
               {selectedVersion === updateInfo?.current_version
-                ? "Reinstall Current Version"
-                : `Install ${selectedVersion}`}
+                ? "重装当前版本"
+                : `安装 ${selectedVersion}`}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {selectedVersion === updateInfo?.current_version ? (
                 <>
-                  This will reinstall <strong>{selectedVersion}</strong> to repair the
-                  current installation. The device will reboot after installation.
+                  将重新安装 <strong>{selectedVersion}</strong> 以修复当前安装。安装完成后设备将重启。
                 </>
               ) : (
                 <>
-                  This will install <strong>{selectedVersion}</strong>, replacing the
-                  current version (<strong>{updateInfo?.current_version}</strong>).
-                  The device will reboot after installation.
+                  将安装 <strong>{selectedVersion}</strong>，替换当前版本（<strong>{updateInfo?.current_version}</strong>）。安装完成后设备将重启。
                 </>
               )}
-              {" "}Do not power off the device during this process.
+              {" "}更新过程中请勿断电。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -374,8 +370,8 @@ export function UpdatePreferencesCard({
             <AlertDialogAction onClick={handleVersionInstall}>
               <DownloadIcon className="size-4" />
               {selectedVersion === updateInfo?.current_version
-                ? "Reinstall Now"
-                : "Install Now"}
+                ? "立即重装"
+                : "立即安装"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

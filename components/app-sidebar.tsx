@@ -130,7 +130,7 @@ const data = {
       icon: MessageCircleIcon,
     },
     {
-      title: "自定义场景",
+      title: "自定义 SIM 档案",
       url: "/cellular/custom-profiles",
       icon: User2Icon,
       items: [

@@ -81,7 +81,7 @@ const TTLSettingsCard = () => {
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>TTL 与 Hop Limit</CardTitle>
+          <CardTitle>TTL 与跳数限制（HL）</CardTitle>
           <CardDescription>
             设置蜂窝接口出站 IPv4 TTL 与 IPv6 Hop Limit。
           </CardDescription>
@@ -182,7 +182,7 @@ function TTLForm({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>TTL 与 Hop Limit</CardTitle>
+        <CardTitle>TTL 与跳数限制（HL）</CardTitle>
         <CardDescription>
           设置蜂窝接口出站 IPv4 TTL 与 IPv6 Hop Limit。
         </CardDescription>

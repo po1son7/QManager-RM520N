@@ -173,7 +173,7 @@ const LTELockingComponent = ({
   const handleToggle = (checked: boolean) => {
     if (checked && isWatcherRunning) {
       toast.warning("正在进行故障转移检查", {
-        description: "Signal quality check is running, please wait.",
+        description: "正在进行信号质量检测，请稍候。",
       });
       return;
     }
@@ -181,7 +181,7 @@ const LTELockingComponent = ({
       const cells = buildCells();
       if (cells.length === 0) {
         toast.warning("无小区目标", {
-          description: "Enter a channel and cell ID first.",
+          description: "请先填写信道与小区 ID。",
         });
         return;
       }
@@ -238,7 +238,7 @@ const LTELockingComponent = ({
               {`自定义: EARFCN ${currentEarfcn}, PCI ${currentPci}`}
             </span>
           ) : (
-            <SelectValue placeholder="Pick an LTE carrier" />
+            <SelectValue placeholder="选择 LTE 运营商" />
           )}
         </SelectTrigger>
         <SelectContent>
@@ -270,7 +270,7 @@ const LTELockingComponent = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>LTE Tower Locking</CardTitle>
+          <CardTitle>LTE 基站锁定</CardTitle>
           <CardDescription>
             Lock to a specific LTE cell tower by entering its channel and cell ID.
           </CardDescription>
@@ -335,7 +335,7 @@ const LTELockingComponent = ({
     <>
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>LTE Tower Locking</CardTitle>
+          <CardTitle>LTE 基站锁定</CardTitle>
           <CardDescription>
             Lock to a specific LTE cell tower by entering its channel and cell ID.
           </CardDescription>
@@ -354,8 +354,8 @@ const LTELockingComponent = ({
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
                       {hasOptions
-                        ? "Pick from currently visible LTE carriers (PCC + SCCs from QCAINFO)."
-                        : "No LTE carriers visible in QCAINFO right now. Switch off Simple Mode to enter values manually."}
+                        ? "从当前可见 LTE 载波中选择（QCAINFO 中的 PCC + SCC）。"
+                        : "当前 QCAINFO 中无可见 LTE 载波。请关闭简易模式后手动填写。"}
                     </TooltipContent>
                   </Tooltip>
                   <p className="font-medium text-muted-foreground text-sm">
@@ -365,13 +365,13 @@ const LTELockingComponent = ({
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="lte-simple-mode"
-                    aria-label="Toggle LTE Simple Mode"
+                    aria-label="切换 LTE 简易模式"
                     checked={simpleMode && hasOptions}
                     onCheckedChange={handleSimpleModeToggle}
                     disabled={!hasOptions || isLocking}
                   />
                   <Label htmlFor="lte-simple-mode">
-                    {simpleMode && hasOptions ? "On" : "Off"}
+                    {simpleMode && hasOptions ? "开" : "关"}
                   </Label>
                 </div>
               </div>
@@ -399,7 +399,7 @@ const LTELockingComponent = ({
                   disabled={isLocking}
                 />
                 <Label htmlFor="lte-tower-locking">
-                  {isEnabled ? "Enabled" : "Disabled"}
+                  {isEnabled ? "已启用" : "已关闭"}
                 </Label>
               </div>
             </div>
@@ -417,7 +417,7 @@ const LTELockingComponent = ({
                           <Input
                             id="earfcn1"
                             type="text"
-                            placeholder="Enter EARFCN"
+                            placeholder="输入 EARFCN"
                             value={earfcn1}
                             onChange={(e) => setEarfcn1(e.target.value)}
                             disabled={isLocking}
@@ -429,7 +429,7 @@ const LTELockingComponent = ({
                         <Input
                           id="pci1"
                           type="text"
-                          placeholder="Enter PCI"
+                          placeholder="输入 PCI"
                           value={pci1}
                           onChange={(e) => setPci1(e.target.value)}
                           disabled={isLocking}
@@ -446,7 +446,7 @@ const LTELockingComponent = ({
                           <Input
                             id="earfcn2"
                             type="text"
-                            placeholder="Enter EARFCN 2"
+                            placeholder="输入 EARFCN 2"
                             value={earfcn2}
                             onChange={(e) => setEarfcn2(e.target.value)}
                             disabled={isLocking}
@@ -458,7 +458,7 @@ const LTELockingComponent = ({
                         <Input
                           id="pci2"
                           type="text"
-                          placeholder="Enter PCI 2"
+                            placeholder="输入 PCI 2"
                           value={pci2}
                           onChange={(e) => setPci2(e.target.value)}
                           disabled={isLocking}
@@ -475,7 +475,7 @@ const LTELockingComponent = ({
                           <Input
                             id="earfcn3"
                             type="text"
-                            placeholder="Enter EARFCN 3"
+                            placeholder="输入 EARFCN 3"
                             value={earfcn3}
                             onChange={(e) => setEarfcn3(e.target.value)}
                             disabled={isLocking}
@@ -487,7 +487,7 @@ const LTELockingComponent = ({
                         <Input
                           id="pci3"
                           type="text"
-                          placeholder="Enter PCI 3"
+                            placeholder="输入 PCI 3"
                           value={pci3}
                           onChange={(e) => setPci3(e.target.value)}
                           disabled={isLocking}
@@ -506,21 +506,21 @@ const LTELockingComponent = ({
       <AlertDialog open={showLockDialog} onOpenChange={setShowLockDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Lock to LTE Tower?</AlertDialogTitle>
+            <AlertDialogTitle>锁定 LTE 基站？</AlertDialogTitle>
             <AlertDialogDescription>
-              This will lock your modem to{" "}
+              将把模组锁定到{" "}
               {pendingCells.length === 1
-                ? `EARFCN ${pendingCells[0]?.earfcn}, PCI ${pendingCells[0]?.pci}`
-                : `${pendingCells.length} cell targets`}
-              . The modem will only connect to{" "}
-              {pendingCells.length === 1 ? "this tower" : "these towers"} and
-              may briefly disconnect during the switch.
+                ? `EARFCN ${pendingCells[0]?.earfcn}，PCI ${pendingCells[0]?.pci}`
+                : `${pendingCells.length} 组小区`}
+              ，仅连接该
+              {pendingCells.length === 1 ? "基站" : "组基站"}
+              ，切换期间可能短暂断网。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmLock}>
-              Lock Tower
+              确认锁定
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -530,17 +530,15 @@ const LTELockingComponent = ({
       <AlertDialog open={showUnlockDialog} onOpenChange={setShowUnlockDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unlock LTE Tower?</AlertDialogTitle>
+            <AlertDialogTitle>解除 LTE 基站锁定？</AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove the LTE tower lock. The modem will be free to
-              select any available tower and may briefly disconnect during the
-              switch.
+              将移除 LTE 基站锁定，模组可自由选择可用基站，切换期间可能短暂断网。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmUnlock}>
-              Remove Lock
+              解除锁定
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

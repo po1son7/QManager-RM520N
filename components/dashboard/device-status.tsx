@@ -104,7 +104,7 @@ const DeviceStatusComponent = ({
             <div className="size-44 bg-primary/15 rounded-full p-4 flex items-center justify-center">
               <img
                 src="/device-icon.svg"
-                alt="Device Icon"
+                alt="设备图标"
                 className="size-full drop-shadow-md object-contain"
               />
             </div>
@@ -117,7 +117,7 @@ const DeviceStatusComponent = ({
                 size="icon"
                 onClick={() => setHidePrivate((prev) => !prev)}
                 aria-label={
-                  hidePrivate ? "Show private details" : "Hide private details"
+                  hidePrivate ? "显示私密详情" : "隐藏私密详情"
                 }
               >
                 {hidePrivate ? (

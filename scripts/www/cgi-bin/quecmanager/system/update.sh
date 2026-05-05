@@ -95,25 +95,28 @@ check_lock() {
     fi
 }
 
+# GitHub API rejects requests without a User-Agent (403).
+QM_HTTP_UA="QManager-RM520N/1.0 (+OpenWrt)"
+
 # Fetch URL to a file, capturing HTTP headers for rate-limit detection.
 # RG501Q-EU firmware often lacks curl — prefer Entware/system wget first.
 http_api_fetch() {
     local url="$1" out_file="$2" header_file="$3" timeout="${4:-15}"
 
     if [ -x /opt/bin/wget ]; then
-        /opt/bin/wget -qO "$out_file" -T "$timeout" -S "$url" 2>"$header_file" && return 0
+        /opt/bin/wget -qO "$out_file" -T "$timeout" -U "$QM_HTTP_UA" -S "$url" 2>"$header_file" && return 0
     fi
 
     if command -v wget >/dev/null 2>&1; then
-        wget -qO "$out_file" -T "$timeout" -S "$url" 2>"$header_file" && return 0
+        wget -qO "$out_file" -T "$timeout" -U "$QM_HTTP_UA" -S "$url" 2>"$header_file" && return 0
     fi
 
     if command -v curl >/dev/null 2>&1; then
-        curl -sL --max-time "$timeout" -o "$out_file" -D "$header_file" "$url" && return 0
+        curl -sL --max-time "$timeout" -A "$QM_HTTP_UA" -o "$out_file" -D "$header_file" "$url" && return 0
     fi
 
     if command -v uclient-fetch >/dev/null 2>&1; then
-        uclient-fetch -qO "$out_file" --timeout="$timeout" "$url" 2>"$header_file" && return 0
+        uclient-fetch -qO "$out_file" --timeout="$timeout" --user-agent="$QM_HTTP_UA" "$url" 2>"$header_file" && return 0
     fi
 
     return 1
@@ -144,11 +147,12 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
     auto_enabled=$(uci_update_get auto_update_enabled "0")
     auto_time=$(uci_update_get auto_update_time "03:00")
 
-    # Query GitHub Releases API with header capture for rate-limit detection
-    api_url=$(qm_update_mirror_url "https://api.github.com/repos/$GITHUB_REPO/releases")
+    # Query GitHub Releases API (mirror first for CN; fallback direct — many mirrors
+    # do not proxy api.github.com). GitHub requires User-Agent (see http_api_fetch).
+    api_direct="https://api.github.com/repos/$GITHUB_REPO/releases"
+    api_mirrored=$(qm_update_mirror_url "$api_direct")
     tmp_body="/tmp/qm_update_api_body.json"
     tmp_headers="/tmp/qm_update_api_headers.txt"
-    rm -f "$tmp_body" "$tmp_headers"
 
     # Detect stale pending-version file (previous install interrupted before reboot)
     pending_version=""
@@ -156,52 +160,46 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
         pending_version=$(tr -d '[:space:]' < "$VERSION_PENDING" 2>/dev/null)
     fi
 
-    if ! http_api_fetch "$api_url" "$tmp_body" "$tmp_headers"; then
-        rm -f "$tmp_body" "$tmp_headers"
-        jq -n \
-            --arg cv "$current_version" \
-            --argjson prerelease "$include_prerelease" \
-            --arg auto_en "$auto_enabled" \
-            --arg auto_time "$auto_time" \
-            --argjson pif "$([ -n "$pending_version" ] && echo true || echo false)" \
-            --arg pv "$pending_version" \
-            '{
-                success: true, current_version: $cv,
-                latest_version: null, update_available: false,
-                changelog: null, current_changelog: null,
-                download_url: null, download_size: null,
-                available_versions: [], download_state: null,
-                include_prerelease: ($prerelease == 1),
-                auto_update_enabled: ($auto_en == "1"),
-                auto_update_time: $auto_time,
-                previous_install_failed: $pif,
-                pending_version: (if $pv == "" then null else $pv end),
-                check_error: "Unable to check for updates. Check your internet connection."
-            }'
-        exit 0
-    fi
+    api_fetch_ok=0
+    api_urls="$api_mirrored"
+    [ "$api_mirrored" != "$api_direct" ] && api_urls="$api_urls $api_direct"
 
-    # Check for rate limiting (HTTP 403)
-    if grep -qi "403 Forbidden\|HTTP/[0-9.]* 403" "$tmp_headers" 2>/dev/null; then
-        # Try to parse reset time
-        reset_ts=$(grep -i 'x-ratelimit-reset' "$tmp_headers" | sed 's/.*: *//;s/\r//' | head -1)
-        wait_msg="Rate limit reached. Try again later."
-        if [ -n "$reset_ts" ]; then
-            now_ts=$(date +%s 2>/dev/null)
-            if [ -n "$now_ts" ] && [ -n "$reset_ts" ] && [ "$reset_ts" -gt "$now_ts" ] 2>/dev/null; then
-                wait_mins=$(( (reset_ts - now_ts + 59) / 60 ))
-                wait_msg="Rate limit reached. Try again in ${wait_mins} minute(s)."
-            fi
+    last_check_err=""
+    for api_url in $api_urls; do
+        rm -f "$tmp_body" "$tmp_headers"
+        if ! http_api_fetch "$api_url" "$tmp_body" "$tmp_headers"; then
+            last_check_err="无法访问 GitHub API，请确认路由器已联网、DNS 正常且系统时间正确。"
+            continue
         fi
+        if grep -qi "403 Forbidden\|HTTP/[0-9.]* 403" "$tmp_headers" 2>/dev/null; then
+            reset_ts=$(grep -i 'x-ratelimit-reset' "$tmp_headers" | sed 's/.*: *//;s/\r//' | head -1)
+            last_check_err="GitHub API 返回拒绝访问（403）。请稍后重试。"
+            if [ -n "$reset_ts" ]; then
+                now_ts=$(date +%s 2>/dev/null)
+                if [ -n "$now_ts" ] && [ "$reset_ts" -gt "$now_ts" ] 2>/dev/null; then
+                    wait_mins=$(( (reset_ts - now_ts + 59) / 60 ))
+                    last_check_err="GitHub API 频率受限，请约 ${wait_mins} 分钟后再试。"
+                fi
+            fi
+            continue
+        fi
+        if jq -e 'type == "array"' "$tmp_body" >/dev/null 2>&1; then
+            api_fetch_ok=1
+            break
+        fi
+        last_check_err="更新服务器返回了无效数据，已尝试镜像与直连。"
+    done
+
+    if [ "$api_fetch_ok" != "1" ]; then
         rm -f "$tmp_body" "$tmp_headers"
         jq -n \
             --arg cv "$current_version" \
             --argjson prerelease "$include_prerelease" \
-            --arg err "$wait_msg" \
             --arg auto_en "$auto_enabled" \
             --arg auto_time "$auto_time" \
             --argjson pif "$([ -n "$pending_version" ] && echo true || echo false)" \
             --arg pv "$pending_version" \
+            --arg ce "${last_check_err:-无法检查更新，请确认网络正常。}" \
             '{
                 success: true, current_version: $cv,
                 latest_version: null, update_available: false,
@@ -213,7 +211,7 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
                 auto_update_time: $auto_time,
                 previous_install_failed: $pif,
                 pending_version: (if $pv == "" then null else $pv end),
-                check_error: $err
+                check_error: $ce
             }'
         exit 0
     fi
@@ -256,7 +254,7 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
         download_state=$(jq -n \
             --arg status "ready" \
             --arg version "$staged_ver" \
-            --arg message "Download verified ($staged_size)" \
+            --arg message "下载已校验（$staged_size）" \
             --arg size "$staged_size" \
             '{status: $status, version: $version, message: $message, size: $size}')
     fi

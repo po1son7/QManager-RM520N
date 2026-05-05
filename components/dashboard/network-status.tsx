@@ -46,36 +46,36 @@ function getNetworkDisplay(
     case "5G-NSA":
       return {
         icon: <MdOutline5G className="size-full text-white" />,
-        label: "5G Signal",
+        label: "5G",
         sublabel: nrCaActive ? "5G + LTE / NR-CA" : "5G + LTE",
         hasNetwork: true,
       };
     case "5G-SA":
       return {
         icon: <MdOutline5G className="size-full text-white" />,
-        label: "5G Signal",
-        sublabel: nrCaActive ? "Standalone / NR-CA" : "Standalone",
+        label: "5G",
+        sublabel: nrCaActive ? "SA / NR-CA" : "SA（独立组网）",
         hasNetwork: true,
       };
     case "LTE":
       return caActive
         ? {
             icon: <Md4gPlusMobiledata className="size-full text-white" />,
-            label: "LTE+ Signal",
-            sublabel: "4G Carrier Aggregation",
+            label: "LTE+",
+            sublabel: "4G 载波聚合",
             hasNetwork: true,
           }
         : {
             icon: <Md4gMobiledata className="size-full text-white" />,
-            label: "LTE Signal",
-            sublabel: "4G Connected",
+            label: "LTE",
+            sublabel: "4G 已连接",
             hasNetwork: true,
           };
     default:
       return {
         icon: <Md3gMobiledata className="size-full text-white/50" />,
-        label: "Signal",
-        sublabel: "No 4G/5G",
+        label: "信号",
+        sublabel: "无 4G/5G",
         hasNetwork: false,
       };
   }
@@ -85,19 +85,19 @@ function getNetworkDisplay(
 function getServiceLabel(status: ServiceStatus) {
   switch (status) {
     case "optimal":
-      return "Optimal";
+      return "最佳";
     case "connected":
-      return "Connected";
+      return "已连接";
     case "limited":
-      return "Limited";
+      return "受限";
     case "no_service":
-      return "No Service";
+      return "无服务";
     case "searching":
-      return "Searching";
+      return "搜网中";
     case "sim_error":
-      return "SIM Error";
+      return "SIM 异常";
     default:
-      return "Unknown";
+      return "未知";
   }
 }
 

@@ -45,8 +45,8 @@ interface SpeedtestDialogProps {
 function PhaseIndicator({ phase }: { phase: SpeedtestPhase }) {
   const phases: { key: SpeedtestPhase; label: string }[] = [
     { key: "ping", label: "Ping" },
-    { key: "download", label: "Download" },
-    { key: "upload", label: "Upload" },
+    { key: "download", label: "下行" },
+    { key: "upload", label: "上行" },
   ];
 
   return (
@@ -110,16 +110,17 @@ function LiveSpeed({
   const Icon = phase === "download" ? ArrowDown : ArrowUp;
   const mbps = bytesToMbps(bandwidth);
   const pct = Math.round(progress * 100);
+  const phaseLabel = phase === "download" ? "下行" : "上行";
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Icon className="size-4 text-primary" />
-          <span className="text-sm font-medium capitalize">{phase}</span>
+          <span className="text-sm font-medium">{phaseLabel}</span>
         </div>
         <span className="text-xs text-muted-foreground">
-          {formatBytes(bytes)} transferred
+          已传输 {formatBytes(bytes)}
         </span>
       </div>
 
@@ -156,7 +157,7 @@ function ResultDisplay({
         <div className="text-center space-y-1">
           <div className="flex items-center justify-center gap-1 text-primary font-semibold">
             <ArrowDown className="h-3.5 w-3.5" />
-            <span className="text-xs">Download</span>
+            <span className="text-xs">下行</span>
           </div>
           <div className="flex items-baseline justify-center gap-0.5">
             <span className="text-2xl font-bold tabular-nums">
@@ -172,7 +173,7 @@ function ResultDisplay({
         <div className="text-center space-y-1">
           <div className="flex items-center justify-center gap-1 text-primary font-semibold">
             <ArrowUp className="h-3.5 w-3.5" />
-            <span className="text-xs">Upload</span>
+            <span className="text-xs">上行</span>
           </div>
           <div className="flex items-baseline justify-center gap-0.5">
             <span className="text-2xl font-bold tabular-nums">
@@ -206,13 +207,13 @@ function ResultDisplay({
       {/* Secondary metrics */}
       <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-muted-foreground font-medium">Jitter</span>
+          <span className="text-muted-foreground font-medium">抖动（Jitter）</span>
           <span className="font-semibold tabular-nums">
             {result.ping.jitter.toFixed(1)} ms
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground font-medium">Packet Loss</span>
+          <span className="text-muted-foreground font-medium">丢包率</span>
           <span className="font-semibold tabular-nums">
             {result.packetLoss !== undefined
               ? `${result.packetLoss.toFixed(2)}%`
@@ -220,25 +221,25 @@ function ResultDisplay({
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground font-medium">DL Latency</span>
+          <span className="text-muted-foreground font-medium">下行延迟</span>
           <span className="font-semibold tabular-nums">
             {result.download.latency.iqm.toFixed(1)} ms
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground font-medium">UL Latency</span>
+          <span className="text-muted-foreground font-medium">上行延迟</span>
           <span className="font-semibold tabular-nums">
             {result.upload.latency.iqm.toFixed(1)} ms
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground font-medium">DL Data</span>
+          <span className="text-muted-foreground font-medium">下行流量</span>
           <span className="font-semibold tabular-nums">
             {formatBytes(result.download.bytes)}
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground font-medium">UL Data</span>
+          <span className="text-muted-foreground font-medium">上行流量</span>
           <span className="font-semibold tabular-nums">
             {formatBytes(result.upload.bytes)}
           </span>
@@ -251,19 +252,19 @@ function ResultDisplay({
       <div className="space-y-2 text-sm">
         <div className="flex items-center gap-1.5">
           <Server className="h-3.5 w-3.5 text-primary" />
-          <span className="text-primary font-semibold">Server</span>
+          <span className="text-primary font-semibold">服务器</span>
           <span className="font-medium ml-auto">{result.server.name}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <Globe className="h-3.5 w-3.5 text-primary" />
-          <span className="text-primary font-semibold">Location</span>
+          <span className="text-primary font-semibold">位置</span>
           <span className="font-medium ml-auto">
             {result.server.location}, {result.server.country}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
           <Activity className="h-3.5 w-3.5 text-primary" />
-          <span className="text-primary font-semibold">ISP</span>
+          <span className="text-primary font-semibold">运营商（ISP）</span>
           <span className="font-medium ml-auto">{result.isp}</span>
         </div>
       </div>
@@ -277,7 +278,7 @@ function ResultDisplay({
           className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors pt-1 underline underline-offset-4"
         >
           <ExternalLink className="h-3 w-3" />
-          View on Speedtest.net
+          在 Speedtest.net 查看结果
         </a>
       )}
     </div>
@@ -339,10 +340,10 @@ export function SpeedtestDialog({ open, onOpenChange }: SpeedtestDialogProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            Speed Test
+            网速测试
             {isRunning && (
               <Badge variant="default" className="text-[10px] font-normal">
-                Running
+                进行中
               </Badge>
             )}
           </DialogTitle>
@@ -355,20 +356,20 @@ export function SpeedtestDialog({ open, onOpenChange }: SpeedtestDialogProps) {
           {phase === "idle" && (
             <div className="flex flex-col items-center gap-4 py-4">
               <p className="text-sm text-muted-foreground text-center">
-                Measure your current download speed, upload speed, and latency.
+                测量当前网络的下行速率、上行速率与延迟。
               </p>
 
               {/* Server selection */}
               <div className="w-full space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Server</span>
+                  <span className="text-sm font-medium">服务器</span>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="size-7"
                     onClick={fetchServers}
                     disabled={isLoadingServers}
-                    aria-label="Refresh server list"
+                    aria-label="刷新服务器列表"
                   >
                     <RefreshCwIcon className={`size-3.5 ${isLoadingServers ? "animate-spin" : ""}`} />
                   </Button>
@@ -382,12 +383,12 @@ export function SpeedtestDialog({ open, onOpenChange }: SpeedtestDialogProps) {
                       setSelectedServer(value === "auto" ? null : Number(value))
                     }
                   >
-                    <SelectTrigger className="w-full" aria-label="Select server">
-                      <SelectValue placeholder="自动 (nearest)" />
+                    <SelectTrigger className="w-full" aria-label="选择测速服务器">
+                      <SelectValue placeholder="自动（最近节点）" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl max-h-64">
                       <SelectItem value="auto" className="rounded-lg">
-                        自动 (nearest)
+                        自动（最近节点）
                       </SelectItem>
                       {servers.map((s) => (
                         <SelectItem
@@ -405,11 +406,11 @@ export function SpeedtestDialog({ open, onOpenChange }: SpeedtestDialogProps) {
 
               <Button onClick={start} disabled={!isAvailable} className="gap-2">
                 <Play className="size-4" />
-                Run Speed Test
+                开始测速
               </Button>
               {isAvailable === false && (
                 <p className="text-xs text-destructive">
-                  speedtest-cli is not installed on this device.
+                  设备未安装 speedtest-cli。
                 </p>
               )}
             </div>
@@ -422,7 +423,7 @@ export function SpeedtestDialog({ open, onOpenChange }: SpeedtestDialogProps) {
             <div className="flex flex-col items-center gap-3 py-6">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground">
-                Connecting to server...
+                正在连接服务器…
               </p>
               {currentProgress?.type === "testStart" && (
                 <p className="text-xs text-muted-foreground">
@@ -441,7 +442,7 @@ export function SpeedtestDialog({ open, onOpenChange }: SpeedtestDialogProps) {
               <PhaseIndicator phase="ping" />
               <div className="flex flex-col items-center gap-2 py-4">
                 <Activity className="size-6 text-primary animate-pulse" />
-                <span className="text-sm font-medium">Testing latency...</span>
+                <span className="text-sm font-medium">正在测量延迟…</span>
                 {currentProgress?.type === "ping" && (
                   <span className="text-2xl font-bold tabular-nums">
                     {currentProgress.ping.latency.toFixed(1)}{" "}
@@ -494,7 +495,7 @@ export function SpeedtestDialog({ open, onOpenChange }: SpeedtestDialogProps) {
               <div className="flex justify-center pt-2">
                 <Button onClick={start}>
                   <Play className="h-3.5 w-3.5" />
-                  Run Again
+                  再测一次
                 </Button>
               </div>
             </div>
@@ -514,7 +515,7 @@ export function SpeedtestDialog({ open, onOpenChange }: SpeedtestDialogProps) {
                 className="gap-2"
               >
                 <Play className="h-3.5 w-3.5" />
-                Try Again
+                重试
               </Button>
             </div>
           )}

@@ -248,9 +248,9 @@ const SystemLogsCard = () => {
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>System Logs</CardTitle>
+          <CardTitle>系统日志</CardTitle>
           <CardDescription>
-            QManager application logs from all components.
+            QManager 各组件的应用日志。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -282,9 +282,9 @@ const SystemLogsCard = () => {
     <>
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>System Logs</CardTitle>
+          <CardTitle>系统日志</CardTitle>
           <CardDescription>
-            QManager application logs from all components.
+            QManager 各组件的应用日志。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -294,10 +294,10 @@ const SystemLogsCard = () => {
             <div className="grid grid-cols-2 @md/card:flex @md/card:flex-wrap items-center gap-2">
               <Select value={level} onValueChange={setLevel}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Levels" />
+                  <SelectValue placeholder="全部级别" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Levels</SelectItem>
+                  <SelectItem value="all">全部级别</SelectItem>
                   <SelectItem value="DEBUG">DEBUG</SelectItem>
                   <SelectItem value="INFO">INFO</SelectItem>
                   <SelectItem value="WARN">WARN</SelectItem>
@@ -307,10 +307,10 @@ const SystemLogsCard = () => {
 
               <Select value={component} onValueChange={setComponent}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Components" />
+                  <SelectValue placeholder="全部组件" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Components</SelectItem>
+                  <SelectItem value="all">全部组件</SelectItem>
                   {availableComponents.map((c) => (
                     <SelectItem key={c} value={c}>
                       {c}
@@ -321,12 +321,12 @@ const SystemLogsCard = () => {
 
               <div className="relative col-span-2 @md/card:flex-1 @md/card:min-w-48">
                 <label htmlFor="log-search" className="sr-only">
-                  Search logs
+                  搜索日志
                 </label>
                 <SearchIcon className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                 <Input
                   id="log-search"
-                  placeholder="Search logs..."
+                  placeholder="搜索日志…"
                   value={searchInput}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   className="pl-8"
@@ -358,7 +358,7 @@ const SystemLogsCard = () => {
                   htmlFor="include-rotated"
                   className="text-sm text-muted-foreground whitespace-nowrap"
                 >
-                  Include archived
+                  包含归档日志
                 </label>
               </div>
 
@@ -366,7 +366,7 @@ const SystemLogsCard = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  aria-label="Refresh system logs"
+                  aria-label="刷新系统日志"
                   onClick={() => fetchLogs()}
                 >
                   <RefreshCcwIcon className="size-4" />
@@ -378,7 +378,7 @@ const SystemLogsCard = () => {
                   onClick={() => setShowClearDialog(true)}
                 >
                   <Trash2Icon className="size-4 mr-1" />
-                  Clear
+                  清空
                 </Button>
               </div>
             </div>
@@ -389,12 +389,12 @@ const SystemLogsCard = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-44">Timestamp</TableHead>
-                  <TableHead className="w-20">Level</TableHead>
+                  <TableHead className="w-44">时间戳</TableHead>
+                  <TableHead className="w-20">级别</TableHead>
                   <TableHead className="w-32 hidden @md/card:table-cell">
-                    Component
+                    组件
                   </TableHead>
-                  <TableHead>Message</TableHead>
+                  <TableHead>消息</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -404,7 +404,7 @@ const SystemLogsCard = () => {
                       <div className="flex flex-col items-center gap-2">
                         <LogsIcon className="h-8 w-8 text-muted-foreground" />
                         <p className="text-sm text-muted-foreground">
-                          No log entries found
+                          暂无日志条目
                         </p>
                       </div>
                     </TableCell>
@@ -444,19 +444,19 @@ const SystemLogsCard = () => {
         </CardContent>
         <CardFooter className="flex justify-between items-center">
           <div className="text-xs text-muted-foreground">
-            Showing <strong>{entries.length}</strong> of{" "}
-            <strong>{totalEntries}</strong> entries
+            显示 <strong>{entries.length}</strong> /{" "}
+            <strong>{totalEntries}</strong> 条
             {stats && (
               <span className="ml-2">
-                ({stats.current_size_kb}KB, {stats.rotated_files} rotated file
-                {stats.rotated_files !== 1 ? "s" : ""})
+                （{stats.current_size_kb}KB，已轮转文件 {stats.rotated_files}{" "}
+                个）
               </span>
             )}
           </div>
           {lastFetched && (
             <div className="flex items-center text-xs text-muted-foreground">
               <Clock className="h-3 w-3 mr-1" />
-              Last updated: {lastFetched.toLocaleTimeString()}
+              上次刷新：{lastFetched.toLocaleTimeString()}
             </div>
           )}
         </CardFooter>
@@ -466,10 +466,9 @@ const SystemLogsCard = () => {
       <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Clear System Logs</AlertDialogTitle>
+            <AlertDialogTitle>清空系统日志</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete all log entries including rotated
-              files. This action cannot be undone.
+              将永久删除所有日志条目（含已轮转文件），此操作不可撤销。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -482,10 +481,10 @@ const SystemLogsCard = () => {
               {isClearing ? (
                 <>
                   <Loader2 className="size-4 animate-spin mr-1" />
-                  Clearing...
+                  清空中…
                 </>
               ) : (
-                "Clear All Logs"
+                "清空全部日志"
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

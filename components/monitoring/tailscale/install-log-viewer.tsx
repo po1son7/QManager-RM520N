@@ -23,7 +23,7 @@ export function InstallLogViewer({ log, isRunning }: InstallLogViewerProps) {
   return (
     <div className="w-full rounded-md border border-zinc-800 bg-zinc-950 text-zinc-200 overflow-hidden">
       <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-800">
-        <span className="text-xs font-medium text-zinc-400">Install log</span>
+        <span className="text-xs font-medium text-zinc-400">安装日志</span>
         {isRunning && (
           <Loader2 className="size-3.5 animate-spin text-zinc-400" />
         )}
@@ -33,7 +33,7 @@ export function InstallLogViewer({ log, isRunning }: InstallLogViewerProps) {
         className="h-56 overflow-y-auto px-3 py-2 font-mono text-xs leading-relaxed whitespace-pre text-left"
       >
         {showPlaceholder ? (
-          <span className="text-zinc-500">Waiting for output...</span>
+          <span className="text-zinc-500">等待输出…</span>
         ) : (
           log
         )}

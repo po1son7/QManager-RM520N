@@ -99,7 +99,7 @@ const createColumns = (
           <span className="font-semibold">{cell.provider}</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button type="button" className="inline-flex p-2 -m-2" aria-label="MCC/MNC details">
+              <button type="button" className="inline-flex p-2 -m-2" aria-label="MCC/MNC 详情">
                 <Info className="size-3" />
               </button>
             </TooltipTrigger>
@@ -197,7 +197,7 @@ const createColumns = (
               size="icon"
             >
               <MoreVertical className="size-4" />
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">打开菜单</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
@@ -286,7 +286,7 @@ const ScanResultView = ({ data, onLockCell }: ScanResultViewProps) => {
     <div ref={containerRef} className="relative flex flex-col gap-4 overflow-hidden">
       <div className="flex flex-col @sm/card:flex-row items-start @sm/card:items-center gap-2">
         <Input
-          placeholder="Filter by provider..."
+          placeholder="按运营商筛选…"
           value={
             (table.getColumn("provider")?.getFilterValue() as string) ?? ""
           }

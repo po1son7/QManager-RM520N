@@ -21,14 +21,14 @@ const APNSettingsComponent = () => {
   return (
     <div className="@container/main mx-auto p-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">APN Management</h1>
+        <h1 className="text-3xl font-bold mb-2">APN 管理</h1>
         <p className="text-muted-foreground">
-          Configure APNs and carrier firmware profiles.
+          配置接入点名称（APN）与运营商配置文件（MBN）。
         </p>
       </div>
       {error && !isLoading && (
         <div role="alert" className="mb-4 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          Failed to load APN settings. Displayed values may be outdated.
+          无法加载 APN 设置，当前显示的值可能已过期。
           <button type="button" className="ml-2 underline" onClick={refresh}>
             Retry
           </button>

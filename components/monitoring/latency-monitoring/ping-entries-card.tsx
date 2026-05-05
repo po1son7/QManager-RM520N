@@ -71,7 +71,7 @@ const PingEntriesCard = ({
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Detailed Entries</CardTitle>
+          <CardTitle>明细记录</CardTitle>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-7 gap-1">

@@ -30,7 +30,7 @@ const CellularAMBRCard = ({ ambr, isLoading }: CellularAMBRCardProps) => {
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Data Rate Limits</CardTitle>
+          <CardTitle>数据速率上限（AMBR）</CardTitle>
           <CardDescription>
             The maximum upload and download speeds your carrier allows for each
             data connection. These limits are set by your carrier&apos;s network policy.
@@ -61,7 +61,7 @@ const CellularAMBRCard = ({ ambr, isLoading }: CellularAMBRCardProps) => {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Data Rate Limits</CardTitle>
+        <CardTitle>数据速率上限（AMBR）</CardTitle>
         <CardDescription>
           The maximum upload and download speeds your carrier allows for each
           data connection. These limits are set by your carrier&apos;s network policy.
@@ -74,7 +74,7 @@ const CellularAMBRCard = ({ ambr, isLoading }: CellularAMBRCardProps) => {
             <div className="flex items-center gap-1.5">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button type="button" className="inline-flex" aria-label="More info">
+                  <button type="button" className="inline-flex" aria-label="更多信息">
                     <TbInfoCircleFilled className="size-5 text-info" />
                   </button>
                 </TooltipTrigger>
@@ -133,7 +133,7 @@ const CellularAMBRCard = ({ ambr, isLoading }: CellularAMBRCardProps) => {
             <div className="flex items-center gap-1.5">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button type="button" className="inline-flex" aria-label="More info">
+                  <button type="button" className="inline-flex" aria-label="更多信息">
                     <TbInfoCircleFilled className="size-5 text-info" />
                   </button>
                 </TooltipTrigger>

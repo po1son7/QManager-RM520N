@@ -104,9 +104,9 @@ const CellularSettingsCard = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Cellular Basic Settings</CardTitle>
+          <CardTitle>模组射频设置</CardTitle>
           <CardDescription>
-            Manage your cellular connection settings.
+            配置 SIM 卡槽、射频电源、网络类型与漫游偏好。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -150,9 +150,9 @@ const CellularSettingsCard = ({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Modem Radio Settings</CardTitle>
+        <CardTitle>模组射频设置</CardTitle>
         <CardDescription>
-          Configure SIM slot, radio power, network type, and roaming preferences.
+          配置 SIM 卡槽、射频电源、网络类型与漫游偏好。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -162,14 +162,14 @@ const CellularSettingsCard = ({
               <FieldGroup>
                 <div className="grid @md/card:grid-cols-2 grid-cols-1 grid-flow-row gap-4">
                   <Field>
-                    <FieldLabel>SIM Slot</FieldLabel>
+                    <FieldLabel>SIM 卡槽</FieldLabel>
                     <Select
                       value={simSlot || (settings ? String(settings.sim_slot) : "")}
                       onValueChange={setSimSlot}
                       disabled={isSaving}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose SIM Slot" />
+                        <SelectValue placeholder="选择 SIM 卡槽" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="1">SIM 1</SelectItem>
@@ -179,20 +179,20 @@ const CellularSettingsCard = ({
                   </Field>
 
                   <Field>
-                    <FieldLabel>Radio Power</FieldLabel>
+                    <FieldLabel>射频电源</FieldLabel>
                     <Select
                       value={cfun || (settings ? String(settings.cfun) : "")}
                       onValueChange={setCfun}
                       disabled={isSaving}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose Radio Power Mode" />
+                        <SelectValue placeholder="选择射频电源模式" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="0">Radio Off (Low Power)</SelectItem>
-                        <SelectItem value="1">Normal Operation</SelectItem>
+                        <SelectItem value="0">射频关闭（低功耗）</SelectItem>
+                        <SelectItem value="1">正常工作</SelectItem>
                         <SelectItem value="4">
-                          Airplane Mode (RF Off)
+                          飞行模式（射频关闭）
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -201,14 +201,14 @@ const CellularSettingsCard = ({
 
                 <div className="grid @md/card:grid-cols-2 grid-cols-1 grid-flow-row gap-4">
                   <Field>
-                    <FieldLabel>Preferred Network Type</FieldLabel>
+                    <FieldLabel>首选网络类型</FieldLabel>
                     <Select
                       value={modePref || (settings ? settings.mode_pref : "")}
                       onValueChange={setModePref}
                       disabled={isSaving}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose Network Type" />
+                        <SelectValue placeholder="选择网络类型" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="AUTO">自动</SelectItem>
@@ -227,7 +227,7 @@ const CellularSettingsCard = ({
                       disabled={isSaving}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose 5G Mode" />
+                        <SelectValue placeholder="选择 5G 模式" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="0">自动（SA + NSA）</SelectItem>
@@ -240,19 +240,19 @@ const CellularSettingsCard = ({
 
                 <div className="grid @md/card:grid-cols-2 grid-cols-1 grid-flow-row gap-4">
                   <Field>
-                    <FieldLabel>Roaming Preference</FieldLabel>
+                    <FieldLabel>漫游偏好</FieldLabel>
                     <Select
                       value={roamPref || (settings ? String(settings.roam_pref) : "")}
                       onValueChange={setRoamPref}
                       disabled={isSaving}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose Roaming Preference" />
+                        <SelectValue placeholder="选择漫游偏好" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="255">Any Network</SelectItem>
-                        <SelectItem value="1">Home Network Only</SelectItem>
-                        <SelectItem value="3">Partner Networks</SelectItem>
+                        <SelectItem value="255">任意网络</SelectItem>
+                        <SelectItem value="1">仅归属网络</SelectItem>
+                        <SelectItem value="3">合作伙伴网络</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>
@@ -267,7 +267,7 @@ const CellularSettingsCard = ({
               variant="outline"
               onClick={handleReset}
               disabled={isSaving}
-              aria-label="Reset to saved values"
+              aria-label="恢复已保存的值"
             >
               <RotateCcwIcon />
             </Button>

@@ -62,11 +62,11 @@ const FPLMNCard = () => {
       if (data.success) {
         setHasEntries(data.has_entries);
       } else {
-        setFetchError(data.detail || "Failed to read blocked networks");
+        setFetchError(data.detail || "读取禁止漫游网络列表失败");
       }
     } catch {
       if (mountedRef.current) {
-        setFetchError("Unable to connect to device");
+        setFetchError("无法连接到设备");
       }
     } finally {
       if (mountedRef.current && !silent) {
@@ -114,7 +114,7 @@ const FPLMNCard = () => {
   // ---------------------------------------------------------------------------
   const cardHeader = (
     <CardHeader>
-      <CardTitle>Blocked Networks</CardTitle>
+      <CardTitle>禁止的网络（FPLMN）</CardTitle>
       <CardDescription>
         Your SIM stores a list of networks that previously rejected your
         device. Clearing this list may restore connectivity and improve

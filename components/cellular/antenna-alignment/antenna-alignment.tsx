@@ -65,10 +65,9 @@ export default function AntennaAlignmentComponent() {
   return (
     <div className="@container/main mx-auto p-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Antenna Alignment</h1>
+        <h1 className="text-3xl font-bold mb-2">天线对准</h1>
         <p className="text-muted-foreground">
-          Per-antenna signal strength for each receiver chain. Record and
-          compare positions to find the best aim or placement.
+          各接收链路的分天线信号强度，记录并对比不同摆放角度以找到最佳指向。
         </p>
       </div>
 
@@ -78,8 +77,8 @@ export default function AntennaAlignmentComponent() {
           className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive mb-4"
         >
           {error
-            ? "Unable to reach the modem. Data shown may be outdated."
-            : "Signal data is stale — modem may be unresponsive."}
+            ? "无法连接模组，所示数据可能已过期。"
+            : "信号数据已过期，模组可能无响应。"}
         </div>
       )}
 

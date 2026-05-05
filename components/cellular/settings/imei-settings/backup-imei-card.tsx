@@ -140,10 +140,9 @@ const BackupIMEICard = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Backup Device IMEI</CardTitle>
+          <CardTitle>设备备份 IMEI</CardTitle>
           <CardDescription>
-            自动ally sets up a backup IMEI for your device to ensure
-            connectivity in case of primary IMEI issues.
+            当主 IMEI 异常时自动切换到备份 IMEI，保障联网能力。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -171,10 +170,9 @@ const BackupIMEICard = ({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Backup Device IMEI</CardTitle>
+        <CardTitle>设备备份 IMEI</CardTitle>
         <CardDescription>
-          If the network rejects the current IMEI after a reboot, the device
-          can automatically switch to a backup IMEI and restart.
+          若重启后网络拒绝当前 IMEI，设备可自动切换到备份 IMEI 并再次重启。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -186,18 +184,17 @@ const BackupIMEICard = ({
                   <FieldLabel htmlFor="backup-imei-toggle">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <button type="button" className="inline-flex" aria-label="More info">
+                        <button type="button" className="inline-flex" aria-label="更多信息">
                           <TbInfoCircleFilled className="size-5 text-info" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>
-                          Switch to a backup IMEI when the primary IMEI was
-                          rejected by the network.
+                          当主 IMEI 被网络拒绝时，切换到备份 IMEI。
                         </p>
                       </TooltipContent>
                     </Tooltip>
-                    Enable Backup IMEI
+                    启用备份 IMEI
                   </FieldLabel>
                   <Switch
                     id="backup-imei-toggle"
@@ -209,12 +206,12 @@ const BackupIMEICard = ({
               </div>
               <Field>
                 <FieldLabel htmlFor="backup-imei-input">
-                  Set Backup IMEI
+                  备份 IMEI
                 </FieldLabel>
                 <InputGroup>
                   <InputGroupInput
                     id="backup-imei-input"
-                    placeholder="Enter Backup IMEI"
+                    placeholder="输入备份 IMEI"
                     value={localImei}
                     onChange={handleImeiChange}
                     maxLength={15}
@@ -227,24 +224,23 @@ const BackupIMEICard = ({
                         <button
                           type="button"
                           className="pl-1.5 inline-flex items-center"
-                          aria-label="IMEI legal warning"
+                          aria-label="IMEI 合规提示"
                         >
                           <AlertTriangleIcon className="text-muted-foreground size-4" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>
-                          IMEI modification regulations vary by country.
+                          各国对 IMEI 修改的监管不同，
                           <br />
-                          Check your local laws before changing the IMEI.
+                          更改前请查阅当地法律法规。
                         </p>
                       </TooltipContent>
                     </Tooltip>
                   </InputGroupAddon>
                 </InputGroup>
                 <FieldDescription>
-                  Switching to the backup IMEI will require a device reboot to
-                  take effect.
+                  切换到备份 IMEI 后需要重启设备方可生效。
                 </FieldDescription>
               </Field>
             </FieldGroup>
@@ -261,7 +257,7 @@ const BackupIMEICard = ({
               variant="outline"
               onClick={handleReset}
               disabled={isSaving}
-              aria-label="Reset to saved values"
+              aria-label="恢复已保存的值"
             >
               <RotateCcwIcon />
             </Button>
@@ -272,12 +268,10 @@ const BackupIMEICard = ({
         <AlertDialog open={showInfoDialog} onOpenChange={setShowInfoDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Backup IMEI Auto-Recovery</AlertDialogTitle>
+              <AlertDialogTitle>备份 IMEI 自动恢复</AlertDialogTitle>
               <AlertDialogDescription>
-                When backup IMEI is enabled, the device will automatically check
-                for IMEI rejection after each reboot following an IMEI change.
-                If the network rejects the primary IMEI, the device will switch
-                to the backup IMEI and reboot automatically.
+                启用备份 IMEI 后，每次因更改 IMEI 而重启时，设备会自动检测主 IMEI
+                是否被网络拒绝；若被拒绝，将切换到备份 IMEI 并自动再次重启。
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -285,7 +279,7 @@ const BackupIMEICard = ({
                 取消
               </AlertDialogCancel>
               <AlertDialogAction onClick={handleInfoConfirm}>
-                Enable Backup
+                启用备份
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

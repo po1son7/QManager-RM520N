@@ -136,10 +136,9 @@ export const ScenarioItem = ({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Scenario</AlertDialogTitle>
+            <AlertDialogTitle>删除场景</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &quot;{scenario.name}&quot;? This
-              action cannot be undone.
+              确定删除「{scenario.name}」吗？此操作不可撤销。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -148,7 +147,7 @@ export const ScenarioItem = ({
               onClick={handleConfirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              删除
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

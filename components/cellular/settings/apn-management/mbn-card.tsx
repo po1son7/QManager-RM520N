@@ -143,9 +143,9 @@ const MBNCard = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Carrier Profile</CardTitle>
+          <CardTitle>运营商配置文件（MBN）</CardTitle>
           <CardDescription>
-            Select which carrier firmware profile is active on the modem. A reboot is required after changes.
+            选择模组当前启用的运营商固件配置文件。更改后需要重启生效。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -171,9 +171,9 @@ const MBNCard = ({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Carrier Profile</CardTitle>
+        <CardTitle>运营商配置文件（MBN）</CardTitle>
         <CardDescription>
-          Select which carrier firmware profile is active on the modem. A reboot is required after changes.
+          选择模组当前启用的运营商固件配置文件。更改后需要重启生效。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -182,7 +182,7 @@ const MBNCard = ({
             <FieldSet>
               <FieldGroup>
                 <Field>
-                  <FieldLabel htmlFor="mbn-auto-select">Auto-Select Profile</FieldLabel>
+                  <FieldLabel htmlFor="mbn-auto-select">自动选择配置文件</FieldLabel>
                   <Select
                     value={
                       localAutoSel ||
@@ -191,18 +191,18 @@ const MBNCard = ({
                     onValueChange={setLocalAutoSel}
                     disabled={isSaving}
                   >
-                    <SelectTrigger id="mbn-auto-select" aria-label="Auto-Select Profile">
-                      <SelectValue placeholder="Choose Auto-Select" />
+                    <SelectTrigger id="mbn-auto-select" aria-label="自动选择配置文件">
+                      <SelectValue placeholder="选择自动选择策略" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">Enabled</SelectItem>
-                      <SelectItem value="0">Disabled</SelectItem>
+                      <SelectItem value="1">已启用</SelectItem>
+                      <SelectItem value="0">已关闭</SelectItem>
                     </SelectContent>
                   </Select>
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="mbn-carrier-config">Carrier Configuration</FieldLabel>
+                  <FieldLabel htmlFor="mbn-carrier-config">运营商配置</FieldLabel>
                   <Select
                     value={
                       selectedProfile ||
@@ -213,14 +213,14 @@ const MBNCard = ({
                     onValueChange={setSelectedProfile}
                     disabled={isSaving || localAutoSel === "1"}
                   >
-                    <SelectTrigger id="mbn-carrier-config" aria-label="Carrier Configuration">
-                      <SelectValue placeholder="Choose Carrier Configuration" />
+                    <SelectTrigger id="mbn-carrier-config" aria-label="运营商配置">
+                      <SelectValue placeholder="选择运营商配置" />
                     </SelectTrigger>
                     <SelectContent>
                       {profiles?.map((p) => (
                         <SelectItem key={p.index} value={p.name}>
                           {p.name}
-                          {p.selected && p.activated ? " (Active)" : ""}
+                          {p.selected && p.activated ? "（当前）" : ""}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -234,7 +234,7 @@ const MBNCard = ({
               {isSaving ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Saving...
+                  保存中…
                 </>
               ) : (
                 "保存设置"
@@ -245,7 +245,7 @@ const MBNCard = ({
               variant="outline"
               onClick={handleReset}
               disabled={isSaving}
-              aria-label="Reset to saved values"
+              aria-label="恢复已保存的值"
             >
               <RotateCcwIcon />
             </Button>
@@ -258,15 +258,14 @@ const MBNCard = ({
         }}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Reboot Required</AlertDialogTitle>
+              <AlertDialogTitle>需要重启</AlertDialogTitle>
               <AlertDialogDescription>
-                Carrier profile changes require a device reboot to take effect.
-                Would you like to reboot now?
+                更改运营商配置文件后需要重启设备才能生效，是否立即重启？
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isRebooting}>
-                Reboot Later
+                稍后重启
               </AlertDialogCancel>
               <AlertDialogAction
                 disabled={isRebooting}

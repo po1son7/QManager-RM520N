@@ -60,11 +60,11 @@ interface LiveLatencyComponentProps {
 
 const chartConfig = {
   latency: {
-    label: "Latency",
+    label: "延迟",
     color: "var(--chart-1)",
   },
   packetloss: {
-    label: "Packetloss",
+    label: "丢包率",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
@@ -132,7 +132,7 @@ const LiveLatencyComponent = ({ connectivity }: LiveLatencyComponentProps) => {
 
       // Time label: seconds ago counting back from the most recent entry
       const secsAgo = (displaySlice.length - 1 - i) * interval;
-      const timeLabel = secsAgo === 0 ? "Now" : `-${secsAgo}s`;
+      const timeLabel = secsAgo === 0 ? "现在" : `-${secsAgo}s`;
 
       // Rolling packet loss: look back LOSS_WINDOW entries ending at absIdx
       const windowStart = Math.max(0, absIdx - LOSS_WINDOW + 1);
@@ -151,7 +151,7 @@ const LiveLatencyComponent = ({ connectivity }: LiveLatencyComponentProps) => {
   // Build the footer description from cached result
   const footerDescription = useMemo(() => {
     if (!cachedResult) {
-      return "Start a speed test to measure your current network speed.";
+      return "点击测速以测量当前网络下行/上行速率。";
     }
     const dl = formatSpeed(cachedResult.download.bandwidth);
     const ul = formatSpeed(cachedResult.upload.bandwidth);
@@ -159,7 +159,7 @@ const LiveLatencyComponent = ({ connectivity }: LiveLatencyComponentProps) => {
     return (
       <div className="flex items-center gap-x-3">
         <p className="font-medium text-sm text-muted-foreground xl:mr-2 mr-0">
-          Speedtest result:
+          测速结果：
         </p>
         <div className="flex items-center gap-x-0.5">
           <TbCircleArrowDownFilled className="text-info size-5" />
@@ -178,7 +178,7 @@ const LiveLatencyComponent = ({ connectivity }: LiveLatencyComponentProps) => {
       <Card className="@container/card">
         <CardHeader className="-mb-4">
           <CardTitle className="text-lg font-semibold">
-            Live Latency and Speed Test
+            实时延迟与测速
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -246,14 +246,14 @@ const LiveLatencyComponent = ({ connectivity }: LiveLatencyComponentProps) => {
           <div className="flex w-full items-start gap-2 text-sm">
             <div className="grid gap-2">
               <div className="flex items-center gap-2 leading-none font-medium">
-                Speed Test
+                网速测试
               </div>
               <div className="text-muted-foreground flex items-center gap-2 leading-none">
                 <Button
                   variant="default"
                   size="icon-sm"
                   className="p-0.5 rounded-full"
-                  aria-label="Start speed test"
+                  aria-label="开始测速"
                   onClick={handleSpeedtestOpen}
                 >
                   <TbPlayerPlayFilled className="size-4" />

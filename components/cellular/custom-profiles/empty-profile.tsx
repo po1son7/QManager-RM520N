@@ -34,9 +34,9 @@ const EmptyProfileViewComponent = ({ onRefresh }: EmptyProfileViewProps) => {
     >
     <Card className="@container/card h-full">
       <CardHeader>
-        <CardTitle>已保存的场景</CardTitle>
+        <CardTitle>已保存的档案</CardTitle>
         <CardDescription>
-          在此管理自定义 SIM 配置文件。
+          在此管理自定义 SIM 档案。
         </CardDescription>
       </CardHeader>
       <CardContent className="h-full flex items-center justify-center">
@@ -45,9 +45,9 @@ const EmptyProfileViewComponent = ({ onRefresh }: EmptyProfileViewProps) => {
             <EmptyMedia variant="icon">
               <SmartphoneIcon />
             </EmptyMedia>
-            <EmptyTitle>暂无自定义场景</EmptyTitle>
+            <EmptyTitle>暂无自定义档案</EmptyTitle>
             <EmptyDescription>
-              尚未创建任何自定义 SIM 配置。请在表单中创建首个场景。
+              尚未创建任何自定义 SIM 档案。请在表单中创建首个档案。
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>

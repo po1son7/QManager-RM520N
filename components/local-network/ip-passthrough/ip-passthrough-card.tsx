@@ -187,10 +187,9 @@ const IPPassthroughCard = () => {
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>IP Passthrough Configuration</CardTitle>
+          <CardTitle>IP 穿透（IPPT）配置</CardTitle>
           <CardDescription>
-            Assign the modem's public IP directly to a downstream device,
-            bypassing the router's NAT.
+            将模组的公网 IP 直接分配给下游设备，绕过路由器 NAT。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -234,10 +233,9 @@ const IPPassthroughCard = () => {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>IP Passthrough Configuration</CardTitle>
+        <CardTitle>IP 穿透（IPPT）配置</CardTitle>
         <CardDescription>
-          Assign the modem's public IP directly to a downstream device,
-          bypassing the router's NAT.
+          将模组的公网 IP 直接分配给下游设备，绕过路由器 NAT。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -251,7 +249,7 @@ const IPPassthroughCard = () => {
               className="shrink-0 text-destructive hover:text-destructive"
               onClick={refresh}
             >
-              Retry
+              重试
             </Button>
           </div>
         )}
@@ -262,29 +260,29 @@ const IPPassthroughCard = () => {
                 <div className="grid @md/card:grid-cols-2 grid-cols-1 gap-4">
                   {/* Field 1: Passthrough Mode */}
                   <Field>
-                    <FieldLabel>IP Passthrough Mode</FieldLabel>
+                    <FieldLabel>IP 穿透模式</FieldLabel>
                     <Select
                       name="ippt_mode"
                       value={localMode}
                       onValueChange={(v) => setLocalMode(v as PassthroughMode)}
                       disabled={isSaving}
                     >
-                      <SelectTrigger aria-label="IP Passthrough mode">
-                        <SelectValue placeholder="Select Mode" />
+                      <SelectTrigger aria-label="IP 穿透模式">
+                        <SelectValue placeholder="选择模式" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="disabled">
-                          Disabled (Router Mode)
+                          关闭（路由模式）
                         </SelectItem>
-                        <SelectItem value="eth">Ethernet (ETH)</SelectItem>
-                        <SelectItem value="usb">USB Tethering</SelectItem>
+                        <SelectItem value="eth">以太网（ETH）</SelectItem>
+                        <SelectItem value="usb">USB 网络共享</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>
 
                   {/* Field 2: Target Device MAC (hidden when disabled) */}
                   <Field>
-                    <FieldLabel>Target Device (MAC)</FieldLabel>
+                    <FieldLabel>目标设备（MAC）</FieldLabel>
                     <AnimatePresence mode="wait">
                       {localMode === "disabled" ? (
                         <motion.div
@@ -295,8 +293,8 @@ const IPPassthroughCard = () => {
                           transition={{ duration: 0.2 }}
                         >
                           <Select disabled>
-                            <SelectTrigger aria-label="Target Device MAC">
-                              <SelectValue placeholder="N/A — Router Mode" />
+                            <SelectTrigger aria-label="目标设备 MAC">
+                              <SelectValue placeholder="不适用 — 路由模式" />
                             </SelectTrigger>
                             <SelectContent />
                           </Select>
@@ -318,15 +316,15 @@ const IPPassthroughCard = () => {
                             }
                             disabled={isSaving}
                           >
-                            <SelectTrigger aria-label="MAC source" className="w-full">
-                              <SelectValue placeholder="Select Target" />
+                            <SelectTrigger aria-label="MAC 来源" className="w-full">
+                              <SelectValue placeholder="选择目标" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="automatic">
-                                自动 — First Connected Device
+                                自动 — 首个已连接设备
                               </SelectItem>
                               <SelectItem value="manual">
-                                Enter Manually…
+                                手动输入…
                               </SelectItem>
                             </SelectContent>
                           </Select>
@@ -345,7 +343,7 @@ const IPPassthroughCard = () => {
                                 }}
                               >
                                 <Input
-                                  aria-label="MAC address"
+                                  aria-label="MAC 地址"
                                   placeholder="XX:XX:XX:XX:XX:XX"
                                   className="font-mono uppercase placeholder:normal-case"
                                   value={localMacInput}
@@ -354,8 +352,7 @@ const IPPassthroughCard = () => {
                                   disabled={isSaving}
                                 />
                                 <p className="text-xs text-muted-foreground mt-1">
-                                  Enter the MAC address of the device that will
-                                  receive the WAN IP.
+                                  请输入将接收 WAN IP 的设备的 MAC 地址。
                                 </p>
                               </motion.div>
                             )}
@@ -369,7 +366,7 @@ const IPPassthroughCard = () => {
                 <div className="grid @md/card:grid-cols-2 grid-cols-1 grid-flow-row gap-4">
                   {/* Field 3: IPPT NAT Mode */}
                   <Field>
-                    <FieldLabel>NAT Mode (Network Address Translation)</FieldLabel>
+                    <FieldLabel>NAT 模式（网络地址转换）</FieldLabel>
                     <Select
                       value={
                         localIpptNat ||
@@ -382,14 +379,14 @@ const IPPassthroughCard = () => {
                       onValueChange={(v) => setLocalIpptNat(v as NatMode)}
                       disabled={isSaving}
                     >
-                      <SelectTrigger aria-label="NAT mode">
-                        <SelectValue placeholder="Select NAT Mode" />
+                      <SelectTrigger aria-label="NAT 模式">
+                        <SelectValue placeholder="选择 NAT 模式" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="nat-on">
-                          With NAT (Recommended)
+                          启用 NAT（推荐）
                         </SelectItem>
-                        <SelectItem value="nat-off">Without NAT</SelectItem>
+                        <SelectItem value="nat-off">禁用 NAT</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>
@@ -403,7 +400,7 @@ const IPPassthroughCard = () => {
                       disabled={isSaving}
                     >
                       <SelectTrigger aria-label="USB 连接模式">
-                        <SelectValue placeholder="Choose USB Modem Protocol" />
+                        <SelectValue placeholder="选择 USB 模组协议" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="rmnet">RMNET (QMI)</SelectItem>
@@ -418,22 +415,22 @@ const IPPassthroughCard = () => {
                 <div className="grid @md/card:grid-cols-2 grid-cols-1 grid-flow-row gap-4">
                   {/* Field 5: DNS Offloading */}
                   <Field>
-                    <FieldLabel>DNS Proxy</FieldLabel>
+                    <FieldLabel>DNS 代理</FieldLabel>
                     <Select
                       name="dns_mode"
                       value={localDnsProxy}
                       onValueChange={(v) => setLocalDnsProxy(v as DnsProxy)}
                       disabled={isSaving}
                     >
-                      <SelectTrigger aria-label="DNS proxy">
-                        <SelectValue placeholder="Select DNS mode" />
+                      <SelectTrigger aria-label="DNS 代理">
+                        <SelectValue placeholder="选择 DNS 模式" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="disabled">
-                          Disabled (Recommended)
+                          关闭（推荐）
                         </SelectItem>
                         <SelectItem value="enabled">
-                          Enabled (Use Modem DNS)
+                          启用（使用模组 DNS）
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -455,7 +452,7 @@ const IPPassthroughCard = () => {
               variant="outline"
               onClick={resetToServer}
               disabled={isSaving}
-              aria-label="Reset to saved values"
+              aria-label="恢复已保存的值"
             >
               <RotateCcwIcon />
             </Button>
@@ -470,30 +467,27 @@ const IPPassthroughCard = () => {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                Device Will Reboot Immediately
+                设备将立即重启
               </AlertDialogTitle>
               <AlertDialogDescription asChild>
                 <div className="space-y-3 text-sm text-muted-foreground">
                   <p>
-                    Applying these changes will save the configuration and
-                    immediately reboot the device.
+                    应用这些更改将保存配置并立即重启设备。
                   </p>
                   {localMode !== "disabled" && (
                     <p className="font-medium text-foreground">
-                      Once IP Passthrough is active, the device&apos;s local
-                      gateway will no longer be reachable. Make sure you have an
-                      active Tailscale connection or another out-of-band method
-                      to access the device after reboot.
+                      IP 穿透启用后，设备本地网关可能无法访问。请确保已通过 Tailscale
+                      或其他带外方式可在重启后继续管理设备。
                     </p>
                   )}
-                  <p>This setting persists across reboots.</p>
+                  <p>该设置在重启后仍会保留。</p>
                 </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>取消</AlertDialogCancel>
               <AlertDialogAction onClick={handleConfirmedApply}>
-                Apply &amp; Reboot
+                应用并重启
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

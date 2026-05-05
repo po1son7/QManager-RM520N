@@ -118,10 +118,9 @@ const IMEISettingsCard = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>IMEI Settings</CardTitle>
+          <CardTitle>IMEI 设置</CardTitle>
           <CardDescription>
-            Please proceed with caution when modifying IMEI settings. Incorrect
-            changes may lead to device malfunctions or legal issues.
+            修改 IMEI 需谨慎，错误设置可能导致设备异常或合规问题。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -144,10 +143,9 @@ const IMEISettingsCard = ({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>IMEI Settings</CardTitle>
+        <CardTitle>IMEI 设置</CardTitle>
         <CardDescription>
-          Change the device&apos;s IMEI identifier. A reboot is required after changes.
-          Check your local regulations before modifying.
+          更改设备 IMEI 标识，保存后需要重启生效。修改前请确认当地法规要求。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -157,12 +155,12 @@ const IMEISettingsCard = ({
               <FieldGroup>
                 <Field>
                   <FieldLabel htmlFor="device-imei-input">
-                    Set Device IMEI
+                    设备 IMEI
                   </FieldLabel>
                   <InputGroup>
                     <InputGroupInput
                       id="device-imei-input"
-                      placeholder="Enter Device IMEI"
+                      placeholder="输入 15 位 IMEI"
                       value={imei}
                       onChange={handleImeiChange}
                       maxLength={15}
@@ -177,16 +175,16 @@ const IMEISettingsCard = ({
                           <button
                             type="button"
                             className="pl-1.5 inline-flex items-center"
-                            aria-label="IMEI legal warning"
+                            aria-label="IMEI 合规提示"
                           >
                             <AlertTriangleIcon className="text-muted-foreground size-4" />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            IMEI modification regulations vary by country.
+                            各国对 IMEI 修改的监管不同，
                             <br />
-                            Check your local laws before changing the IMEI.
+                            更改前请查阅当地法律法规。
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -194,12 +192,11 @@ const IMEISettingsCard = ({
                   </InputGroup>
                   {showImeiError && (
                     <FieldError id="imei-error">
-                      IMEI must be exactly 15 digits ({imei.length}/15)
+                      IMEI 必须为 15 位数字（当前 {imei.length}/15）
                     </FieldError>
                   )}
                   <FieldDescription>
-                    Changing the IMEI will require a device reboot to take
-                    effect.
+                    更改 IMEI 后需重启设备方可生效。
                   </FieldDescription>
                 </Field>
               </FieldGroup>
@@ -213,10 +210,10 @@ const IMEISettingsCard = ({
               {isSaving ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Saving...
+                  保存中…
                 </>
               ) : (
-                "Write IMEI"
+                "写入 IMEI"
               )}
             </Button>
             <Button
@@ -224,7 +221,7 @@ const IMEISettingsCard = ({
               variant="outline"
               onClick={handleReset}
               disabled={isSaving}
-              aria-label="Reset to saved values"
+              aria-label="恢复已保存的值"
             >
               <RotateCcwIcon />
             </Button>
@@ -237,15 +234,14 @@ const IMEISettingsCard = ({
         }}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Reboot Required</AlertDialogTitle>
+              <AlertDialogTitle>需要重启</AlertDialogTitle>
               <AlertDialogDescription>
-                IMEI changes require a device reboot to take effect. Would you
-                like to reboot now?
+                IMEI 更改需要重启后才能生效，是否立即重启设备？
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isRebooting}>
-                Reboot Later
+                稍后重启
               </AlertDialogCancel>
               <AlertDialogAction
                 disabled={isRebooting}

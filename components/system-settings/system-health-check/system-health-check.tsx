@@ -68,9 +68,9 @@ export default function SystemHealthCheck() {
   return (
     <div className="@container/main mx-auto p-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">System Health Check</h1>
+        <h1 className="text-3xl font-bold mb-2">系统健康检查</h1>
         <p className="text-muted-foreground">
-          Diagnose QManager subsystems and download a redacted bundle for support.
+          诊断 QManager 各子系统，并可下载脱敏诊断包便于技术支持排查。
         </p>
       </div>
       <div className="flex flex-col gap-4">

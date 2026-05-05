@@ -124,7 +124,7 @@ const LteFreqLockingComponent = ({
       const earfcns = buildEarfcns();
       if (earfcns.length === 0) {
         toast.warning("未输入频率", {
-          description: "Enter at least one channel number before enabling.",
+          description: "启用前请至少填写一个信道号（EARFCN）。",
         });
         return;
       }
@@ -187,9 +187,9 @@ const LteFreqLockingComponent = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>LTE Frequency Locking</CardTitle>
+          <CardTitle>LTE 频率锁定</CardTitle>
           <CardDescription>
-            Lock to specific LTE channel frequencies.
+            锁定到指定 LTE 频点（EARFCN）。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -215,9 +215,9 @@ const LteFreqLockingComponent = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>LTE Frequency Locking</CardTitle>
+          <CardTitle>LTE 频率锁定</CardTitle>
           <CardDescription>
-            Lock to specific LTE channel frequencies.
+            锁定到指定 LTE 频点（EARFCN）。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -227,11 +227,11 @@ const LteFreqLockingComponent = ({
           >
             <AlertCircleIcon className="size-8 text-destructive" />
             <div className="space-y-1">
-              <p className="text-sm font-medium">Failed to load frequency lock status</p>
+              <p className="text-sm font-medium">无法加载频率锁定状态</p>
               <p className="text-xs text-muted-foreground">{error}</p>
             </div>
             <Button variant="outline" size="sm" onClick={onRefresh}>
-              Retry
+              重试
             </Button>
           </div>
         </CardContent>
@@ -246,9 +246,9 @@ const LteFreqLockingComponent = ({
         aria-disabled={towerLockActive || undefined}
       >
         <CardHeader>
-          <CardTitle>LTE Frequency Locking</CardTitle>
+          <CardTitle>LTE 频率锁定</CardTitle>
           <CardDescription>
-            Lock to specific LTE channel frequencies. Maximum 2 channels.
+            锁定到指定 LTE 频点（EARFCN），最多 2 个信道。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -258,14 +258,13 @@ const LteFreqLockingComponent = ({
               <div className="flex items-start gap-2 p-2 rounded-md bg-destructive/10 border border-destructive/30 text-destructive text-sm">
                 <TbAlertTriangleFilled className="size-5 mt-0.5 shrink-0" />
                 <p className="font-semibold">
-                  LTE Tower Lock is active. Disable it before using frequency
-                  locking.
+                  已启用 LTE 基站锁定，请先关闭后再使用频率锁定。
                 </p>
               </div>
             ) : (
               <div className="flex items-start gap-2 p-2 rounded-md bg-warning/10 border border-warning/30 text-warning text-sm">
                 <TbAlertTriangleFilled className="size-5 mt-0.5 shrink-0" />
-                <p className="font-semibold">Experimental Feature</p>
+                <p className="font-semibold">实验性功能</p>
               </div>
             )}
 
@@ -274,20 +273,20 @@ const LteFreqLockingComponent = ({
               <div className="flex items-center gap-1.5">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button type="button" className="inline-flex" aria-label="More info">
+                    <button type="button" className="inline-flex" aria-label="更多信息">
                       <TbInfoCircleFilled className="size-5 text-info" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>
-                      Locking to an unsupported frequency may cause the modem
-                      to restart unexpectedly. <br />
-                      Cannot be used while Tower Lock is active.
+                      锁定到不支持的频点可能导致模组异常重启。
+                      <br />
+                      启用基站锁定时不可使用本功能。
                     </p>
                   </TooltipContent>
                 </Tooltip>
                 <p className="font-semibold text-muted-foreground text-sm">
-                  LTE Frequency Lock Enabled
+                  LTE 频率锁定
                 </p>
               </div>
               <div className="flex items-center space-x-2">
@@ -301,7 +300,7 @@ const LteFreqLockingComponent = ({
                   disabled={isDisabled}
                 />
                 <Label htmlFor="lte-freq-locking">
-                  {isEnabled ? "Enabled" : "Disabled"}
+                  {isEnabled ? "已启用" : "已关闭"}
                 </Label>
               </div>
             </div>
@@ -317,7 +316,7 @@ const LteFreqLockingComponent = ({
                     {/* EARFCN 1 */}
                     <Field>
                       <div className="flex items-center justify-between">
-                        <FieldLabel htmlFor="freq-earfcn1">Channel (EARFCN)</FieldLabel>
+                        <FieldLabel htmlFor="freq-earfcn1">信道（EARFCN）</FieldLabel>
                         <Button
                           type="button"
                           variant="outline"
@@ -325,13 +324,13 @@ const LteFreqLockingComponent = ({
                           onClick={handleUseCurrent}
                           disabled={isDisabled || !hasActiveLteCell}
                         >
-                          Use Current
+                          使用当前小区
                         </Button>
                       </div>
                       <Input
                         id="freq-earfcn1"
                         type="text"
-                        placeholder="Enter EARFCN"
+                        placeholder="输入 EARFCN"
                                                 value={earfcn1}
                         onChange={(e) => setEarfcn1(e.target.value)}
                         disabled={isDisabled}
@@ -341,19 +340,19 @@ const LteFreqLockingComponent = ({
                         hasInput={earfcn1.length > 0}
                         supportedBands={supportedBands}
                         prefix="B"
-                        noMatchLabel="this channel"
+                        noMatchLabel="此 EARFCN"
                       />
                     </Field>
 
                     {/* EARFCN 2 */}
                     <Field>
                       <FieldLabel htmlFor="freq-earfcn2">
-                        Channel 2 (Optional)
+                        第二信道（可选）
                       </FieldLabel>
                       <Input
                         id="freq-earfcn2"
                         type="text"
-                        placeholder="Enter EARFCN 2"
+                        placeholder="输入第二个 EARFCN"
                                                 value={earfcn2}
                         onChange={(e) => setEarfcn2(e.target.value)}
                         disabled={isDisabled}
@@ -363,7 +362,7 @@ const LteFreqLockingComponent = ({
                         hasInput={earfcn2.length > 0}
                         supportedBands={supportedBands}
                         prefix="B"
-                        noMatchLabel="this channel"
+                        noMatchLabel="此 EARFCN"
                       />
                     </Field>
                   </FieldGroup>
@@ -378,23 +377,21 @@ const LteFreqLockingComponent = ({
       <AlertDialog open={showLockDialog} onOpenChange={setShowLockDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Lock LTE Frequency?</AlertDialogTitle>
+            <AlertDialogTitle>锁定 LTE 频率？</AlertDialogTitle>
             <AlertDialogDescription>
-              This will lock your modem to{" "}
+              将把模组锁定到{" "}
               {pendingEarfcns.length === 1
                 ? `EARFCN ${pendingEarfcns[0]}`
-                : `EARFCNs ${pendingEarfcns.join(", ")}`}
-              . The modem will only use{" "}
-              {pendingEarfcns.length === 1
-                ? "this frequency"
-                : "these frequencies"}{" "}
-              and may briefly disconnect.
+                : `EARFCN ${pendingEarfcns.join("、")}`}
+              ，仅使用该
+              {pendingEarfcns.length === 1 ? "频点" : "频点组合"}
+              ，过程中可能短暂断网。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmLock}>
-              Lock Frequency
+              确认锁定
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -408,24 +405,22 @@ const LteFreqLockingComponent = ({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="text-destructive">
-              Unsupported Frequency Warning
+              不支持的频段警告
             </AlertDialogTitle>
             <AlertDialogDescription>
-              The frequencies you entered match bands not supported by your
-              modem. Locking to an unsupported frequency may cause the modem to
-              restart unexpectedly.
+              您输入的频点对应模组不支持的频段，锁定后可能导致模组异常重启。
               <br />
               <br />
-              <strong>Matched bands:</strong>{" "}
+              <strong>解析到的频段：</strong>{" "}
               {[...matchedBands1, ...matchedBands2]
                 .map((b) => `B${b.band}`)
-                .join(", ") || "Unknown"}
+                .join("、") || "未知"}
               <br />
-              <strong>Supported bands:</strong>{" "}
-              {supportedBands.map((b) => `B${b}`).join(", ")}
+              <strong>模组支持的频段：</strong>{" "}
+              {supportedBands.map((b) => `B${b}`).join("、")}
               <br />
               <br />
-              Are you sure you want to proceed?
+              确定要继续吗？
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -434,7 +429,7 @@ const LteFreqLockingComponent = ({
               onClick={confirmLock}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Lock Anyway
+              仍要锁定
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -444,16 +439,15 @@ const LteFreqLockingComponent = ({
       <AlertDialog open={showUnlockDialog} onOpenChange={setShowUnlockDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unlock LTE Frequency?</AlertDialogTitle>
+            <AlertDialogTitle>解除 LTE 频率锁定？</AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove the LTE frequency lock. The modem will be free to
-              use any available frequency and may briefly disconnect.
+              将移除 LTE 频率锁定，模组可重新选择任意可用频点，过程中可能短暂断网。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction onClick={confirmUnlock}>
-              Remove Lock
+              解除锁定
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
