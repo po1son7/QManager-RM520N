@@ -62,23 +62,23 @@ export interface TestOutputResponse {
 }
 
 export const CATEGORY_LABELS: Record<TestCategory, string> = {
-  binaries: "二进制与版本",
-  permissions: "文件系统与权限",
+  binaries: "Binaries & Versions",
+  permissions: "Filesystem & Permissions",
   at_transport: "AT Transport",
-  sms: "SMS 子系统",
+  sms: "SMS Subsystem",
   sudoers: "Sudoers",
-  services: "Systemd 服务",
-  network: "网络",
-  configuration: "配置",
+  services: "Systemd Services",
+  network: "Network",
+  configuration: "Configuration",
 };
 
 export const CATEGORY_DESCRIPTIONS: Record<TestCategory, string> = {
-  binaries: "必需二进制文件及其版本检查",
-  permissions: "文件系统所有者、权限与组成员关系",
-  at_transport: "通过 qcmd / atcli_smd11 与模组进行的往返检测",
-  sms: "sms_tool 就绪状态与 SIM 在位情况",
-  sudoers: "www-data sudoers 辅助脚本可见性",
-  services: "Systemd 单元存在性、开机启用与运行状态",
-  network: "DNS、IPv4、模组数据通路、lighttpd、防火墙",
-  configuration: "QManager 配置文件与轮询缓存时效",
+  binaries: "Required binaries and version checks",
+  permissions: "Filesystem ownership, modes, and group membership",
+  at_transport: "qcmd / atcli_smd11 round-trip checks against the modem",
+  sms: "sms_tool readiness and SIM presence",
+  sudoers: "www-data sudoers helper visibility",
+  services: "Systemd unit presence, enablement, and active state",
+  network: "DNS, IPv4, modem data path, lighttpd, firewall",
+  configuration: "QManager config files and poller cache freshness",
 };

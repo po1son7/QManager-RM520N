@@ -36,11 +36,11 @@ const DeviceStatusComponent = ({
   const [hidePrivate, setHidePrivate] = useState(false);
 
   const rows = [
-    { label: "Manufacturer", value: data?.manufacturer || "-" },
-    { label: "Firmware Version", value: data?.firmware || "-" },
-    { label: "Build Date", value: data?.build_date || "-" },
+    { label: "制造商", value: data?.manufacturer || "-" },
+    { label: "固件版本", value: data?.firmware || "-" },
+    { label: "构建日期", value: data?.build_date || "-" },
     {
-      label: "Phone Number",
+      label: "电话号码",
       value: data?.phone_number || "-",
       mono: true,
       private: true,
@@ -48,7 +48,7 @@ const DeviceStatusComponent = ({
     { label: "IMSI", value: data?.imsi || "-", mono: true, private: true },
     { label: "ICCID", value: data?.iccid || "-", mono: true, private: true },
     {
-      label: "Device IMEI",
+      label: "设备 IMEI",
       value: data?.imei || "-",
       mono: true,
       private: true,
@@ -66,7 +66,7 @@ const DeviceStatusComponent = ({
       <Card className="@container/card col-span-2">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-center">
-            Device Information
+            设备信息
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -95,7 +95,7 @@ const DeviceStatusComponent = ({
     <Card className="@container/card col-span-2">
       <CardHeader>
         <CardTitle className="text-2xl font-semibold @[250px]/card:text-3xl text-center flex-1">
-          Device Information
+          设备信息
         </CardTitle>
       </CardHeader>
       <CardContent>

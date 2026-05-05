@@ -250,7 +250,7 @@ const NRSALockingComponent = ({
         <CardHeader>
           <CardTitle>NR-SA 基站锁定</CardTitle>
           <CardDescription>
-            Lock to a specific 5G SA cell tower by entering its channel, cell ID, band, and subcarrier spacing.
+            通过信道（ARFCN）、小区 ID（PCI）、NR Band 与子载波间距（SCS）锁定指定 5G SA 基站。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -305,9 +305,9 @@ const NRSALockingComponent = ({
         <CardHeader>
           <CardTitle>NR-SA 基站锁定</CardTitle>
           <CardDescription>
-            Lock to a specific 5G SA cell tower by entering its channel, cell ID, band, and subcarrier spacing.
-            {isNsaMode && " Not compatible with NR5G-NSA mode."}
-            {isLteOnly && " No NR connection available."}
+            通过信道（ARFCN）、小区 ID（PCI）、NR Band 与子载波间距（SCS）锁定指定 5G SA 基站。
+            {isNsaMode && " NR5G-NSA 模式下不可用。"}
+            {isLteOnly && " 当前无 NR 连接。"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -329,7 +329,7 @@ const NRSALockingComponent = ({
                     </TooltipContent>
                   </Tooltip>
                   <p className="font-medium text-muted-foreground text-sm">
-                    Simple Mode
+                    简易模式
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -347,7 +347,7 @@ const NRSALockingComponent = ({
               </div>
               {!hasOptions && (
                 <p className="text-xs text-muted-foreground">
-                  No 5G carriers visible in QCAINFO right now.
+                  当前 QCAINFO 中看不到 5G 载波。
                 </p>
               )}
             </div>
@@ -355,7 +355,7 @@ const NRSALockingComponent = ({
               <div className="flex items-center gap-1.5">
                 <TbInfoCircleFilled className="size-5 text-info" />
                 <p className="font-semibold text-muted-foreground text-sm">
-                  NR Tower Locking Enabled
+                  NR-SA 基站锁定
                 </p>
               </div>
               <div className="flex items-center space-x-2">
@@ -380,7 +380,7 @@ const NRSALockingComponent = ({
                   <FieldGroup>
                     <div className="grid grid-cols-2 gap-4">
                       <Field>
-                        <FieldLabel htmlFor="nrarfcn1">Channel (ARFCN)</FieldLabel>
+                        <FieldLabel htmlFor="nrarfcn1">信道（ARFCN）</FieldLabel>
                         {simpleMode && hasOptions ? (
                           <Select
                             value={arfcnInList ? currentArfcnComposite : ""}
@@ -424,7 +424,7 @@ const NRSALockingComponent = ({
                         )}
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="nrpci">Cell ID (PCI)</FieldLabel>
+                        <FieldLabel htmlFor="nrpci">小区 ID（PCI）</FieldLabel>
                         <Input
                           id="nrpci"
                           type="text"
@@ -449,7 +449,7 @@ const NRSALockingComponent = ({
                       </Field>
                       <Field>
                         <div className="flex items-center justify-between gap-2">
-                          <FieldLabel htmlFor="scs">Subcarrier Spacing</FieldLabel>
+                          <FieldLabel htmlFor="scs">子载波间距（SCS）</FieldLabel>
                           {simpleMode && scsSource === "band_default" && band && (
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -458,7 +458,7 @@ const NRSALockingComponent = ({
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent className="max-w-xs">
-                                {`SCS auto-filled from band default for N${band}. Verify against your tower if locking fails.`}
+                                {`已按 N${band} 默认填入 SCS；若锁定失败请与基站配置核对。`}
                               </TooltipContent>
                             </Tooltip>
                           )}

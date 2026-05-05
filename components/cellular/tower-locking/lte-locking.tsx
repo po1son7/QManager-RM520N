@@ -254,7 +254,7 @@ const LTELockingComponent = ({
                   <CarrierLabel opt={opt} />
                   {disabled && (
                     <span className="text-xs text-muted-foreground">
-                      (used in slot {usedInIndex + 1})
+                      (已用于槽位 {usedInIndex + 1})
                     </span>
                   )}
                 </span>
@@ -272,7 +272,7 @@ const LTELockingComponent = ({
         <CardHeader>
           <CardTitle>LTE 基站锁定</CardTitle>
           <CardDescription>
-            Lock to a specific LTE cell tower by entering its channel and cell ID.
+            通过信道（EARFCN）与小区 ID（PCI）锁定指定 LTE 基站。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -337,7 +337,7 @@ const LTELockingComponent = ({
         <CardHeader>
           <CardTitle>LTE 基站锁定</CardTitle>
           <CardDescription>
-            Lock to a specific LTE cell tower by entering its channel and cell ID.
+            通过信道（EARFCN）与小区 ID（PCI）锁定指定 LTE 基站。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -359,7 +359,7 @@ const LTELockingComponent = ({
                     </TooltipContent>
                   </Tooltip>
                   <p className="font-medium text-muted-foreground text-sm">
-                    Simple Mode
+                    简易模式
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -377,7 +377,7 @@ const LTELockingComponent = ({
               </div>
               {!hasOptions && (
                 <p className="text-xs text-muted-foreground">
-                  No LTE carriers visible in QCAINFO right now.
+                  当前 QCAINFO 中看不到 LTE 载波。
                 </p>
               )}
             </div>
@@ -385,7 +385,7 @@ const LTELockingComponent = ({
               <div className="flex items-center gap-1.5">
                 <TbInfoCircleFilled className="size-5 text-info" />
                 <p className="font-semibold text-muted-foreground text-sm">
-                  LTE Tower Locking Enabled
+                  LTE 基站锁定
                 </p>
               </div>
               <div className="flex items-center space-x-2">
@@ -410,7 +410,7 @@ const LTELockingComponent = ({
                   <FieldGroup>
                     <div className="grid grid-cols-2 gap-4">
                       <Field>
-                        <FieldLabel htmlFor="earfcn1">Channel (EARFCN)</FieldLabel>
+                        <FieldLabel htmlFor="earfcn1">信道（EARFCN）</FieldLabel>
                         {simpleMode && hasOptions ? (
                           renderSlotSelect(0, "earfcn1")
                         ) : (
@@ -425,7 +425,7 @@ const LTELockingComponent = ({
                         )}
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="pci1">Cell ID (PCI)</FieldLabel>
+                        <FieldLabel htmlFor="pci1">小区 ID（PCI）</FieldLabel>
                         <Input
                           id="pci1"
                           type="text"
@@ -439,7 +439,7 @@ const LTELockingComponent = ({
                     {/* Optional locking entry 2 */}
                     <div className="grid grid-cols-2 gap-4">
                       <Field>
-                        <FieldLabel htmlFor="earfcn2">Channel (EARFCN) 2</FieldLabel>
+                        <FieldLabel htmlFor="earfcn2">信道（EARFCN）2</FieldLabel>
                         {simpleMode && hasOptions ? (
                           renderSlotSelect(1, "earfcn2")
                         ) : (
@@ -454,7 +454,7 @@ const LTELockingComponent = ({
                         )}
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="pci2">Cell ID (PCI) 2</FieldLabel>
+                        <FieldLabel htmlFor="pci2">小区 ID（PCI）2</FieldLabel>
                         <Input
                           id="pci2"
                           type="text"
@@ -468,7 +468,7 @@ const LTELockingComponent = ({
                     {/* Optional locking entry 3 */}
                     <div className="grid grid-cols-2 gap-4">
                       <Field>
-                        <FieldLabel htmlFor="earfcn3">Channel (EARFCN) 3</FieldLabel>
+                        <FieldLabel htmlFor="earfcn3">信道（EARFCN）3</FieldLabel>
                         {simpleMode && hasOptions ? (
                           renderSlotSelect(2, "earfcn3")
                         ) : (
@@ -483,7 +483,7 @@ const LTELockingComponent = ({
                         )}
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="pci3">Cell ID (PCI) 3</FieldLabel>
+                        <FieldLabel htmlFor="pci3">小区 ID（PCI）3</FieldLabel>
                         <Input
                           id="pci3"
                           type="text"

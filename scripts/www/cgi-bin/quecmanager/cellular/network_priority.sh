@@ -34,17 +34,26 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
     fi
 
     # Typical: +QNWPREFCFG: "rat_acq_order",NR5G:LTE:WCDMA
-    # Alt:    +QNWPREFCFG: "rat_acq_order","NR5G:LTE:WCDMA"
-    # awk -F',' breaks when RAT names contain commas — strip prefix then trim quotes.
-    line=$(printf '%s\n' "$resp" | grep '+QNWPREFCFG:' | head -1 | tr -d '\r')
+    # Malformed dumps may prepend junk — extract known RAT tokens in appearance order.
     order=""
-    if [ -n "$line" ]; then
-        order=$(printf '%s' "$line" | sed '
-            s/.*[Rr][Aa][Tt]_[Aa][Cc][Qq]_[Oo][Rr][Dd][Ee][Rr]"*[,:[:space:]]*//
-            s/^"//
-            s/"[[:space:]]*$//
-            s/[[:space:]]*$//
-        ')
+    token_order=$(printf '%s\n' "$resp" | tr '\r' '\n' \
+        | grep -oiE 'NR5G-NSA|LTE|NR5G|WCDMA|GSM|EDGE|TDSCDMA' \
+        | tr '[:lower:]' '[:upper:]' \
+        | awk '!seen[$0]++' \
+        | awk '{ printf "%s%s", (NR > 1 ? ":" : ""), $0 } END { print "" }' \
+        | tr -d '\n')
+    if [ -n "$token_order" ]; then
+        order="$token_order"
+    else
+        line=$(printf '%s\n' "$resp" | grep '+QNWPREFCFG:' | grep -Fi rat_acq_order | head -1 | tr -d '\r')
+        if [ -n "$line" ]; then
+            order=$(printf '%s' "$line" | sed '
+                s/.*[Rr][Aa][Tt]_[Aa][Cc][Qq]_[Oo][Rr][Dd][Ee][Rr]"*[,:[:space:]]*//
+                s/^"//
+                s/"[[:space:]]*$//
+                s/[[:space:]]*$//
+            ')
+        fi
     fi
 
     if [ -z "$order" ]; then
@@ -73,9 +82,9 @@ if [ "$REQUEST_METHOD" = "POST" ]; then
         exit 0
     fi
 
-    # Validate: only allow known RAT names separated by colons
+    # Validate: only known-style RAT tokens separated by colons (allows NR5G-NSA)
     case "$ORDER" in
-        *[!A-Z0-9:]*)
+        *[!A-Z0-9:-]*)
             cgi_error "invalid_order" "order must contain only RAT names separated by colons"
             exit 0
             ;;

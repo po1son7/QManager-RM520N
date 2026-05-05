@@ -88,7 +88,7 @@ const RecentActivitiesComponent = () => {
     <Card className="@container/card">
       <CardHeader className="-mb-4">
         <CardTitle className="text-lg font-semibold">
-          Recent Activities
+          近期活动
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -109,11 +109,9 @@ const RecentActivitiesComponent = () => {
                 <EmptyMedia variant="icon">
                   <CalendarX2Icon />
                 </EmptyMedia>
-                <EmptyTitle>No Events</EmptyTitle>
+                <EmptyTitle>暂无事件</EmptyTitle>
                 <EmptyDescription className="max-w-xs text-pretty">
-                  No recent network events detected. Your device is likely
-                  stable and not experiencing any significant changes in network
-                  conditions.
+                  近期未检测到网络事件，设备连接可能较为稳定。
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>

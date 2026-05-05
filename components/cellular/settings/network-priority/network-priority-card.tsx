@@ -43,15 +43,40 @@ import { SaveButton, useSaveFlash } from "@/components/ui/save-button";
 // RAT name mapping: AT command value → display name
 // =============================================================================
 const RAT_DISPLAY: Record<string, string> = {
-  NR5G: "NR5G（5G）",
-  LTE: "LTE（4G）",
-  WCDMA: "WCDMA（3G）",
+  "NR5G-NSA": "NR5G-NSA",
+  NR5G: "NR5G",
+  LTE: "LTE",
+  WCDMA: "WCDMA",
+  GSM: "GSM",
+  EDGE: "EDGE",
+  TDSCDMA: "TDSCDMA",
 };
 
+const RAT_TOKEN_RE = /\b(NR5G-NSA|LTE|NR5G|WCDMA|GSM|EDGE|TDSCDMA)\b/gi;
+
+/** Strip junk from modem/UART dumps; keep only known RAT tokens in order of first appearance. */
+function sanitizeRatOrderString(order: string): string {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  const re = new RegExp(RAT_TOKEN_RE.source, "gi");
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(order)) !== null) {
+    const token = (m[1] ?? m[0]).toUpperCase();
+    if (seen.has(token)) continue;
+    seen.add(token);
+    out.push(token === "NR5G-NSA" ? "NR5G-NSA" : token);
+  }
+  return out.length > 0 ? out.join(":") : order;
+}
+
 const RAT_COLORS: Record<string, { bg: string; fg: string }> = {
+  "NR5G-NSA": { bg: "bg-info", fg: "text-info-foreground" },
   NR5G: { bg: "bg-info", fg: "text-info-foreground" },
   LTE: { bg: "bg-success", fg: "text-success-foreground" },
   WCDMA: { bg: "bg-destructive", fg: "text-destructive-foreground" },
+  GSM: { bg: "bg-muted", fg: "text-muted-foreground" },
+  EDGE: { bg: "bg-muted", fg: "text-muted-foreground" },
+  TDSCDMA: { bg: "bg-muted", fg: "text-muted-foreground" },
 };
 
 interface NetworkItem {
@@ -149,9 +174,9 @@ const NetworkPriorityCard = () => {
   // Parse order string into NetworkItem array
   // ---------------------------------------------------------------------------
   const orderToNetworks = (order: string): NetworkItem[] => {
-    const cleaned = order
-      .trim()
-      .replace(/^["']+|["']+$/g, "");
+    const cleaned = sanitizeRatOrderString(
+      order.trim().replace(/^["']+|["']+$/g, ""),
+    );
     return cleaned
       .split(":")
       .map((r) => r.trim().replace(/^["']+|["']+$/g, ""))

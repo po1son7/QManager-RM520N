@@ -10,7 +10,8 @@
 # Data sources:
 #   /tmp/qmanager_status.json       -> Poller cache (firmware, IMEI, WAN IPs)
 #   AT+QNWCFG="3gpp_rel"           -> 3GPP release versions (LTE, NR5G)
-#   AT+QMAP="LANIP"                -> Device LAN IP and gateway
+#   SDX5x platform heuristic       -> Rel 15 when 3gpp_rel is missing (RG501Q/RM520N, sdx* host)
+#   AT+QMAP="LANIP"                -> device_ip (CSV f2) and lan_gateway (CSV f4), own qcmd after gap
 #   https://api-ipv4.ip.sb/ip / api.ipify.org / ident.me -> Public IPv4 (fallback chain)
 #   https://api-ipv6.ip.sb/ip / api6.ipify.org / ipv6.icanhazip.com -> Public IPv6
 #   /etc/openwrt_release            -> OpenWRT version
@@ -35,6 +36,45 @@ cleanup() {
     rm -f "$pub4_file" "$pub6_file"
 }
 trap cleanup EXIT INT TERM
+
+# SDX5x family (RG501Q / RM520N, hostnames like sdxprairie): some firmware omits
+# AT+QNWCFG="3gpp_rel" — use Rel-15 for About when the AT path yields nothing.
+# Uses same Project Name source as install_rm520n.sh detect_modem_firmware / preflight.
+is_sdx5x_platform() {
+    _hn=$(cat /proc/sys/kernel/hostname 2>/dev/null | tr '[:upper:]' '[:lower:]')
+    case "$_hn" in *sdx*) return 0 ;; esac
+
+    if [ -f /etc/quectel-project-version ]; then
+        _pn=$(grep -m1 '^Project Name:' /etc/quectel-project-version 2>/dev/null \
+            | sed 's/^Project Name:[[:space:]]*//' | tr -d '[:space:]' | tr '[:lower:]' '[:upper:]')
+        case "$_pn" in RG501Q*|RM520N*) return 0 ;; esac
+        if grep -qiE 'SDX5|SDXLEMUR|SDXPRAIRIE' /etc/quectel-project-version 2>/dev/null; then
+            return 0
+        fi
+    fi
+
+    _m=$(printf '%s' "$c_model" | tr '[:lower:]' '[:upper:]')
+    case "$_m" in *RG501Q*|*RM520N*) return 0 ;; esac
+
+    return 1
+}
+
+is_dotted_ipv4() {
+    printf '%s' "$1" | grep -qE '^([0-9]{1,3}\.){3}[0-9]{1,3}$'
+}
+
+# Parse +QMAP: "LANIP",<host_or_start>,<mid>,<gateway> — field 2 = device LAN IP, 4 = gateway.
+parse_qmap_lanip_line() {
+    _line=$1
+    [ -z "$_line" ] && return 1
+    _ip2=$(printf '%s' "$_line" | cut -d',' -f2 | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    _ip4=$(printf '%s' "$_line" | cut -d',' -f4 | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    is_dotted_ipv4 "$_ip2" || return 1
+    is_dotted_ipv4 "$_ip4" || return 1
+    lan_ip=$_ip2
+    lan_gateway=$_ip4
+    return 0
+}
 
 # --- GET only ----------------------------------------------------------------
 if [ "$REQUEST_METHOD" != "GET" ]; then
@@ -139,21 +179,44 @@ rel_nr5g=""
 lan_ip=""
 lan_gateway=""
 
-# Compound AT: 3GPP release + LAN IP in one call
-raw=$(qcmd 'AT+QNWCFG="3gpp_rel";+QMAP="LANIP"' 2>/dev/null)
-
-# 3GPP release versions -- +QNWCFG: "3gpp_rel",R17,R17
-line=$(printf '%s\n' "$raw" | grep '+QNWCFG:.*"3gpp_rel"' | head -1 | tr -d '\r ')
+# 3GPP release — dedicated AT (compound replies can drop / reorder lines on some builds).
+# Typical: +QNWCFG: "3gpp_rel",15,15  or  +QNWCFG: "3gpp_rel","R15","R17"
+raw_rel=$(qcmd 'AT+QNWCFG="3gpp_rel"' 2>/dev/null)
+line=$(printf '%s\n' "$raw_rel" | grep -Fi '3gpp_rel' | head -1 | tr -d '\r')
 if [ -n "$line" ]; then
-    rel_lte=$(printf '%s' "$line" | cut -d',' -f2)
-    rel_nr5g=$(printf '%s' "$line" | cut -d',' -f3)
+    payload=$(printf '%s' "$line" | sed 's/.*3gpp_rel//; s/^[^,]*,//')
+    rel_lte=$(printf '%s' "$payload" | cut -d',' -f1 | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    rel_nr5g=$(printf '%s' "$payload" | cut -d',' -f2 | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    # Prefer numeric release for display (15 from R15 / Rel15 / "15")
+    if [ -n "$rel_lte" ]; then
+        _n=$(printf '%s' "$rel_lte" | grep -o '[0-9][0-9]*' | head -1)
+        [ -n "$_n" ] && rel_lte="$_n"
+    fi
+    if [ -n "$rel_nr5g" ]; then
+        _n=$(printf '%s' "$rel_nr5g" | grep -o '[0-9][0-9]*' | head -1)
+        [ -n "$_n" ] && rel_nr5g="$_n"
+    fi
 fi
 
-# LAN IP and gateway -- +QMAP: "LANIP",192.168.224.100,192.168.227.99,192.168.224.1
-line=$(printf '%s\n' "$raw" | grep '+QMAP:.*"LANIP"' | head -1 | tr -d '\r ')
+# No 3gpp_rel on some SDX5x builds — documented Rel-15 class for About display.
+if [ -z "$rel_lte" ] && [ -z "$rel_nr5g" ] && is_sdx5x_platform; then
+    rel_lte=15
+    rel_nr5g=15
+fi
+
+# LAN IP and gateway — dedicated AT only (do not compound with QNWCFG).
+# Typical: +QMAP: "LANIP",192.168.225.20,192.168.227.99,192.168.225.1  (f2=device, f4=gateway)
+sleep "$CMD_GAP" 2>/dev/null || true
+raw_map=$(qcmd 'AT+QMAP="LANIP"' 2>/dev/null)
+line=$(printf '%s\n' "$raw_map" | grep -E '[+]QMAP:.*LANIP' | head -1 | tr -d '\r')
 if [ -n "$line" ]; then
-    lan_ip=$(printf '%s' "$line" | cut -d',' -f2 | tr -d '"')
-    lan_gateway=$(printf '%s' "$line" | cut -d',' -f4 | tr -d '"')
+    parse_qmap_lanip_line "$line" || line=""
+fi
+if [ -z "$lan_ip" ] || [ -z "$lan_gateway" ]; then
+    sleep "$CMD_GAP" 2>/dev/null || true
+    raw_map=$(qcmd 'AT+QMAP="LANIP"' 2>/dev/null)
+    line=$(printf '%s\n' "$raw_map" | grep -E '[+]QMAP:.*LANIP' | head -1 | tr -d '\r')
+    [ -n "$line" ] && parse_qmap_lanip_line "$line" || true
 fi
 
 # =============================================================================

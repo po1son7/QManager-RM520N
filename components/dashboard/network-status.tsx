@@ -201,7 +201,7 @@ const NetworkStatusComponent = ({
       <CardHeader>
         <div className="flex md:flex-row flex-col xl:items-center justify-center xl:justify-between gap-2">
           <CardTitle className="text-2xl font-semibold @[250px]/card:text-3xl">
-            Network Status
+            网络状态
           </CardTitle>
 
           {/* Status badges */}
@@ -219,7 +219,7 @@ const NetworkStatusComponent = ({
                   className="bg-warning/15 text-warning hover:bg-warning/20 border-warning/30"
                 >
                   <div className="w-2 h-2 rounded-full bg-warning" />
-                  Data Delayed
+                  数据延迟
                 </Badge>
               )}
 
@@ -244,10 +244,10 @@ const NetworkStatusComponent = ({
                   }`}
                 />
                 {isAirplaneMode
-                  ? "Airplane Mode"
+                  ? "飞行模式"
                   : radioOn
-                    ? "Radio On"
-                    : "Radio Off"}
+                    ? "射频开启"
+                    : "射频关闭"}
               </Badge>
 
               {/* Internet status — green/red/gray based on ping daemon */}
@@ -275,10 +275,10 @@ const NetworkStatusComponent = ({
                   />
                 )}
                 {internetAvailable === true
-                  ? "Online"
+                  ? "在线"
                   : internetAvailable === false
-                    ? "Offline"
-                    : "Internet"}
+                    ? "离线"
+                    : "互联网"}
               </Badge>
             </div>
           )}
@@ -328,10 +328,10 @@ const NetworkStatusComponent = ({
               </div>
               <div className="grid gap-0.5 text-center">
                 <h3 className="text-base font-semibold leading-none">
-                  {isAirplaneMode ? "Low Power" : networkDisplay.label}
+                  {isAirplaneMode ? "低功耗" : networkDisplay.label}
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  {isAirplaneMode ? "Radio Off" : networkDisplay.sublabel}
+                  {isAirplaneMode ? "射频关闭" : networkDisplay.sublabel}
                 </p>
               </div>
             </div>
@@ -378,8 +378,8 @@ const NetworkStatusComponent = ({
                 </h3>
                 <p className="text-muted-foreground text-sm">
                   {isAirplaneMode
-                    ? "Airplane Mode"
-                    : carrier || "No Carrier"}
+                    ? "飞行模式"
+                    : carrier || "无运营商"}
                 </p>
               </div>
             </div>
@@ -428,10 +428,10 @@ const NetworkStatusComponent = ({
               </div>
               <div className="grid gap-0.5 text-center">
                 <h3 className="text-base font-semibold leading-none">
-                  {isAirplaneMode ? "Standby" : "Service"}
+                  {isAirplaneMode ? "待机" : "业务"}
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  {isAirplaneMode ? "Radio Off" : serviceLabel}
+                  {isAirplaneMode ? "射频关闭" : serviceLabel}
                 </p>
               </div>
             </div>

@@ -71,7 +71,7 @@ export default function SummaryCard({
       <CardHeader>
         <CardTitle as="h2">系统健康检查</CardTitle>
         <CardDescription>
-          运行完整诊断（二进制、权限、AT 传输、服务与配置）。可下载打包文件提供给技术支持。
+          运行完整诊断（Binaries & Versions、Filesystem & Permissions、AT Transport、SMS Subsystem、Sudoers、Systemd Services、Network、Configuration）。可下载打包文件提供给技术支持。
         </CardDescription>
         <CardAction>
           <div className="flex flex-wrap items-center justify-end gap-2">
