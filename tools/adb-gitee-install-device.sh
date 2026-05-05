@@ -37,8 +37,8 @@ tar xzf /tmp/qmanager.tar.gz -C /tmp/ || { echo "[qm] ERROR: extract failed"; ex
 
 [ -f /tmp/qmanager_install/install_rm520n.sh ] || { echo "[qm] ERROR: install_rm520n.sh missing"; exit 1; }
 
-echo "[qm] Running install_rm520n.sh --force (empty line => skip optional SSH prompt)..."
+echo "[qm] Running install_rm520n.sh --force (answer y => enable dropbear SSH when prompted)..."
 chmod +x /tmp/qmanager_install/install_rm520n.sh
-printf '\n' | /bin/bash /tmp/qmanager_install/install_rm520n.sh --force
+printf 'y\n' | /bin/bash /tmp/qmanager_install/install_rm520n.sh --force
 
 echo "[qm] Done."
