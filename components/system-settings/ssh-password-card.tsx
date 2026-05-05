@@ -48,12 +48,12 @@ export default function SSHPasswordCard() {
       setError("");
 
       if (newPassword.length < 6) {
-        setError("SSH password must be at least 6 characters.");
+        setError("SSH 密码至少需要 6 个字符。");
         return;
       }
 
       if (newPassword !== confirmPassword) {
-        setError("Passwords do not match.");
+        setError("两次输入的密码不一致。");
         return;
       }
 
@@ -65,10 +65,10 @@ export default function SSHPasswordCard() {
           confirmPassword
         );
         if (result.success) {
-          toast.success("SSH password updated successfully.");
+          toast.success("SSH 密码已更新。");
           reset();
         } else {
-          setError(result.error || "SSH password change failed.");
+          setError(result.error || "修改 SSH 密码失败。");
         }
       } finally {
         setIsSubmitting(false);
@@ -80,9 +80,9 @@ export default function SSHPasswordCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>SSH Password</CardTitle>
+        <CardTitle>SSH 密码</CardTitle>
         <CardDescription>
-          Set the root password used for SSH access to the modem.
+          设置用于 SSH 登录 modem（root）的密码。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -90,7 +90,7 @@ export default function SSHPasswordCard() {
 
           <Field>
             <FieldLabel htmlFor="ssh-current-password">
-              Current Web UI Password
+              当前 Web 密码
             </FieldLabel>
             <div className="relative">
               <Input
@@ -111,7 +111,7 @@ export default function SSHPasswordCard() {
                 onClick={() => setShowCurrentPassword((v) => !v)}
                 tabIndex={-1}
                 aria-label={
-                  showCurrentPassword ? "Hide password" : "Show password"
+                  showCurrentPassword ? "隐藏密码" : "显示密码"
                 }
               >
                 {showCurrentPassword ? (
@@ -125,7 +125,7 @@ export default function SSHPasswordCard() {
 
           <Field>
             <FieldLabel htmlFor="ssh-new-password">
-              New SSH Password
+              新 SSH 密码
             </FieldLabel>
             <div className="relative">
               <Input
@@ -146,7 +146,7 @@ export default function SSHPasswordCard() {
                 onClick={() => setShowNewPassword((v) => !v)}
                 tabIndex={-1}
                 aria-label={
-                  showNewPassword ? "Hide password" : "Show password"
+                  showNewPassword ? "隐藏密码" : "显示密码"
                 }
               >
                 {showNewPassword ? (
@@ -160,7 +160,7 @@ export default function SSHPasswordCard() {
 
           <Field>
             <FieldLabel htmlFor="ssh-confirm-password">
-              Confirm SSH Password
+              确认 SSH 密码
             </FieldLabel>
             <div className="relative">
               <Input
@@ -181,7 +181,7 @@ export default function SSHPasswordCard() {
                 onClick={() => setShowConfirmPassword((v) => !v)}
                 tabIndex={-1}
                 aria-label={
-                  showConfirmPassword ? "Hide password" : "Show password"
+                  showConfirmPassword ? "隐藏密码" : "显示密码"
                 }
               >
                 {showConfirmPassword ? (
@@ -203,10 +203,10 @@ export default function SSHPasswordCard() {
             {isSubmitting ? (
               <>
                 <Spinner className="mr-2" />
-                Updating...
+                更新中…
               </>
             ) : (
-              "Update SSH Password"
+              "更新 SSH 密码"
             )}
           </Button>
         </form>

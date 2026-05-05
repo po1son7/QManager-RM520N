@@ -107,14 +107,14 @@ const SmsAlertsLogCard = ({ refreshKey }: SmsAlertsLogCardProps) => {
           setTotal(data.total);
           setLastFetched(new Date());
         } else {
-          const msg = data.error || "Failed to load SMS log";
+          const msg = data.error || "无法加载短信日志";
           setFetchError(msg);
           if (mode !== "silent") toast.error(msg);
         }
       } catch (err) {
         if (controller.signal.aborted) return;
         const msg =
-          err instanceof Error ? err.message : "Failed to load SMS alert log";
+          err instanceof Error ? err.message : "无法加载短信告警日志";
         setFetchError(msg);
         if (mode !== "silent") toast.error(msg);
       } finally {
@@ -142,9 +142,9 @@ const SmsAlertsLogCard = ({ refreshKey }: SmsAlertsLogCardProps) => {
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Alert Log</CardTitle>
+          <CardTitle>告警记录</CardTitle>
           <CardDescription>
-            History of sent and failed SMS alerts.
+            已发送与发送失败的短信告警记录。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -176,15 +176,15 @@ const SmsAlertsLogCard = ({ refreshKey }: SmsAlertsLogCardProps) => {
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Alert Log</CardTitle>
+          <CardTitle>告警记录</CardTitle>
           <CardDescription>
-            History of sent and failed SMS alerts.
+            已发送与发送失败的短信告警记录。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Alert variant="destructive">
             <AlertCircle className="size-4" />
-            <AlertTitle>Failed to load alert log</AlertTitle>
+            <AlertTitle>无法加载告警记录</AlertTitle>
             <AlertDescription>
               <p>{fetchError}</p>
               <Button
@@ -194,7 +194,7 @@ const SmsAlertsLogCard = ({ refreshKey }: SmsAlertsLogCardProps) => {
                 onClick={() => fetchLog("initial")}
               >
                 <RefreshCcwIcon className="size-3.5" />
-                Retry
+                重试
               </Button>
             </AlertDescription>
           </Alert>
@@ -209,15 +209,15 @@ const SmsAlertsLogCard = ({ refreshKey }: SmsAlertsLogCardProps) => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Alert Log</CardTitle>
+            <CardTitle>告警记录</CardTitle>
             <CardDescription>
-              History of sent and failed SMS alerts.
+              已发送与发送失败的短信告警记录。
             </CardDescription>
           </div>
           <Button
             variant="outline"
             size="icon"
-            aria-label="Refresh alert log"
+            aria-label="刷新告警记录"
             disabled={isRefreshing}
             onClick={() => fetchLog("refresh")}
           >
@@ -233,14 +233,14 @@ const SmsAlertsLogCard = ({ refreshKey }: SmsAlertsLogCardProps) => {
             <TableHeader>
               <TableRow>
                 <TableHead scope="col" className="whitespace-nowrap">
-                  Timestamp
+                  时间
                 </TableHead>
-                <TableHead scope="col">Trigger</TableHead>
+                <TableHead scope="col">触发原因</TableHead>
                 <TableHead scope="col" className="w-20">
-                  Status
+                  状态
                 </TableHead>
                 <TableHead scope="col" className="hidden @md/card:table-cell">
-                  Recipient
+                  收件人
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -251,15 +251,14 @@ const SmsAlertsLogCard = ({ refreshKey }: SmsAlertsLogCardProps) => {
                     <div className="flex flex-col items-center gap-2">
                       <MessageSquareIcon className="size-8 text-muted-foreground" />
                       <p className="text-sm text-muted-foreground">
-                        No alerts sent yet
+                        暂无告警记录
                       </p>
                       <div className="grid gap-1">
                         <p className="text-xs text-muted-foreground/70">
-                          Alerts appear here when your connection drops past
-                          the configured threshold.
+                          连接中断超过设定阈值后，告警将显示在此处。
                         </p>
                         <p className="text-xs text-muted-foreground/70">
-                          Use Send Test SMS to verify your setup.
+                          可点击「发送测试短信」验证配置。
                         </p>
                       </div>
                     </div>
@@ -293,7 +292,7 @@ const SmsAlertsLogCard = ({ refreshKey }: SmsAlertsLogCardProps) => {
                           className="bg-success/15 text-success hover:bg-success/20 border-success/30"
                         >
                           <CheckCircle2Icon className="h-3 w-3" />
-                          Sent
+                          已发送
                         </Badge>
                       ) : (
                         <Badge
@@ -301,7 +300,7 @@ const SmsAlertsLogCard = ({ refreshKey }: SmsAlertsLogCardProps) => {
                           className="bg-destructive/15 text-destructive hover:bg-destructive/20 border-destructive/30"
                         >
                           <XCircleIcon className="h-3 w-3" />
-                          Failed
+                          失败
                         </Badge>
                       )}
                     </TableCell>
@@ -320,13 +319,12 @@ const SmsAlertsLogCard = ({ refreshKey }: SmsAlertsLogCardProps) => {
       {entries.length > 0 && (
         <CardFooter className="flex flex-col gap-1 @xs/card:flex-row @xs/card:justify-between @xs/card:items-center">
           <div className="text-xs text-muted-foreground">
-            Showing <strong>{entries.length}</strong> of{" "}
-            <strong>{total}</strong> entries
+            显示 <strong>{entries.length}</strong> / <strong>{total}</strong> 条
           </div>
           {lastFetched && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="size-3 shrink-0" />
-              Last updated: {lastFetched.toLocaleTimeString()}
+              上次更新：{lastFetched.toLocaleTimeString()}
             </div>
           )}
         </CardFooter>

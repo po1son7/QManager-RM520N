@@ -25,7 +25,7 @@ export interface SystemSettingsResponse {
 
 // --- Day Labels (shared with tower locking) --------------------------------
 
-export const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+export const DAY_LABELS = ["日", "一", "二", "三", "四", "五", "六"];
 
 // --- OpenWRT Timezone Table ------------------------------------------------
 // Standard OpenWRT/LuCI timezone table. Each entry has:

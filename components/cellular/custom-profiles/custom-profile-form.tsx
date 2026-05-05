@@ -184,19 +184,19 @@ const CustomProfileFormComponent = ({
     }
 
     if (form.cid < 1 || form.cid > 15) {
-      newErrors.cid = "CID must be 1–15.";
+      newErrors.cid = "CID 须在 1–15 之间。";
     }
 
     if (form.imei && !/^\d{15}$/.test(form.imei)) {
-      newErrors.imei = "IMEI must be exactly 15 digits.";
+      newErrors.imei = "IMEI 必须为 15 位数字。";
     }
 
     if (form.ttl < 0 || form.ttl > 255) {
-      newErrors.ttl = "TTL must be 0–255.";
+      newErrors.ttl = "TTL 须在 0–255。";
     }
 
     if (form.hl < 0 || form.hl > 255) {
-      newErrors.hl = "HL must be 0–255.";
+      newErrors.hl = "HL 须在 0–255。";
     }
 
     setErrors(newErrors);
@@ -243,12 +243,12 @@ const CustomProfileFormComponent = ({
     <Card className="@container/card">
       <CardHeader>
         <CardTitle>
-          {isEditing ? "Edit Profile" : "Create 自定义 SIM Profile"}
+          {isEditing ? "编辑场景" : "新建自定义 SIM 场景"}
         </CardTitle>
         <CardDescription>
           {isEditing
-            ? `Editing "${editingProfile?.name}". Update the fields below.`
-            : "Create a custom SIM profile with specific APN, TTL, and IMEI settings."}
+            ? `正在编辑「${editingProfile?.name}」，请在下方修改。`
+            : "创建包含指定 APN、TTL、IMEI 等参数的自定义 SIM 场景。"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -256,7 +256,7 @@ const CustomProfileFormComponent = ({
           {!isEditing && onLoadCurrentSettings && (
             <Button type="button" size="sm" onClick={onLoadCurrentSettings}>
               <DownloadIcon className="size-4" />
-              Load Current SIM
+              读取当前 SIM
             </Button>
           )}
         </div>
@@ -271,7 +271,7 @@ const CustomProfileFormComponent = ({
                   <Input
                     id="profileName"
                     type="text"
-                    placeholder="My LTE Profile"
+                    placeholder="例如：我的 LTE 场景"
                     value={form.name}
                     onChange={(e) => updateField("name", e.target.value)}
                     aria-describedby={errors.name ? "profileName-error" : undefined}
@@ -284,7 +284,7 @@ const CustomProfileFormComponent = ({
                   <Input
                     id="simIccid"
                     type="text"
-                    placeholder="Auto-filled from current SIM"
+                    placeholder="可由当前 SIM 自动填充"
                     value={form.sim_iccid}
                     onChange={(e) => updateField("sim_iccid", e.target.value)}
                   />
@@ -293,7 +293,7 @@ const CustomProfileFormComponent = ({
 
               <div className="grid grid-cols-1 @md/card:grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>Mobile Network Operator</FieldLabel>
+                  <FieldLabel>运营商</FieldLabel>
                   <Select value={selectedMno} onValueChange={handleMnoChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="选择运营商…" />
@@ -343,7 +343,7 @@ const CustomProfileFormComponent = ({
                   </Select>
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="apnCid">Profile Slot (CID)</FieldLabel>
+                  <FieldLabel htmlFor="apnCid">配置文件槽位（CID）</FieldLabel>
                   <Input
                     id="apnCid"
                     type="number"
@@ -360,11 +360,11 @@ const CustomProfileFormComponent = ({
               </div>
 
               <Field>
-                <FieldLabel htmlFor="imei">Preferred IMEI</FieldLabel>
+                <FieldLabel htmlFor="imei">首选 IMEI</FieldLabel>
                 <Input
                   id="imei"
                   type="text"
-                  placeholder="Leave blank to keep current IMEI"
+                  placeholder="留空则保持当前 IMEI"
                   maxLength={15}
                   value={form.imei}
                   onChange={(e) => updateField("imei", e.target.value)}
@@ -375,7 +375,7 @@ const CustomProfileFormComponent = ({
 
               <div className="grid grid-cols-1 @md/card:grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel htmlFor="ttl">TTL Value</FieldLabel>
+                  <FieldLabel htmlFor="ttl">TTL</FieldLabel>
                   <Input
                     id="ttl"
                     type="number"
@@ -410,7 +410,7 @@ const CustomProfileFormComponent = ({
               <div className="flex gap-3 pt-2">
                 <Button type="submit" disabled={isSaving}>
                   {isSaving && <Spinner className="size-4" />}
-                  {isEditing ? "Update Profile" : "Create Profile"}
+                  {isEditing ? "保存更改" : "创建场景"}
                 </Button>
                 <Button
                   type="button"
@@ -418,7 +418,7 @@ const CustomProfileFormComponent = ({
                   onClick={handleReset}
                   disabled={isSaving}
                 >
-                  {isEditing ? "取消" : "Reset"}
+                  {isEditing ? "取消" : "重置"}
                 </Button>
               </div>
             </FieldGroup>

@@ -60,9 +60,9 @@ import type { NetworkEvent, EventSeverity } from "@/types/modem-status";
 type SortOrder = "newest" | "oldest" | "type";
 
 const LIMIT_OPTIONS = [
-  { label: "All Events", value: 50 },
-  { label: "10 Events", value: 10 },
-  { label: "25 Events", value: 25 },
+  { label: "全部（最多 50 条）", value: 50 },
+  { label: "10 条", value: 10 },
+  { label: "25 条", value: 25 },
 ] as const;
 
 // --- Local helpers -----------------------------------------------------------
@@ -109,9 +109,9 @@ function EventsTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="hidden @md/card:table-cell">Event Type</TableHead>
-            <TableHead>Message</TableHead>
-            <TableHead>Date & Time</TableHead>
+            <TableHead className="hidden @md/card:table-cell">事件类型</TableHead>
+            <TableHead>消息</TableHead>
+            <TableHead>日期与时间</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -176,13 +176,13 @@ function EventsTable({
       </Table>
       <div className="flex justify-between items-center pt-4">
         <div className="text-xs text-muted-foreground">
-          Showing <strong>{events.length}</strong> of{" "}
-          <strong>{totalCount}</strong> event{totalCount !== 1 ? "s" : ""}
+          显示 <strong>{events.length}</strong> /{" "}
+          <strong>{totalCount}</strong> 条
         </div>
         {lastUpdate && (
           <div className="flex items-center text-xs text-muted-foreground">
             <Clock className="h-3 w-3 mr-1" />
-            Last updated: {lastUpdate.toLocaleTimeString()}
+            上次更新：{lastUpdate.toLocaleTimeString()}
           </div>
         )}
       </div>
@@ -238,10 +238,9 @@ const NetworkEventsCard = () => {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Network Events</CardTitle>
+        <CardTitle>网络事件</CardTitle>
         <CardDescription>
-          Recent network events including band changes, connection drops, and
-          signal changes.
+          最近的网络事件，包括频段变更、连接中断与信号变化等。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -251,7 +250,7 @@ const NetworkEventsCard = () => {
               <FieldGroup>
                 <Field orientation="horizontal" className="w-fit">
                   <FieldLabel htmlFor="event-monitoring-setting">
-                    Auto-refresh
+                    自动刷新
                   </FieldLabel>
                   <Switch
                     id="event-monitoring-setting"
@@ -267,8 +266,9 @@ const NetworkEventsCard = () => {
             <Alert>
               <BellOff className="size-4" />
               <AlertTitle>
-                Auto-refresh paused — displaying events as of{" "}
-                {lastUpdate ? lastUpdate.toLocaleTimeString() : "last fetch"}.
+                自动刷新已暂停 — 显示截至{" "}
+                {lastUpdate ? lastUpdate.toLocaleTimeString() : "上次刷新"}
+                的事件。
               </AlertTitle>
             </Alert>
           )}
@@ -278,9 +278,9 @@ const NetworkEventsCard = () => {
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <div className="flex items-center">
                   <TabsList>
-                    <TabsTrigger value="all">All</TabsTrigger>
+                    <TabsTrigger value="all">全部</TabsTrigger>
                     <TabsTrigger value="bandChanges">
-                      <span className="hidden @sm/card:inline">Band Changes</span>
+                      <span className="hidden @sm/card:inline">频段变更</span>
                       <Radio className="@sm/card:hidden" />
                     </TabsTrigger>
                     <TabsTrigger value="networkMode">
@@ -302,30 +302,30 @@ const NetworkEventsCard = () => {
                         >
                           <ArrowUpDown className="h-3.5 w-3.5" />
                           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                            Sort
+                            排序
                           </span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+                        <DropdownMenuLabel>排序方式</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuCheckboxItem
                           checked={sortOrder === "newest"}
                           onCheckedChange={() => setSortOrder("newest")}
                         >
-                          Newest first
+                          最新优先
                         </DropdownMenuCheckboxItem>
                         <DropdownMenuCheckboxItem
                           checked={sortOrder === "oldest"}
                           onCheckedChange={() => setSortOrder("oldest")}
                         >
-                          Oldest first
+                          最旧优先
                         </DropdownMenuCheckboxItem>
                         <DropdownMenuCheckboxItem
                           checked={sortOrder === "type"}
                           onCheckedChange={() => setSortOrder("type")}
                         >
-                          Event type
+                          按事件类型
                         </DropdownMenuCheckboxItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -338,12 +338,12 @@ const NetworkEventsCard = () => {
                         >
                           <ListFilter className="h-3.5 w-3.5" />
                           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                            Limit
+                            数量
                           </span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Max Events</DropdownMenuLabel>
+                        <DropdownMenuLabel>显示条数</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {LIMIT_OPTIONS.map((opt) => (
                           <DropdownMenuCheckboxItem
@@ -367,7 +367,7 @@ const NetworkEventsCard = () => {
                         className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`}
                       />
                       <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                        Refresh
+                        刷新
                       </span>
                     </Button>
                   </div>
@@ -378,7 +378,7 @@ const NetworkEventsCard = () => {
                     <div className="flex items-center gap-x-2">
                       <AlertCircle className="size-5" />
                       <AlertTitle>
-                        Failed to load network events: {error}
+                        加载网络事件失败：{error}
                       </AlertTitle>
                     </div>
                   </Alert>
@@ -391,7 +391,7 @@ const NetworkEventsCard = () => {
                     emptyIcon={
                       <Activity className="h-8 w-8 text-muted-foreground" />
                     }
-                    emptyMessage="No network events found"
+                    emptyMessage="暂无网络事件"
                     totalCount={filteredEvents.length}
                     lastUpdate={lastUpdate}
                   />
@@ -399,10 +399,9 @@ const NetworkEventsCard = () => {
 
                 <TabsContent value="bandChanges">
                   <div className="grid gap-1.5 mb-4">
-                    <h3 className="text-sm font-medium">Band Changes</h3>
+                    <h3 className="text-sm font-medium">频段变更</h3>
                     <p className="text-sm text-muted-foreground">
-                      Band changes, cell handoffs, 5G anchor transitions, and
-                      carrier aggregation events.
+                      频段切换、小区接力、5G 锚点变更与载波聚合等相关事件。
                     </p>
                   </div>
                   <EventsTable
@@ -411,7 +410,7 @@ const NetworkEventsCard = () => {
                     emptyIcon={
                       <Radio className="h-8 w-8 text-muted-foreground" />
                     }
-                    emptyMessage="No band change events found"
+                    emptyMessage="暂无频段变更事件"
                     totalCount={filteredEvents.length}
                     lastUpdate={lastUpdate}
                   />
@@ -421,7 +420,7 @@ const NetworkEventsCard = () => {
                   <div className="grid gap-1.5 mb-4">
                     <h3 className="text-sm font-medium">网络模式</h3>
                     <p className="text-sm text-muted-foreground">
-                      Signal quality changes and network mode transitions.
+                      信号质量变化与网络模式切换等相关事件。
                     </p>
                   </div>
                   <EventsTable
@@ -430,7 +429,7 @@ const NetworkEventsCard = () => {
                     emptyIcon={
                       <Signal className="h-8 w-8 text-muted-foreground" />
                     }
-                    emptyMessage="No network mode events found"
+                    emptyMessage="暂无网络模式相关事件"
                     totalCount={filteredEvents.length}
                     lastUpdate={lastUpdate}
                   />
@@ -440,7 +439,7 @@ const NetworkEventsCard = () => {
                   <div className="grid gap-1.5 mb-4">
                     <h3 className="text-sm font-medium">数据连接</h3>
                     <p className="text-sm text-muted-foreground">
-                      Internet connectivity, latency, and packet loss events.
+                      互联网连通性、延迟与丢包等相关事件。
                     </p>
                   </div>
                   <EventsTable
@@ -449,7 +448,7 @@ const NetworkEventsCard = () => {
                     emptyIcon={
                       <Wifi className="h-8 w-8 text-muted-foreground" />
                     }
-                    emptyMessage="No data connection events found"
+                    emptyMessage="暂无数据连接相关事件"
                     totalCount={filteredEvents.length}
                     lastUpdate={lastUpdate}
                   />

@@ -73,7 +73,7 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
   // --- Validation ------------------------------------------------------------
   const phoneError =
     recipientPhone && !PHONE_REGEX.test(recipientPhone)
-      ? "Include country code, e.g. +14155551234"
+      ? "请包含国际区号，例如 +8613800138000"
       : null;
 
   const thresholdError =
@@ -81,7 +81,7 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
     (isNaN(Number(thresholdMinutes)) ||
       Number(thresholdMinutes) < 1 ||
       Number(thresholdMinutes) > 60)
-      ? "Duration must be 1\u201360 minutes"
+      ? "时长须为 1–60 分钟"
       : null;
 
   const hasValidationErrors = !!(phoneError || thresholdError);
@@ -143,9 +143,9 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>SMS Alert Settings</CardTitle>
+          <CardTitle>短信告警</CardTitle>
           <CardDescription>
-            Sends SMS via your modem&apos;s cellular network.
+            通过模组蜂窝网络发送告警短信。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -168,20 +168,20 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>SMS Alert Settings</CardTitle>
+          <CardTitle>短信告警</CardTitle>
           <CardDescription>
-            Sends SMS via your modem&apos;s cellular network.
+            通过模组蜂窝网络发送告警短信。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Alert variant="destructive">
             <AlertCircle className="size-4" />
-            <AlertTitle>Failed to load settings</AlertTitle>
+            <AlertTitle>无法加载设置</AlertTitle>
             <AlertDescription className="flex items-center justify-between">
               <span>{error}</span>
               <Button variant="outline" size="sm" onClick={() => refresh()}>
                 <RefreshCcwIcon className="size-3.5" />
-                Retry
+                重试
               </Button>
             </AlertDescription>
           </Alert>
@@ -194,9 +194,9 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>SMS Alert Settings</CardTitle>
+        <CardTitle>短信告警</CardTitle>
         <CardDescription>
-          Sends SMS via your modem&apos;s cellular network.
+          通过模组蜂窝网络发送告警短信。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -206,7 +206,7 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
               {/* Enable toggle */}
               <Field orientation="horizontal" className="w-fit">
                 <FieldLabel htmlFor="sms-alerts-enabled">
-                  Enable SMS Alerts
+                  启用短信告警
                 </FieldLabel>
                 <Switch
                   id="sms-alerts-enabled"
@@ -218,7 +218,7 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
               {/* Recipient phone */}
               <Field>
                 <FieldLabel htmlFor="recipient-phone">
-                  Recipient Phone
+                  接收号码
                 </FieldLabel>
                 <Input
                   id="recipient-phone"
@@ -242,7 +242,7 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
                   </FieldError>
                 ) : (
                   <FieldDescription id="recipient-phone-desc">
-                    Include the country code with a leading +, e.g. +14155551234.
+                    号码需含国家码，并以 + 开头，例如 +8613800138000。
                   </FieldDescription>
                 )}
               </Field>
@@ -250,7 +250,7 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
               {/* Threshold duration */}
               <Field>
                 <FieldLabel htmlFor="sms-threshold-minutes">
-                  Alert After (minutes)
+                  失联多久后告警（分钟）
                 </FieldLabel>
                 <Input
                   id="sms-threshold-minutes"
@@ -274,8 +274,7 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
                   </FieldError>
                 ) : (
                   <FieldDescription id="sms-threshold-desc">
-                    How long the connection must be down before an alert is
-                    sent. Prevents alerts for brief, transient outages.
+                    连接中断持续达到该时长后才会发送告警，可避免短暂抖动误报。
                   </FieldDescription>
                 )}
               </Field>
@@ -299,12 +298,12 @@ const SmsAlertsSettingsCard = ({ onTestSmsSent }: SmsAlertsSettingsCardProps) =>
                     {isSendingTest ? (
                       <>
                         <Loader2 className="size-4 animate-spin" />
-                        Sending&hellip;
+                        发送中…
                       </>
                     ) : (
                       <>
                         <SendIcon className="size-4" />
-                        Send Test SMS
+                        发送测试短信
                       </>
                     )}
                   </Button>

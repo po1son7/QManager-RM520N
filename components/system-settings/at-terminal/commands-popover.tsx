@@ -86,12 +86,12 @@ export default function CommandsPopover({
     const trimmedCommand = newCommand.trim();
 
     if (!trimmedLabel || !trimmedCommand) {
-      setAddError("Both fields are required.");
+      setAddError("请填写名称和命令。");
       return;
     }
 
     if (!trimmedCommand.toUpperCase().startsWith("AT")) {
-      setAddError('Command must start with "AT".');
+      setAddError("命令必须以 “AT” 开头。");
       return;
     }
 
@@ -100,14 +100,14 @@ export default function CommandsPopover({
       (p) => p.command.toLowerCase() === trimmedCommand.toLowerCase()
     );
     if (isDuplicateCommand) {
-      setAddError("This command already exists.");
+      setAddError("该命令已存在。");
       return;
     }
     const isDuplicateLabel = allCommands.some(
       (p) => p.label.toLowerCase() === trimmedLabel.toLowerCase()
     );
     if (isDuplicateLabel) {
-      setAddError("A command with this label already exists.");
+      setAddError("已存在相同名称的预设。");
       return;
     }
 
@@ -135,18 +135,18 @@ export default function CommandsPopover({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="ghost" size="xs" aria-expanded={open}>
-            Commands
+            命令预设
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
 
         <PopoverContent className="w-80 p-0" align="end">
           <Command>
-            <CommandInput placeholder="Search commands..." />
+            <CommandInput placeholder="搜索命令…" />
             <CommandList>
-              <CommandEmpty>No commands found.</CommandEmpty>
+              <CommandEmpty>未找到命令。</CommandEmpty>
 
-              <CommandGroup heading="Default">
+              <CommandGroup heading="内置">
                 {DEFAULT_AT_COMMANDS.map((preset) => (
                   <CommandItem
                     key={preset.command}
@@ -194,7 +194,7 @@ export default function CommandsPopover({
 
           {/* Footer */}
           <div className="flex items-center justify-between px-3 py-2 border-t text-xs text-muted-foreground">
-            <span>{totalCount} commands</span>
+            <span>{totalCount} 条命令</span>
             <button
               className="text-xs underline underline-offset-2 hover:text-foreground transition-colors"
               onClick={() => {
@@ -202,7 +202,7 @@ export default function CommandsPopover({
                 setOpen(false);
               }}
             >
-              Manage Commands
+              管理自定义命令
             </button>
           </div>
         </PopoverContent>
@@ -212,16 +212,16 @@ export default function CommandsPopover({
       <Dialog open={manageOpen} onOpenChange={setManageOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Manage 自定义 Commands</DialogTitle>
+            <DialogTitle>管理自定义 AT 命令</DialogTitle>
             <DialogDescription>
-              Add and remove custom AT command presets.
+              添加或删除自定义 AT 命令快捷项。
             </DialogDescription>
           </DialogHeader>
 
           {/* 自定义 command list */}
           {customCommands.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">
-              No custom commands yet.
+              暂无自定义命令。
             </p>
           ) : (
             <ul className="space-y-1">
@@ -241,7 +241,7 @@ export default function CommandsPopover({
                   <Button
                     variant="ghost"
                     size="icon-xs"
-                    aria-label={`Delete ${preset.label}`}
+                    aria-label={`删除 ${preset.label}`}
                     onClick={() => handleDelete(index)}
                   >
                     <Trash2Icon />
@@ -256,8 +256,8 @@ export default function CommandsPopover({
           {/* Add form */}
           <div className="flex gap-2">
             <Input
-              placeholder="Command name"
-              aria-label="Command name"
+              placeholder="显示名称"
+              aria-label="命令显示名称"
               value={newLabel}
               onChange={(e) => {
                 setNewLabel(e.target.value);
@@ -267,7 +267,7 @@ export default function CommandsPopover({
             />
             <Input
               placeholder="AT+..."
-              aria-label="AT command"
+              aria-label="AT 命令内容"
               value={newCommand}
               onChange={(e) => {
                 setNewCommand(e.target.value);
@@ -279,7 +279,7 @@ export default function CommandsPopover({
               }}
             />
             <Button size="sm" onClick={handleAdd}>
-              Add
+              添加
             </Button>
           </div>
 

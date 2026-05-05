@@ -81,10 +81,9 @@ const TTLSettingsCard = () => {
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>TTL &amp; Hop Limit Configuration</CardTitle>
+          <CardTitle>TTL 与 Hop Limit</CardTitle>
           <CardDescription>
-            Set custom TTL (IPv4) and Hop Limit (IPv6) values applied to
-            outbound packets on the cellular interface.
+            设置蜂窝接口出站 IPv4 TTL 与 IPv6 Hop Limit。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -172,8 +171,8 @@ function TTLForm({
       markSaved();
       toast.success(
         ttl > 0 || hl > 0
-          ? `Applied — TTL: ${ttl}, Hop Limit: ${hl}`
-          : "自定义 TTL/Hop Limit disabled",
+          ? `已应用 — TTL: ${ttl}，Hop Limit: ${hl}`
+          : "已关闭自定义 TTL/Hop Limit",
       );
     } else {
       toast.error(error || "应用 TTL/Hop Limit 设置失败");
@@ -183,10 +182,9 @@ function TTLForm({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>TTL &amp; Hop Limit Configuration</CardTitle>
+        <CardTitle>TTL 与 Hop Limit</CardTitle>
         <CardDescription>
-          Set custom TTL (IPv4) and Hop Limit (IPv6) values applied to outbound
-          packets on the cellular interface.
+          设置蜂窝接口出站 IPv4 TTL 与 IPv6 Hop Limit。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -195,9 +193,9 @@ function TTLForm({
             <InfoIcon className="size-4" />
             <AlertDescription>
               <p>
-                TTL/HL configuration is managed by the{" "}
-                <span className="font-semibold">{profileName}</span> 自定义 SIM
-                Profile.
+                TTL/HL 由活跃场景「
+                <span className="font-semibold">{profileName}</span>
+                」中的自定义 SIM 配置管理。
               </p>
             </AlertDescription>
           </Alert>
@@ -215,7 +213,7 @@ function TTLForm({
               <div className="grid gap-2">
                 <Field orientation="horizontal" className="w-fit">
                   <FieldLabel htmlFor="ttl-setting">
-                    Enable 自定义 TTL/HL
+                    启用自定义 TTL/HL
                   </FieldLabel>
                   <Switch
                     id="ttl-setting"
@@ -227,13 +225,13 @@ function TTLForm({
               </div>
 
               <Field>
-                <FieldLabel htmlFor="ttl-value">TTL Value</FieldLabel>
+                <FieldLabel htmlFor="ttl-value">TTL</FieldLabel>
                 <Input
                   id="ttl-value"
                   type="number"
                   min="1"
                   max="255"
-                  placeholder="e.g. 64"
+                  placeholder="例如 64"
                   className="w-full"
                   value={ttlValue}
                   onChange={(e) => setTtlValue(e.target.value)}
@@ -243,14 +241,14 @@ function TTLForm({
 
               <Field>
                 <FieldLabel htmlFor="hl-value">
-                  Hop Limit (HL) Value
+                  Hop Limit（HL）
                 </FieldLabel>
                 <Input
                   id="hl-value"
                   type="number"
                   min="1"
                   max="255"
-                  placeholder="e.g. 64"
+                  placeholder="例如 64"
                   className="w-full"
                   value={hlValue}
                   onChange={(e) => setHlValue(e.target.value)}
@@ -260,7 +258,7 @@ function TTLForm({
 
               {isEnabled && !ttlValue && !hlValue && (
                 <FieldError id="ttl-hl-error">
-                  Enter at least a TTL or Hop Limit value
+                  请至少填写 TTL 或 Hop Limit 中的一项
                 </FieldError>
               )}
             </FieldGroup>
@@ -270,7 +268,7 @@ function TTLForm({
               type="submit"
               isSaving={isSaving}
               saved={saved}
-              label="Apply"
+              label="应用"
               disabled={isProfileControlled || !isDirty}
             />
           </div>

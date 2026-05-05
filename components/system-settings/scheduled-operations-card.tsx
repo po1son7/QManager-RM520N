@@ -114,8 +114,8 @@ const ScheduledOperationsCard = ({
     if (success) {
       toast.success(
         checked
-          ? "Scheduled reboot enabled"
-          : "Scheduled reboot disabled",
+          ? "已启用定时重启"
+          : "已关闭定时重启",
       );
     } else {
       setRebootEnabled(!checked);
@@ -159,9 +159,9 @@ const ScheduledOperationsCard = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Scheduled Operations</CardTitle>
+          <CardTitle>定时任务</CardTitle>
           <CardDescription>
-            Set up automated system tasks on a schedule.
+            按计划自动执行系统维护操作。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -189,9 +189,9 @@ const ScheduledOperationsCard = ({
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Scheduled Operations</CardTitle>
+          <CardTitle>定时任务</CardTitle>
           <CardDescription>
-            Set up automated system tasks on a schedule.
+            按计划自动执行系统维护操作。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -207,9 +207,9 @@ const ScheduledOperationsCard = ({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Scheduled Operations</CardTitle>
+        <CardTitle>定时任务</CardTitle>
         <CardDescription>
-          Set up automated system tasks on a schedule.
+          按计划自动执行系统维护操作。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -220,13 +220,13 @@ const ScheduledOperationsCard = ({
           animate="visible"
         >
           {/* ─── Section: Scheduled Reboot ─────────────────────────────── */}
-          <motion.p variants={itemVariants} className="font-semibold text-sm">Scheduled Reboot</motion.p>
+          <motion.p variants={itemVariants} className="font-semibold text-sm">定时重启</motion.p>
           <Separator />
 
           {/* Enable toggle */}
           <motion.div variants={itemVariants} className="flex items-center justify-between">
             <p className="font-semibold text-muted-foreground text-sm">
-              Enable Scheduled Reboot
+              启用定时重启
             </p>
             <div className="flex items-center space-x-2">
               <Switch
@@ -235,7 +235,7 @@ const ScheduledOperationsCard = ({
                 onCheckedChange={handleRebootEnabledChange}
               />
               <Label htmlFor="scheduled-reboot">
-                {rebootEnabled ? "Enabled" : "Disabled"}
+                {rebootEnabled ? "已启用" : "已关闭"}
               </Label>
             </div>
           </motion.div>
@@ -244,7 +244,7 @@ const ScheduledOperationsCard = ({
           {/* Reboot Time */}
           <motion.div variants={itemVariants} className="flex items-center justify-between mt-4">
             <Label className="font-semibold text-muted-foreground text-sm">
-              Reboot Time
+              重启时间
             </Label>
             <Input
               type="time"
@@ -258,12 +258,12 @@ const ScheduledOperationsCard = ({
           {/* Repeat On */}
           <motion.fieldset variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
             <legend className="font-semibold text-muted-foreground text-sm">
-              Repeat On
+              重复日期
             </legend>
             <div
               className="flex flex-wrap gap-2"
               role="group"
-              aria-label="Reboot days of the week"
+              aria-label="每周重启日期"
             >
               {DAY_LABELS.map((day, index) => (
                 <Toggle

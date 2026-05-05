@@ -39,10 +39,9 @@ const MTUSettingsCard = () => {
     return (
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Maximum Transmission Unit (MTU) Configuration</CardTitle>
+          <CardTitle>MTU（最大传输单元）</CardTitle>
           <CardDescription>
-            Set the maximum packet size on the cellular data interface. Lower
-            values can help with fragmentation issues.
+            设置蜂窝数据接口的最大数据包长度，较低数值有助于缓解分片问题。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -143,10 +142,9 @@ function MTUForm({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Maximum Transmission Unit (MTU) Configuration</CardTitle>
+        <CardTitle>MTU（最大传输单元）</CardTitle>
         <CardDescription>
-          Set the maximum packet size on the cellular data interface. Lower
-          values can help with fragmentation issues.
+          设置蜂窝数据接口的最大数据包长度，较低数值有助于缓解分片问题。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -162,7 +160,7 @@ function MTUForm({
               <div className="grid gap-2">
                 <Field orientation="horizontal" className="w-fit">
                   <FieldLabel htmlFor="mtu-setting">
-                    Enable 自定义 MTU
+                    启用自定义 MTU
                   </FieldLabel>
                   <Switch
                     id="mtu-setting"
@@ -173,13 +171,13 @@ function MTUForm({
               </div>
 
               <Field>
-                <FieldLabel htmlFor="mtu-value">MTU Value</FieldLabel>
+                <FieldLabel htmlFor="mtu-value">MTU</FieldLabel>
                 <Input
                   id="mtu-value"
                   type="number"
                   min="576"
                   max="9000"
-                  placeholder="e.g. 1500"
+                  placeholder="例如 1500"
                   className="w-full"
                   value={mtuValue}
                   onChange={(e) => setMtuValue(e.target.value)}
@@ -189,7 +187,7 @@ function MTUForm({
                 />
                 {isMtuInvalid && (
                   <FieldError id="mtu-error">
-                    MTU must be between 576 and 9000
+                    MTU 须在 576–9000 之间
                   </FieldError>
                 )}
               </Field>
@@ -200,7 +198,7 @@ function MTUForm({
               type="submit"
               isSaving={isSaving}
               saved={saved}
-              label="Apply"
+              label="应用"
               disabled={!isDirty}
             />
           </div>

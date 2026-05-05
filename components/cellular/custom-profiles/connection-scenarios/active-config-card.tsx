@@ -43,14 +43,14 @@ export const ActiveConfigCard = ({
               <Icon className="size-6" />
             </div>
             <div className="grid">
-              <h4 className="font-semibold">{scenario.name} Configuration</h4>
+              <h4 className="font-semibold">{scenario.name} — 配置</h4>
               {isActivating ? (
                 <Badge
                   variant="outline"
                   className="bg-info/15 text-info hover:bg-info/20 border-info/30"
                 >
                   <Spinner className="h-2 w-2" />
-                  Applying…
+                  应用中…
                 </Badge>
               ) : isActive ? (
                 <Badge
@@ -58,7 +58,7 @@ export const ActiveConfigCard = ({
                   className="bg-success/15 text-success hover:bg-success/20 border-success/30"
                 >
                   <div className="w-2 h-2 rounded-full bg-success" />
-                  Active
+                  当前
                 </Badge>
               ) : (
                 <Badge
@@ -66,14 +66,14 @@ export const ActiveConfigCard = ({
                   className="bg-muted text-muted-foreground hover:bg-muted border-border"
                 >
                   <div className="w-2 h-2 rounded-full bg-muted-foreground/50" />
-                  Not Active
+                  未启用
                 </Badge>
               )}
             </div>
           </div>
           <div className="flex items-center gap-1">
             {isCustom && (
-              <Button variant="ghost" size="icon" aria-label="Edit scenario settings" onClick={onEdit}>
+              <Button variant="ghost" size="icon" aria-label="编辑场景" onClick={onEdit}>
                 <Settings className="size-4" />
               </Button>
             )}
@@ -83,7 +83,7 @@ export const ActiveConfigCard = ({
                 onClick={onActivate}
                 className="gap-1.5"
               >
-                Activate
+                启用场景
               </Button>
             )}
           </div>
@@ -94,7 +94,7 @@ export const ActiveConfigCard = ({
           <Separator />
           <ConfigRow label="网络模式" value={scenario.config.mode} />
           <Separator />
-          <ConfigRow label="Optimization" value={scenario.config.optimization} />
+          <ConfigRow label="优化" value={scenario.config.optimization} />
           <Separator />
           <ConfigRow
             label="LTE 频段"
@@ -102,12 +102,12 @@ export const ActiveConfigCard = ({
           />
           <Separator />
           <ConfigRow
-            label="NR5G-SA Bands"
+            label="NR5G-SA 频段"
             value={bandsToDisplay(scenario.config.sa_nr_bands)}
           />
           <Separator />
           <ConfigRow
-            label="NR5G-NSA Bands"
+            label="NR5G-NSA 频段"
             value={bandsToDisplay(scenario.config.nsa_nr_bands)}
           />
           <Separator />

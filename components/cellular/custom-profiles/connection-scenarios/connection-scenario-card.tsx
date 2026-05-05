@@ -61,8 +61,8 @@ const gradientOptions = [
 const DEFAULT_SCENARIOS: Scenario[] = [
   {
     id: "balanced",
-    name: "Balanced",
-    description: "Auto band selection",
+    name: "均衡",
+    description: "自动频段选择",
     icon: Zap,
     gradient: "from-emerald-500 via-teal-500 to-cyan-500",
     pattern: "balanced",
@@ -70,7 +70,7 @@ const DEFAULT_SCENARIOS: Scenario[] = [
     config: {
       atModeValue: "AUTO",
       mode: "Auto",
-      optimization: "Balanced",
+      optimization: "均衡",
       lte_bands: "",
       nsa_nr_bands: "",
       sa_nr_bands: "",
@@ -78,8 +78,8 @@ const DEFAULT_SCENARIOS: Scenario[] = [
   },
   {
     id: "gaming",
-    name: "Gaming",
-    description: "Low latency, SA priority",
+    name: "游戏",
+    description: "低延迟，优先 SA",
     icon: Gamepad2,
     gradient: "from-violet-600 via-purple-600 to-indigo-700",
     pattern: "gaming",
@@ -87,7 +87,7 @@ const DEFAULT_SCENARIOS: Scenario[] = [
     config: {
       atModeValue: "NR5G",
       mode: "5G 仅 SA",
-      optimization: "Latency",
+      optimization: "低延迟",
       lte_bands: "",
       nsa_nr_bands: "",
       sa_nr_bands: "",
@@ -95,8 +95,8 @@ const DEFAULT_SCENARIOS: Scenario[] = [
   },
   {
     id: "streaming",
-    name: "Streaming",
-    description: "High bandwidth, stable connection",
+    name: "流媒体",
+    description: "高带宽，连接更稳定",
     icon: Play,
     gradient: "from-rose-500 via-pink-500 to-orange-400",
     pattern: "streaming",
@@ -104,7 +104,7 @@ const DEFAULT_SCENARIOS: Scenario[] = [
     config: {
       atModeValue: "LTE:NR5G",
       mode: "5G SA / NSA",
-      optimization: "Throughput",
+      optimization: "高吞吐",
       lte_bands: "",
       nsa_nr_bands: "",
       sa_nr_bands: "",
@@ -207,7 +207,7 @@ const ConnectionScenariosCard = () => {
       toast.success(`已切换到场景「${selectedScenario.name}」。`);
     } else {
       toast.error(
-        `Failed to activate ${selectedScenario.name} scenario.`,
+        `无法激活场景「${selectedScenario.name}」。`,
       );
     }
   }, [
@@ -229,7 +229,7 @@ const ConnectionScenariosCard = () => {
     setIsSaving(true);
     const scenarioData = {
       name: addName,
-      description: addDescription || "自定义 configuration",
+      description: addDescription || "自定义配置",
       gradient: addGradient,
       config: {
         atModeValue: addMode,
@@ -250,7 +250,7 @@ const ConnectionScenariosCard = () => {
       resetAddForm();
       toast.success("场景创建成功。");
     } else {
-      toast.error("Failed to create scenario.");
+      toast.error("创建场景失败。");
     }
   };
 
@@ -322,7 +322,7 @@ const ConnectionScenariosCard = () => {
       setShowEditDialog(false);
       toast.success("场景已更新。");
     } else {
-      toast.error("Failed to update scenario.");
+      toast.error("更新场景失败。");
     }
   };
 
@@ -416,23 +416,23 @@ const ConnectionScenariosCard = () => {
           <div className="space-y-5 py-4">
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="add-name">Scenario Name</Label>
+              <Label htmlFor="add-name">场景名称</Label>
               <Input
                 id="add-name"
                 value={addName}
                 onChange={(e) => setAddName(e.target.value)}
-                placeholder="e.g., Work from Home"
+                placeholder="例如：居家办公"
               />
             </div>
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="add-description">Description</Label>
+              <Label htmlFor="add-description">说明</Label>
               <Input
                 id="add-description"
                 value={addDescription}
                 onChange={(e) => setAddDescription(e.target.value)}
-                placeholder="e.g., Optimized for video calls"
+                placeholder="例如：优化视频会议"
               />
             </div>
 
@@ -455,38 +455,38 @@ const ConnectionScenariosCard = () => {
 
             {/* Band Locks */}
             <div className="space-y-2">
-              <Label htmlFor="add-lte-bands">LTE Band Lock</Label>
+              <Label htmlFor="add-lte-bands">LTE 频段锁定</Label>
               <Input
                 id="add-lte-bands"
                 value={addLteBands}
                 onChange={(e) => setAddLteBands(e.target.value)}
-                placeholder="e.g., 1, 3, 7, 28 (empty = Auto)"
+                placeholder="例如：1, 3, 7, 28（留空为自动）"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="add-sa-bands">NR5G-SA Band Lock</Label>
+                <Label htmlFor="add-sa-bands">NR5G-SA 频段锁定</Label>
                 <Input
                   id="add-sa-bands"
                   value={addSaNrBands}
                   onChange={(e) => setAddSaNrBands(e.target.value)}
-                  placeholder="e.g., 41, 78"
+                  placeholder="例如：41, 78"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="add-nsa-bands">NR5G-NSA Band Lock</Label>
+                <Label htmlFor="add-nsa-bands">NR5G-NSA 频段锁定</Label>
                 <Input
                   id="add-nsa-bands"
                   value={addNsaNrBands}
                   onChange={(e) => setAddNsaNrBands(e.target.value)}
-                  placeholder="e.g., 41, 78"
+                  placeholder="例如：41, 78"
                 />
               </div>
             </div>
 
             {/* Card Theme */}
             <div className="space-y-2">
-              <Label>Card Theme</Label>
+              <Label>卡片配色</Label>
               <div className="grid grid-cols-6 gap-2">
                 {gradientOptions.map((grad) => (
                   <button
@@ -507,7 +507,7 @@ const ConnectionScenariosCard = () => {
 
             {/* Preview */}
             <div className="space-y-2">
-              <Label>Preview</Label>
+              <Label>预览</Label>
               <div
                 className={cn(
                   "relative overflow-hidden rounded-xl h-20 bg-linear-to-br",
@@ -520,10 +520,10 @@ const ConnectionScenariosCard = () => {
                 />
                 <div className="relative p-4 text-white">
                   <p className="font-medium">
-                    {addName || "Scenario Name"}
+                    {addName || "场景名称"}
                   </p>
                   <p className="text-sm text-white/70">
-                    {addDescription || "自定义 configuration"}
+                    {addDescription || "自定义配置"}
                   </p>
                 </div>
               </div>
@@ -538,7 +538,7 @@ const ConnectionScenariosCard = () => {
               onClick={handleAddScenario}
               disabled={!addName.trim() || isSaving}
             >
-              {isSaving ? "Creating…" : "Create Scenario"}
+              {isSaving ? "创建中…" : "创建场景"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -548,29 +548,29 @@ const ConnectionScenariosCard = () => {
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit Configuration</DialogTitle>
+            <DialogTitle>编辑场景</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-5 py-4">
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="edit-name">Scenario Name</Label>
+              <Label htmlFor="edit-name">场景名称</Label>
               <Input
                 id="edit-name"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                placeholder="Scenario name"
+                placeholder="场景名称"
               />
             </div>
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="edit-description">Description</Label>
+              <Label htmlFor="edit-description">说明</Label>
               <Input
                 id="edit-description"
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
-                placeholder="Scenario description"
+                placeholder="场景说明"
               />
             </div>
 
@@ -593,49 +593,49 @@ const ConnectionScenariosCard = () => {
 
             {/* Optimization */}
             <div className="space-y-2">
-              <Label htmlFor="edit-optimization">Optimization Label</Label>
+              <Label htmlFor="edit-optimization">优化标签（展示用）</Label>
               <Input
                 id="edit-optimization"
                 value={editOptimization}
                 onChange={(e) => setEditOptimization(e.target.value)}
-                placeholder="e.g., Latency, Throughput, 自定义"
+                placeholder="例如：低延迟、高吞吐、自定义"
               />
             </div>
 
             {/* Band Locks */}
             <div className="space-y-2">
-              <Label htmlFor="edit-lte-bands">LTE Band Lock</Label>
+              <Label htmlFor="edit-lte-bands">LTE 频段锁定</Label>
               <Input
                 id="edit-lte-bands"
                 value={editLteBands}
                 onChange={(e) => setEditLteBands(e.target.value)}
-                placeholder="e.g., 1, 3, 7, 28 (empty = Auto)"
+                placeholder="例如：1, 3, 7, 28（留空为自动）"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-sa-bands">NR5G-SA Band Lock</Label>
+                <Label htmlFor="edit-sa-bands">NR5G-SA 频段锁定</Label>
                 <Input
                   id="edit-sa-bands"
                   value={editSaNrBands}
                   onChange={(e) => setEditSaNrBands(e.target.value)}
-                  placeholder="e.g., 41, 78"
+                  placeholder="例如：41, 78"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-nsa-bands">NR5G-NSA Band Lock</Label>
+                <Label htmlFor="edit-nsa-bands">NR5G-NSA 频段锁定</Label>
                 <Input
                   id="edit-nsa-bands"
                   value={editNsaNrBands}
                   onChange={(e) => setEditNsaNrBands(e.target.value)}
-                  placeholder="e.g., 41, 78"
+                  placeholder="例如：41, 78"
                 />
               </div>
             </div>
 
             {/* Card Theme */}
             <div className="space-y-2">
-              <Label>Card Theme</Label>
+              <Label>卡片配色</Label>
               <div className="grid grid-cols-6 gap-2">
                 {gradientOptions.map((grad) => (
                   <button
@@ -656,7 +656,7 @@ const ConnectionScenariosCard = () => {
 
             {/* Preview */}
             <div className="space-y-2">
-              <Label>Preview</Label>
+              <Label>预览</Label>
               <div
                 className={cn(
                   "relative overflow-hidden rounded-xl h-20 bg-linear-to-br",
@@ -668,9 +668,9 @@ const ConnectionScenariosCard = () => {
                   className="absolute inset-0 w-full h-full"
                 />
                 <div className="relative p-4 text-white">
-                  <p className="font-medium">{editName || "Scenario Name"}</p>
+                  <p className="font-medium">{editName || "场景名称"}</p>
                   <p className="text-sm text-white/70">
-                    {editDescription || "自定义 configuration"}
+                    {editDescription || "自定义配置"}
                   </p>
                 </div>
               </div>
