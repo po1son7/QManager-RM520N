@@ -138,6 +138,15 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
         exit 0
     fi
 
+    # --- Reboot ack: /reboot/ page tells the OTA worker it has loaded ---
+    # Worker waits up to REBOOT_ACK_TIMEOUT for this file before rebooting,
+    # so the static reboot page is in browser memory before the device dies.
+    if [ "$action" = "reboot_ack" ]; then
+        touch /tmp/qmanager_reboot_ack 2>/dev/null
+        jq -n '{"success":true}'
+        exit 0
+    fi
+
     # --- Update check ---
     qlog_info "Checking for updates"
     load_update_remote_config
@@ -271,7 +280,7 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
             is_current: (.tag_name == $cv)
         }]')
 
-    # Download URL from GitHub Releases (stable, redirect handled by uclient-fetch/curl)
+    # Download URL from GitHub Releases (stable, redirect handled by curl -L)
     download_url=""
     if [ -n "$latest_tag" ]; then
         download_url=$(qm_update_mirror_url "https://github.com/${GITHUB_REPO}/releases/download/${latest_tag}/qmanager.tar.gz")

@@ -18,7 +18,7 @@ import {
   SettingsIcon,
   TerminalIcon,
   DownloadIcon,
-  TerminalSquareIcon,
+  EthernetPort,
 } from "lucide-react";
 
 import QManagerLogo from "@/public/qmanager-logo.svg";
@@ -73,6 +73,10 @@ const data = {
           title: "系统健康检查",
           url: "/system-settings/system-health-check",
         },
+        {
+          title: "Connection Quality",
+          url: "/system-settings/connection-quality",
+        },
       ],
     },
     {
@@ -81,14 +85,12 @@ const data = {
       icon: DownloadIcon,
     },
     {
-      title: "AT 终端",
+      title: "终端",
       url: "/system-settings/at-terminal",
       icon: TerminalIcon,
-    },
-    {
-      title: "Web 控制台",
-      url: "/system-settings/web-console",
-      icon: TerminalSquareIcon,
+      items: [
+        { title: "Web 控制台", url: "/system-settings/web-console" },
+      ],
     },
   ],
   navSecondary: [
@@ -196,6 +198,11 @@ const data = {
   ],
   localNetwork: [
     {
+      title: "以太网状态",
+      url: "/local-network/ethernet",
+      icon: EthernetPort,
+    },
+    {
       title: "局域网设置",
       url: "/local-network/ip-passthrough",
       icon: Settings2,
@@ -224,6 +231,10 @@ const data = {
         {
           title: "短信告警",
           url: "/monitoring/sms-alerts",
+        },
+        {
+          title: "Discord Bot",
+          url: "/monitoring/discord-bot",
         },
       ],
     },

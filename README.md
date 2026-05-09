@@ -92,6 +92,23 @@ wget -q -O /tmp/qmanager-installer.sh \
 
 上述地址使用 **jsDelivr CDN** 读取仓库中的安装脚本，**浏览器侧域名不含 github.com**，适合 GitHub 无法直连的环境。
 
+> **若参考固件无 `curl`（RM502/RM520/RM521 等常见）：** 请先用 Entware 安装 `curl`，并用绝对路径调用（BusyBox 默认 `PATH` 不含 `/opt/bin`）：
+>
+> ```sh
+> opkg update && opkg install curl
+> /opt/bin/curl -fsSL -o /tmp/qmanager-installer.sh \
+>   https://github.com/po1son7/QManager-RM520N/raw/refs/heads/cn/edition/qmanager-installer.sh && \
+>   bash /tmp/qmanager-installer.sh
+> ```
+>
+> **若仅有 `wget` 而无 `curl`：** 可先用 `wget` 拉取安装脚本；安装器预检会从 Entware 自动安装 `curl`（须已引导 Entware）。安装完成后会建立 `/usr/bin/curl` 符号链接，后续命令与 OTA 可直接使用。
+>
+> ```sh
+> wget -O /tmp/qmanager-installer.sh \
+>   https://github.com/po1son7/QManager-RM520N/raw/refs/heads/cn/edition/qmanager-installer.sh && \
+>   bash /tmp/qmanager-installer.sh
+> ```
+
 **备选：** 若 jsDelivr 不可用，可通过镜像前缀封装 Raw 地址：
 
 ```sh
@@ -299,7 +316,10 @@ QManager/
   <p>捐助有助于硬件、多网络测试与长期维护。</p>
   <br/>
   <a href="https://github.com/sponsors/dr-dolomite" target="_blank">
-    <img height="40" src="https://img.shields.io/badge/Sponsor-%E2%9D%A4-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub" />
+    <img height="40" src="https://img.shields.io/badge/GitHub%20Tip-%E2%9D%A4-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Tip on GitHub" />
+  </a>
+  <a href="https://paypal.me/iamrusss" target="_blank">
+    <img height="40" src="https://img.shields.io/badge/PayPal%20Tip-00457C?style=for-the-badge&logo=paypal&logoColor=white" alt="Tip via PayPal" />
   </a>
   <br/><br/>
   <p><strong>GCash（Remitly）</strong><br/>姓名: Russel Yasol<br/>号码: +639544817486</p>

@@ -2,14 +2,20 @@
 
 import React, { useState } from "react";
 import { motion, type Variants } from "motion/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 
 import type { DeviceStatus } from "@/types/modem-status";
 import { modemHeroImage } from "@/lib/device-modem-image";
+import packageJson from "@/package.json";
 
 const containerVariants: Variants = {
   hidden: {},
@@ -28,11 +34,13 @@ const itemVariants: Variants = {
 interface DeviceStatusComponentProps {
   data: DeviceStatus | null;
   isLoading: boolean;
+  lanGateway?: string;
 }
 
 const DeviceStatusComponent = ({
   data,
   isLoading,
+  lanGateway,
 }: DeviceStatusComponentProps) => {
   const [hidePrivate, setHidePrivate] = useState(false);
 
@@ -60,29 +68,31 @@ const DeviceStatusComponent = ({
       mono: true,
     },
     { label: "Active MIMO", value: data?.mimo || "-", mono: true },
+    { label: "LAN Gateway", value: lanGateway || "-", mono: true },
+    { label: "QManager Version", value: packageJson.version, mono: true },
   ];
 
   if (isLoading) {
     return (
-      <Card className="@container/card col-span-2">
+      <Card className="@container/card">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-center">
+          <CardTitle className="text-2xl font-semibold @[250px]/card:text-3xl">
             设备信息
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
-            <div className="flex items-center justify-center mb-8">
+            <div className="flex items-center justify-center mb-4">
               <Skeleton className="size-44 rounded-full" />
             </div>
-            <div className="grid gap-2">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i}>
-                  <Separator />
-                  <div className="flex items-center justify-between py-1">
-                    <Skeleton className="h-4 w-28" />
-                    <Skeleton className="h-4 w-36" />
-                  </div>
+            <div className="grid divide-y divide-border border-y border-border">
+              {Array.from({ length: 11 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between py-2"
+                >
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-4 w-36" />
                 </div>
               ))}
             </div>
@@ -93,15 +103,31 @@ const DeviceStatusComponent = ({
   }
 
   return (
-    <Card className="@container/card col-span-2">
+    <Card className="@container/card">
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold @[250px]/card:text-3xl text-center flex-1">
+        <CardTitle className="text-2xl font-semibold @[250px]/card:text-3xl flex-1">
           设备信息
         </CardTitle>
+        <CardAction>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setHidePrivate((prev) => !prev)}
+            aria-label={
+              hidePrivate ? "显示私密详情" : "隐藏私密详情"
+            }
+          >
+            {hidePrivate ? (
+              <EyeOff className="size-4" />
+            ) : (
+              <Eye className="size-4" />
+            )}
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
-          <div className="flex items-center justify-center mb-8">
+          <div className="flex items-center justify-center mb-4">
             {(() => {
               const hero = modemHeroImage(data?.model);
               const frame =
@@ -120,45 +146,27 @@ const DeviceStatusComponent = ({
             })()}
           </div>
 
-          <div className="grid gap-2">
-            <div className="flex justify-end">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setHidePrivate((prev) => !prev)}
-                aria-label={
-                  hidePrivate ? "显示私密详情" : "隐藏私密详情"
-                }
-              >
-                {hidePrivate ? (
-                  <EyeOff className="size-4" />
-                ) : (
-                  <Eye className="size-4" />
-                )}
-              </Button>
-            </div>
-            <motion.dl
-              className="grid divide-y divide-border border-y border-border"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {rows.map((row) => (
-                <motion.div key={row.label} variants={itemVariants} className="flex items-center justify-between py-2">
-                  <dt className="font-semibold text-muted-foreground xl:text-base text-sm">
-                    {row.label}
-                  </dt>
-                  <dd
-                    className={`font-semibold xl:text-base text-sm ${
-                      row.mono ? "tabular-nums" : ""
-                    }`}
-                  >
-                    {hidePrivate && row.private ? "••••••••••••" : row.value}
-                  </dd>
-                </motion.div>
-              ))}
-            </motion.dl>
-          </div>
+          <motion.dl
+            className="grid divide-y divide-border border-y border-border"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {rows.map((row) => (
+              <motion.div key={row.label} variants={itemVariants} className="flex items-center justify-between py-2">
+                <dt className="font-semibold text-muted-foreground xl:text-base text-sm">
+                  {row.label}
+                </dt>
+                <dd
+                  className={`font-semibold xl:text-base text-sm ${
+                    row.mono ? "tabular-nums" : ""
+                  }`}
+                >
+                  {hidePrivate && row.private ? "••••••••••••" : row.value}
+                </dd>
+              </motion.div>
+            ))}
+          </motion.dl>
         </div>
       </CardContent>
     </Card>

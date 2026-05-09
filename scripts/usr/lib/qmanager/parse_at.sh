@@ -677,21 +677,20 @@ parse_ca_info() {
         local csv
         csv=$(printf '%s' "$line" | sed 's/+QCAINFO: //g' | tr -d '"' | tr -d ' ' | tr -d '\r')
 
-        local cc_type
-        cc_type=$(printf '%s' "$csv" | cut -d',' -f1)
+        # POSIX field splitting — one substitution instead of 10 cut forks.
+        local _OLD_IFS=$IFS
+        IFS=','
+        # shellcheck disable=SC2086 # intentional word splitting on commas
+        set -- $csv
+        IFS=$_OLD_IFS
+        local nfields=$#
 
-        local freq
-        freq=$(printf '%s' "$csv" | cut -d',' -f2)
+        [ "$nfields" -lt 4 ] && continue
 
-        local bw_raw
-        bw_raw=$(printf '%s' "$csv" | cut -d',' -f3)
-
-        local band_str
-        band_str=$(printf '%s' "$csv" | cut -d',' -f4)
-
-        # Count total comma-separated fields
-        local nfields
-        nfields=$(printf '%s' "$csv" | awk -F',' '{print NF}')
+        local cc_type="$1"
+        local freq="$2"
+        local bw_raw="$3"
+        local band_str="$4"
 
         local tech="" band_short="" mhz=0
         local cc_pci="null" cc_rsrp="null" cc_rsrq="null" cc_rssi="null" cc_sinr="null"
@@ -699,18 +698,18 @@ parse_ca_info() {
         case "$band_str" in
             LTEBAND*)
                 # ---- LTE line ----
+                # Positions: type(1),freq(2),bw(3),band(4),state(5),PCI(6),RSRP(7),RSRQ(8),RSSI(9),RSSNR(10)
                 tech="LTE"
                 mhz=$(_lte_rb_to_mhz "$bw_raw")
                 local band_num
                 band_num=$(printf '%s' "$band_str" | sed 's/LTEBAND//')
                 band_short="B${band_num}"
 
-                # LTE fields: type(1),freq(2),bw(3),band(4),state(5),PCI(6),RSRP(7),RSRQ(8),RSSI(9),RSSNR(10)
-                cc_pci=$(printf '%s' "$csv" | cut -d',' -f6)
-                cc_rsrp=$(printf '%s' "$csv" | cut -d',' -f7)
-                cc_rsrq=$(printf '%s' "$csv" | cut -d',' -f8)
-                cc_rssi=$(printf '%s' "$csv" | cut -d',' -f9)
-                cc_sinr=$(printf '%s' "$csv" | cut -d',' -f10)
+                [ "$nfields" -ge 6 ]  && cc_pci="$6"
+                [ "$nfields" -ge 7 ]  && cc_rsrp="$7"
+                [ "$nfields" -ge 8 ]  && cc_rsrq="$8"
+                [ "$nfields" -ge 9 ]  && cc_rssi="$9"
+                [ "$nfields" -ge 10 ] && cc_sinr="${10}"
                 ;;
             NR5GBAND*|NRDCBAND*)
                 # ---- NR line ----

@@ -151,6 +151,7 @@ download_file() {
         wget -q -O "$dest" "$url" 2>/dev/null && return 0
     fi
 
+    # RM520N-GL / post–Entware installs: curl (TLS, redirects).
     if command -v curl >/dev/null 2>&1; then
         curl -fsSL -o "$dest" "$url" 2>/dev/null && return 0
     fi

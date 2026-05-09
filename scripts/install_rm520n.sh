@@ -167,11 +167,15 @@ VERSION_PENDING="/etc/qmanager/VERSION.pending"
 # Watchcat lock prevents Tier-4 reboot during install
 WATCHCAT_LOCK="/tmp/qmanager_watchcat.lock"
 
+# Status of early SSH bootstrap; set by setup_ssh_early(), read by print_summary().
+# Values: installed | skipped_ota | skipped_existing | failed_install | failed_start | failed_password | not_run
+SSH_BOOTSTRAP_STATUS="not_run"
+
 # Install log (qmanager_update tails this for step progress)
 LOG_FILE="/tmp/qmanager_install.log"
 
 # Services gated on config: only re-enable if they were already enabled
-UCI_GATED_SERVICES="qmanager-watchcat qmanager-tower-failover"
+UCI_GATED_SERVICES="qmanager-watchcat qmanager-tower-failover qmanager-discord"
 
 # Conflict packages that must be removed before installing
 CONFLICT_PACKAGES="socat socat-at-bridge"
@@ -341,6 +345,29 @@ preflight() {
         die "This script must be run as root"
     fi
 
+    # Hard requirement: curl with TLS. If missing but Entware is already
+    # bootstrapped, self-heal by installing curl via opkg so users who fetched
+    # this script with wget can still complete the install.
+    if ! command -v curl >/dev/null 2>&1; then
+        if [ -x /opt/bin/opkg ]; then
+            warn "curl not found — installing from Entware"
+            /opt/bin/opkg update >/dev/null 2>&1 || true
+            if /opt/bin/opkg install curl >/dev/null 2>&1; then
+                [ -x /opt/bin/curl ] && ln -sf /opt/bin/curl /usr/bin/curl 2>/dev/null
+                hash -r 2>/dev/null || true
+                if command -v curl >/dev/null 2>&1; then
+                    info "curl installed from Entware"
+                else
+                    die "curl install via Entware succeeded but curl still not on PATH. Aborting."
+                fi
+            else
+                die "curl is required but not found, and 'opkg install curl' failed. Aborting."
+            fi
+        else
+            die "curl is required but not found, and Entware is not installed. Install curl first (e.g. via Entware) and re-run."
+        fi
+    fi
+
     if [ "$DO_FORCE" = "1" ]; then
         warn "--force: skipping modem firmware detection"
     else
@@ -480,6 +507,17 @@ install_dependencies() {
         warn "sms_tool not found — SMS features will not work"
     fi
 
+    # --- qmanager_discord (optional Discord bot binary) -----------------------
+    if [ -f "$SRC_DEPS/qmanager_discord" ]; then
+        install_file "$SRC_DEPS/qmanager_discord" "$BIN_DIR/qmanager_discord" 755 \
+            || warn "Failed to install qmanager_discord"
+        info "qmanager_discord installed to $BIN_DIR/qmanager_discord"
+    elif [ -x "$BIN_DIR/qmanager_discord" ]; then
+        info "qmanager_discord already installed"
+    else
+        info "qmanager_discord not bundled — Discord bot feature disabled"
+    fi
+
     _qm_entware_bootstrapped_here=0
 
     # --- Entware bootstrap -------------------------------------------------------
@@ -569,7 +607,6 @@ SVCEOF
 
         qm_entware_rewrite_opkg_feeds /opt/etc/opkg.conf
         info "Entware feeds pinned to ${ENTWARE_FEED_BASE:-$ENTWARE_BIN_HOST}"
-
         info "Downloaded opkg package manager"
 
         # Install base Entware (single metadata refresh — feeds already domestic)
@@ -665,6 +702,13 @@ RCEOF
             _batch="$_batch jq"
         fi
 
+        # Ensure jq is in standard PATH (lighttpd CGI won't see /opt/bin)
+        [ -x /opt/bin/jq ] && ln -sf /opt/bin/jq /usr/bin/jq 2>/dev/null || true
+
+        # Same for curl — Entware-installed curl lands in /opt/bin/, but
+        # CGI scripts and BusyBox shells don't have /opt/bin on PATH.
+        [ -x /opt/bin/curl ] && ! command -v curl >/dev/null 2>&1 && \
+            ln -sf /opt/bin/curl /usr/bin/curl 2>/dev/null || true
         if command -v timeout >/dev/null 2>&1; then
             info "timeout is already installed"
         else
@@ -776,8 +820,7 @@ RCEOF
            { _wget_try "$SPEEDTEST_MIRROR_TRY" || _curl_try "$SPEEDTEST_MIRROR_TRY"; }; then
             _st_dl=1
         fi
-        if [ "$_st_dl" = "1" ] && [ -s /tmp/speedtest.tgz ]; then
-            tar -xzf /tmp/speedtest.tgz -C "$SPEEDTEST_DIR" speedtest 2>/dev/null
+        if [ "$_st_dl" = "1" ] && [ -s /tmp/speedtest.tgz ]; then            tar -xzf /tmp/speedtest.tgz -C "$SPEEDTEST_DIR" speedtest 2>/dev/null
             rm -f /tmp/speedtest.tgz "$SPEEDTEST_DIR/speedtest.md"
             chmod +x "$SPEEDTEST_DIR/speedtest"
             ln -sf "$SPEEDTEST_DIR/speedtest" /bin/speedtest
@@ -1105,7 +1148,90 @@ install_backend() {
         info "Config initialized at /etc/qmanager/qmanager.conf"
     fi
 
+    # --- Bootstrap default ping_profile.json / migrate legacy env vars ----------
+    install_ping_profile
+    migrate_ping_environment
+
     info "Backend installed"
+}
+
+# --- Bootstrap Default ping_profile.json -------------------------------------
+
+# Bootstrap default ping_profile.json on first install. Idempotent.
+install_ping_profile() {
+    local target="/etc/qmanager/ping_profile.json"
+    local source_file="$SRC_SCRIPTS/etc/qmanager/ping_profile.json"
+
+    mkdir -p /etc/qmanager
+    if [ ! -f "$target" ]; then
+        if [ -f "$source_file" ]; then
+            cp "$source_file" "$target"
+            chmod 644 "$target"
+            echo "  Installed default ping profile (relaxed)"
+        else
+            echo "  WARNING: $source_file missing from installer payload" >&2
+        fi
+    else
+        echo "  Existing ping profile preserved at $target"
+    fi
+}
+
+# --- Migrate Legacy Ping Environment -----------------------------------------
+
+# Migrate old cycle-count env vars in /etc/qmanager/environment to time-based.
+# Old: FAIL_THRESHOLD=3 (cycles)  ->  New: FAIL_SECS=15 (seconds, assuming 5s probe interval)
+# Idempotent: re-running on already-migrated file is a no-op.
+migrate_ping_environment() {
+    local env_file="/etc/qmanager/environment"
+    [ -f "$env_file" ] || return 0
+
+    # Skip if migration already happened (FAIL_SECS present, FAIL_THRESHOLD absent)
+    if grep -q '^FAIL_SECS=' "$env_file" && ! grep -q '^FAIL_THRESHOLD=' "$env_file"; then
+        return 0
+    fi
+    if ! grep -q '^FAIL_THRESHOLD=\|^RECOVER_THRESHOLD=\|^HISTORY_SIZE=' "$env_file"; then
+        return 0
+    fi
+
+    echo "  Migrating ping env vars from cycle-count to time-based..."
+    local interval=5
+    if grep -q '^PING_INTERVAL=' "$env_file"; then
+        interval=$(grep '^PING_INTERVAL=' "$env_file" | head -1 | cut -d= -f2)
+        # Defensive default if the value is missing or non-numeric
+        case "$interval" in
+            ''|*[!0-9]*) interval=5 ;;
+        esac
+    fi
+
+    local backup="${env_file}.pre-rust-ping.bak"
+    cp "$env_file" "$backup"
+
+    local tmp; tmp=$(mktemp)
+    while IFS= read -r line || [ -n "$line" ]; do
+        case "$line" in
+            FAIL_THRESHOLD=*)
+                local n="${line#FAIL_THRESHOLD=}"
+                case "$n" in ''|*[!0-9]*) n=3 ;; esac
+                printf 'FAIL_SECS=%s\n' "$((n * interval))" >> "$tmp"
+                ;;
+            RECOVER_THRESHOLD=*)
+                local n="${line#RECOVER_THRESHOLD=}"
+                case "$n" in ''|*[!0-9]*) n=2 ;; esac
+                printf 'RECOVER_SECS=%s\n' "$((n * interval))" >> "$tmp"
+                ;;
+            HISTORY_SIZE=*)
+                local n="${line#HISTORY_SIZE=}"
+                case "$n" in ''|*[!0-9]*) n=60 ;; esac
+                printf 'HISTORY_SECS=%s\n' "$((n * interval))" >> "$tmp"
+                ;;
+            *)
+                printf '%s\n' "$line" >> "$tmp"
+                ;;
+        esac
+    done < "$env_file"
+    mv "$tmp" "$env_file"
+    chmod 644 "$env_file"
+    echo "  Migrated $env_file (backup at $backup)"
 }
 
 # --- Cleanup Legacy Scripts --------------------------------------------------
@@ -1117,11 +1243,11 @@ cleanup_legacy_scripts() {
 
     local removed=0
 
-    # /usr/bin/qmanager_* — remove if not in source
+    # /usr/bin/qmanager_* — remove if not in source (scripts/usr/bin/) AND not bundled in dependencies/
     for installed in "$BIN_DIR"/qmanager_*; do
         [ -f "$installed" ] || continue
         fname=$(basename "$installed")
-        if [ ! -f "$SRC_SCRIPTS/usr/bin/$fname" ]; then
+        if [ ! -f "$SRC_SCRIPTS/usr/bin/$fname" ] && [ ! -f "$SRC_DEPS/$fname" ]; then
             rm -f "$installed"
             rm -f "$WANTS_DIR/${fname}.service"
             _log_raw "Removed legacy: $fname"
@@ -1289,6 +1415,15 @@ enable_services() {
         fi
     done
 
+    # --- Discord bot (gated on binary + config + enabled flag) ----------------
+    if [ -x "$BIN_DIR/qmanager_discord" ] && [ -f /etc/qmanager/discord_bot.json ]; then
+        enabled=$(jq -r '.enabled // false' /etc/qmanager/discord_bot.json 2>/dev/null)
+        if [ "$enabled" = "true" ]; then
+            ln -sf "$SYSTEMD_DIR/qmanager-discord.service" "$WANTS_DIR/qmanager-discord.service"
+            info "Discord bot service enabled"
+        fi
+    fi
+
     sync
     systemctl daemon-reload
 }
@@ -1316,9 +1451,18 @@ start_services() {
     systemctl start qmanager-setup 2>/dev/null || true
 
     # Start always-on services with verification
-    for svc in qmanager-ping qmanager-poller qmanager-ttl qmanager-mtu qmanager-imei-check; do
+    for svc in qmanager-cfun-fix qmanager-ping qmanager-poller qmanager-traffic qmanager-ttl qmanager-mtu qmanager-imei-check; do
         systemctl start "$svc" 2>/dev/null || true
     done
+
+    # Start Discord bot if binary present, config exists, and enabled flag is true
+    if [ -x "$BIN_DIR/qmanager_discord" ] && [ -f /etc/qmanager/discord_bot.json ]; then
+        _dc_enabled=$(jq -r '.enabled // false' /etc/qmanager/discord_bot.json 2>/dev/null)
+        if [ "$_dc_enabled" = "true" ]; then
+            systemctl start qmanager-discord 2>/dev/null || warn "Could not start qmanager-discord"
+            info "Discord bot started"
+        fi
+    fi
     sleep 2
 
     # Download ttyd for web console (non-fatal — console is optional)
@@ -1329,7 +1473,7 @@ start_services() {
 
     # Verify critical services
     local svc_errors=0
-    for svc in qmanager-firewall lighttpd qmanager-setup qmanager-ping qmanager-poller; do
+    for svc in qmanager-firewall lighttpd qmanager-setup qmanager-ping qmanager-poller qmanager-traffic; do
         if systemctl is-active "$svc" >/dev/null 2>&1; then
             info "$svc is running"
         else
@@ -1401,67 +1545,76 @@ at_stack_check() {
     fi
 }
 
-# --- SSH Setup (Optional) ----------------------------------------------------
+# --- Early SSH Bootstrap (fresh installs only) -------------------------------
+# Runs once, right after install_dependencies (so Entware/dropbear are available)
+# and before the rest of the install. On fresh installs with no existing SSH,
+# installs dropbear, writes a systemd unit, starts it, and sets root's password
+# to "qmanager" so the user can SSH in immediately. Web-UI onboarding overwrites
+# this temporary password later.
+#
+# Skips entirely on OTA upgrades (VERSION file present) or when port 22 is
+# already in use by another SSH server.
 
-setup_ssh() {
-    # Auto-skip if any SSH server is already serving. Detection order matters:
-    # BusyBox `pgrep -x` is unreliable on RM520N-GL (returns no matches even
-    # when dropbear is clearly running), so we check the port-22 listener
-    # first via `ss`/`netstat`, then fall back to `pidof`, then `pgrep`.
+setup_ssh_early() {
+    step "Bootstrap SSH (fresh install)"
+
+    # 1. Fresh-install gate. /etc/qmanager/VERSION only exists from a prior
+    #    successful install. VERSION.pending (written by preflight) is ignored
+    #    on purpose — that's the in-flight marker, not the prior-install marker.
+    if [ -f "$CONF_DIR/VERSION" ]; then
+        SSH_BOOTSTRAP_STATUS="skipped_ota"
+        info "OTA upgrade detected — skipping SSH bootstrap"
+        return 0
+    fi
+
+    # 2. Port-22 safety check. If anything is already listening, leave it alone.
     if command -v ss >/dev/null 2>&1; then
         if ss -ltn 2>/dev/null | awk '{print $4}' | grep -qE '(^|:)22$'; then
-            info "SSH already running on port 22 — skipping setup"
+            SSH_BOOTSTRAP_STATUS="skipped_existing"
+            info "SSH already running on port 22 — skipping bootstrap"
             return 0
         fi
     elif command -v netstat >/dev/null 2>&1; then
         if netstat -ltn 2>/dev/null | awk '{print $4}' | grep -qE '(^|:)22$'; then
-            info "SSH already running on port 22 — skipping setup"
+            SSH_BOOTSTRAP_STATUS="skipped_existing"
+            info "SSH already running on port 22 — skipping bootstrap"
             return 0
         fi
     fi
     if pidof dropbear >/dev/null 2>&1 || pidof sshd >/dev/null 2>&1; then
-        info "SSH daemon already running — skipping setup"
+        SSH_BOOTSTRAP_STATUS="skipped_existing"
+        info "SSH daemon already running — skipping bootstrap"
         return 0
     fi
 
-    printf "\n"
-    printf "  ${BOLD}Enable SSH access (dropbear)?${NC}\n"
-    printf "  ${DIM}Persistent SSH on port 22 via systemd service.${NC}\n"
-    printf "  ${DIM}Host keys are stored in /opt/etc/dropbear/ (persistent via Entware).${NC}\n\n"
-    printf "  Enable SSH? [y/N] "
-    read -r answer
-    case "$answer" in
-        [yY]|[yY][eE][sS]) ;;
-        *) info "Skipped SSH setup"; return 0 ;;
-    esac
-
-    # Install dropbear if not present (from bundled .ipk or Entware)
+    # 3. Ensure dropbear is installed. install_dependencies already does this on
+    #    a fresh install, so this is normally a no-op fallback. We still try the
+    #    bundled .ipk first, then Entware, in case install_dependencies failed
+    #    on dropbear specifically.
     if ! command -v dropbear >/dev/null 2>&1; then
         if [ -x "$OPKG" ]; then
             if ls "$SRC_DEPS"/dropbear*.ipk >/dev/null 2>&1; then
                 "$OPKG" install "$SRC_DEPS"/dropbear*.ipk >/dev/null 2>&1 \
                     && info "dropbear installed from bundled package" \
-                    || { warn "dropbear install failed"; return 0; }
+                    || { warn "dropbear install failed (bundled .ipk)"; SSH_BOOTSTRAP_STATUS="failed_install"; return 0; }
             else
                 "$OPKG" install dropbear >/dev/null 2>&1 \
                     && info "dropbear installed from Entware" \
-                    || { warn "dropbear install failed"; return 0; }
+                    || { warn "dropbear install failed (Entware)"; SSH_BOOTSTRAP_STATUS="failed_install"; return 0; }
             fi
         else
             warn "Cannot install dropbear — opkg not available"
+            SSH_BOOTSTRAP_STATUS="failed_install"
             return 0
         fi
     else
         info "dropbear already installed"
     fi
 
-    # opkg post-install auto-generates RSA, ECDSA, and ED25519 host keys
-    # in /opt/etc/dropbear/ which persists via /usrdata/opt bind mount.
-    # dropbear finds them automatically — no -r flag needed.
-
-    # Create systemd service (not Entware init.d — more reliable on RM520N-GL)
+    # 4. Write the systemd unit. opkg's post-install hook generates RSA/ECDSA/
+    #    ED25519 host keys in /opt/etc/dropbear/, which persists via the
+    #    /usrdata/opt bind mount. dropbear finds them automatically.
     if [ ! -f "$SYSTEMD_DIR/dropbear.service" ]; then
-        # Rootfs may have been remounted ro by qmanager_console_mgr
         mount -o remount,rw / 2>/dev/null || true
         cat > "$SYSTEMD_DIR/dropbear.service" << 'SSHEOF'
 [Unit]
@@ -1476,34 +1629,61 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 SSHEOF
+        sync
         info "Created dropbear.service"
     fi
 
-    # Enable for boot via symlink (systemctl enable doesn't work on RM520N-GL)
+    # systemctl enable does not work on RM520N-GL — direct symlink instead.
     ln -sf "$SYSTEMD_DIR/dropbear.service" "$WANTS_DIR/dropbear.service"
-    systemctl daemon-reload
+    systemctl daemon-reload 2>/dev/null || true
 
-    # Start dropbear now
-    if pgrep -x dropbear >/dev/null 2>&1; then
-        info "dropbear is already running"
-    else
-        systemctl start dropbear 2>/dev/null || true
-        sleep 1
-        if systemctl is-active dropbear >/dev/null 2>&1; then
-            info "dropbear started on port 22"
-        else
-            warn "dropbear failed to start — check: journalctl -u dropbear"
-        fi
+    # 5. Start dropbear and verify it's active.
+    systemctl start dropbear 2>/dev/null || true
+    sleep 1
+    if ! systemctl is-active dropbear >/dev/null 2>&1; then
+        warn "dropbear failed to start — check: journalctl -u dropbear"
+        SSH_BOOTSTRAP_STATUS="failed_start"
+        return 0
+    fi
+    info "dropbear started on port 22"
+
+    # 6. Set root's password to "qmanager" inline. The qmanager_set_ssh_password
+    #    helper isn't installed at this point in the install (backend hasn't run),
+    #    so we replicate its core logic here. Onboarding will overwrite the
+    #    password on first web login.
+    local _password="qmanager"
+    local _salt _hash _escaped_hash
+    _salt=$(head -c 4 /dev/urandom | od -An -tx1 | tr -d ' \n')
+    _hash=$(printf '%s\n' "$_password" | openssl passwd -1 -salt "$_salt" -stdin 2>/dev/null)
+
+    if [ -z "$_hash" ]; then
+        warn "openssl passwd failed — root password not set"
+        SSH_BOOTSTRAP_STATUS="failed_password"
+        return 0
     fi
 
-    # SSH root password is set automatically during QManager onboarding
-    # (first-time setup syncs the web UI password to the system root password).
-    # It can also be changed later from System Settings > SSH Password.
-    if grep -q '^root:[*!]:' /etc/shadow 2>/dev/null || grep -q '^root::' /etc/shadow 2>/dev/null; then
-        info "Root password will be set during QManager onboarding"
+    if [ ! -f /etc/shadow ]; then
+        warn "/etc/shadow not found — root password not set"
+        SSH_BOOTSTRAP_STATUS="failed_password"
+        return 0
     fi
 
-    info "SSH setup complete — connect via: ssh root@192.168.225.1"
+    mount -o remount,rw / 2>/dev/null || true
+
+    # Escape sed-special chars in the hash. Using | as the sed delimiter so /
+    # in the hash isn't a problem; only &, \, and | need escaping.
+    _escaped_hash=$(printf '%s' "$_hash" | sed 's/[&\\|]/\\&/g')
+
+    # Match locked (root:!:...), passwordless (root::...), or any-existing-hash forms.
+    if ! sed -i "s|^root:[^:]*:|root:${_escaped_hash}:|" /etc/shadow 2>/dev/null; then
+        warn "Failed to update /etc/shadow"
+        SSH_BOOTSTRAP_STATUS="failed_password"
+        return 0
+    fi
+    sync
+
+    SSH_BOOTSTRAP_STATUS="installed"
+    info "Root password set to 'qmanager' (will be replaced on web onboarding)"
 }
 
 # --- Summary -----------------------------------------------------------------
@@ -1526,7 +1706,20 @@ print_summary() {
 
     printf "\n"
     printf "  Open in browser:  ${BOLD}https://192.168.225.1${NC}\n"
-    printf "  Web console:      ${BOLD}https://192.168.225.1/console${NC}\n\n"
+    printf "  Web console:      ${BOLD}https://192.168.225.1/console${NC}\n"
+
+    case "$SSH_BOOTSTRAP_STATUS" in
+        installed)
+            printf "  SSH:              ${BOLD}ssh root@192.168.225.1${NC} ${DIM}(temp password: qmanager — replaced on web onboarding)${NC}\n"
+            ;;
+        failed_install|failed_start|failed_password)
+            printf "  ${YELLOW}SSH bootstrap failed${NC} (${SSH_BOOTSTRAP_STATUS}). Re-run installer or set up dropbear manually.\n"
+            ;;
+        skipped_ota|skipped_existing|not_run)
+            : # no SSH line — avoid noise on upgrades or pre-existing setups
+            ;;
+    esac
+    printf "\n"
 
     if [ ! -f "$CONF_DIR/auth.json" ]; then
         info "First-time setup: you will be prompted to create a password"
@@ -1583,7 +1776,7 @@ main() {
     printf "  ══════════════════════════════════════════\n"
 
     # Calculate steps: preflight always runs; others are conditional
-    TOTAL_STEPS=3  # preflight + stop_services + cleanup_legacy_scripts
+    TOTAL_STEPS=4  # preflight + setup_ssh_early + stop_services + cleanup_legacy_scripts
     [ "$DO_PACKAGES" = "1" ] && TOTAL_STEPS=$(( TOTAL_STEPS + 1 ))
     [ "$DO_FRONTEND" = "1" ] && TOTAL_STEPS=$(( TOTAL_STEPS + 2 ))  # backup + frontend
     [ "$DO_BACKEND" = "1" ] && TOTAL_STEPS=$(( TOTAL_STEPS + 2 ))   # backend + udev
@@ -1597,6 +1790,11 @@ main() {
     remove_conflicts
 
     [ "$DO_PACKAGES" = "1" ] && install_dependencies
+
+    # SSH bootstrap runs after install_dependencies so Entware + bundled
+    # dropbear .ipk are available, and before stop_services so it never has
+    # to wait on QManager service teardown.
+    setup_ssh_early
 
     stop_services
 
@@ -1616,8 +1814,6 @@ main() {
 
     [ "$DO_START" = "1" ] && health_check
     [ "$DO_START" = "1" ] && at_stack_check
-
-    setup_ssh
 
     print_summary
 

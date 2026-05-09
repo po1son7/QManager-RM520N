@@ -83,7 +83,7 @@ if [ "$fetched" != "1" ] && command -v uclient-fetch >/dev/null 2>&1; then
 fi
 
 if [ "$fetched" != "1" ] || [ ! -s "$tmp_body" ]; then
-    qlog_warn "Failed to fetch releases from GitHub"
+    qlog_warn "Failed to fetch releases from GitHub (curl missing or network down)"
     rm -f "$tmp_body"
     exit 1
 fi
