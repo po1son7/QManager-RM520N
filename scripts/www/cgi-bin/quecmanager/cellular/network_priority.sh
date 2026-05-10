@@ -33,31 +33,17 @@ if [ "$REQUEST_METHOD" = "GET" ]; then
         exit 0
     fi
 
-    # Typical: +QNWPREFCFG: "rat_acq_order",NR5G:LTE:WCDMA
-    # Malformed dumps may prepend junk — extract known RAT tokens in appearance order.
-    order=""
-    token_order=$(printf '%s\n' "$resp" | tr '\r' '\n' \
-        | grep -oiE 'NR5G-NSA|LTE|NR5G|WCDMA|GSM|EDGE|TDSCDMA' \
-        | tr '[:lower:]' '[:upper:]' \
-        | awk '!seen[$0]++' \
-        | awk '{ printf "%s%s", (NR > 1 ? ":" : ""), $0 } END { print "" }' \
-        | tr -d '\n')
-    if [ -n "$token_order" ]; then
-        order="$token_order"
-    else
-        line=$(printf '%s\n' "$resp" | grep '+QNWPREFCFG:' | grep -Fi rat_acq_order | head -1 | tr -d '\r')
-        if [ -n "$line" ]; then
-            order=$(printf '%s' "$line" | sed '
-                s/.*[Rr][Aa][Tt]_[Aa][Cc][Qq]_[Oo][Rr][Dd][Ee][Rr]"*[,:[:space:]]*//
-                s/^"//
-                s/"[[:space:]]*$//
-                s/[[:space:]]*$//
-            ')
-        fi
-    fi
+    # +QNWPREFCFG: "rat_acq_order",NR5G:LTE:WCDMA   (x5x firmware)
+    # +QNWPREFCFG: "rat_order_pref",NR5G:LTE:WCDMA  (x6x firmware, e.g. RM521F-GL)
+    order=$(printf '%s' "$resp" | awk -F',' '
+        /\+QNWPREFCFG:.*"(rat_acq_order|rat_order_pref)"/ {
+            val = $2; gsub(/^[[:space:]]+|[[:space:]]+$/, "", val)
+            if (val != "") { print val; exit }
+        }
+    ')
 
     if [ -z "$order" ]; then
-        qlog_warn "rat_acq_order parse failed; raw line=$(printf '%s' "$line" | head -c 200)"
+        qlog_warn "rat_acq_order parse failed; raw=$(printf '%s' "$resp" | head -c 200)"
         cgi_error "parse_failed" "Could not parse rat_acq_order response"
         exit 0
     fi

@@ -5,7 +5,7 @@
   <h3>面向 Quectel 模组管理的现代化 Web 图形界面</h3>
   <p>用直观的网页界面查看、配置与优化蜂窝模组的运行表现</p>
 
-  ![Version](https://img.shields.io/badge/version-v0.1.6-blue?style=flat-square)
+  ![Version](https://img.shields.io/badge/version-v0.1.8--cn-blue?style=flat-square)
   ![License](https://img.shields.io/badge/license-MIT%20%2B%20Commons%20Clause-green?style=flat-square)
   ![Platform](https://img.shields.io/badge/platform-RG501Q--EU-orange?style=flat-square)
   ![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square)
@@ -26,6 +26,7 @@
 - **天线对准** — 三位置记录与综合得分对比，辅助摆放天线  
 - **网络事件** — 频段切换、小区重选、载波聚合变化、连接事件等自动记录  
 - **时延监控** — 实时 ping、24 小时历史、抖动与丢包，多时间尺度汇总  
+- **连接探测引擎** — 可配置 HTTP/HTTPS 探测目标（主 URL 与备用 URL），主失败后自动 fallback；默认 Cloudflare 为主、Google 为备；适合部分无法访问 Google 的地区，减少对单一域名被墙的误判  
 - **流量统计** — 实时速率（Mbps）与累计流量  
 
 ### 蜂窝参数与业务
